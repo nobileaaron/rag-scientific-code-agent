@@ -1,9 +1,14 @@
-data/raw/ippl
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
+
+# Ignore external codebase
+data/raw
+
+# Ignore embeddings
+embeddings/
+vectore_store/
 
 # C extensions
 *.so
