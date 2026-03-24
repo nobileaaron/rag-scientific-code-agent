@@ -1,0 +1,6 @@
+numpy
+ollama
+langchain-community
+
+# Optional: only needed for Embedder.transformer_embed()
+sentence-transformers

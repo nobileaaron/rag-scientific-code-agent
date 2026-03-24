@@ -26,6 +26,7 @@ query -> embedder (query_embed) -> retriever (FAISS) -> system_prompt -> llm_age
 
 ## Project Structure 
 rag-scientific-code-agent
+''''
 │
 ├── src
 │   ├── ingestion
@@ -59,6 +60,7 @@ rag-scientific-code-agent
 ├── configs
 ├── main.py
 └── README.md
+'''
 
 # Installation 
 ## clone repository:
@@ -68,7 +70,13 @@ IMPORTANT: The raw code base of ippl/opalx is not contained in the repo and need
 ## clone ippl framework into data/raw: 
 $ git clone https://github.com/ippl-framework/ippl.git data/raw/ippl
 
+## install Python dependencies:
+$ pip install -r requirements.txt
+
+Notes:
+- `sentence-transformers` is optional and only needed when using `Embedder.transformer_embed()`.
+- The default `main.py` path uses Ollama embeddings and requires local Ollama models such as `nomic-embed-text` and `deepseek-coder`.
+- Vector retrieval uses NumPy-based nearest-neighbor search, which avoids the native FAISS/OpenMP dependency.
+
 # Running the System 
 $ python main.py
-
-
