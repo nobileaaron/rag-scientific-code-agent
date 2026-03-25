@@ -6,6 +6,7 @@ from langchain_community.chat_models import ChatOllama
 class LLMWrapper:
 
     def __init__(self, model):
+        self.model = model
         self.llm = ChatOllama(model=model)
 
     def generate(self, prompt):

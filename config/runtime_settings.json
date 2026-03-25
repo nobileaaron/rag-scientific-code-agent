@@ -1,0 +1,49 @@
+{
+  "raw_data_path": "data/raw/ippl",
+  "ingestion": {
+    "preferred_parser_type": "tree_sitter",
+    "max_chunk_size": 400,
+    "chunk_explanation_allowed_types": [
+      "function_definition",
+      "method_definition",
+      "class",
+      "struct",
+      "section",
+      "paragraph",
+      "code_block"
+    ],
+    "chunk_explanation_min_content_length": 120,
+    "chunk_explanation_pilot_limit": 25
+  },
+  "embedding": {
+    "backend": "ollama",
+    "ollama_model": "nomic-embed-text",
+    "sentence_transformer_model": "all-MiniLM-L6-v2"
+  },
+  "prompts": {
+    "answer_prompt_mode": "retrieval_answer",
+    "chunk_explanation_prompt_mode": "general",
+    "file_level_prompt_mode": "file_level",
+    "file_level_fallback_prompt_mode": "file_level_fallback",
+    "module_level_prompt_mode": "module_level",
+    "call_chain_prompt_mode": "call_chain"
+  },
+  "models": {
+    "answer_model": "deepseek-coder",
+    "chunk_explanation_model": "deepseek-coder",
+    "file_level_model": "deepseek-coder",
+    "module_level_model": "deepseek-coder",
+    "call_chain_model": "deepseek-coder"
+  },
+  "strategies": {
+    "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",
+    "module_level_entity_strategy": "module_entities_from_descendant_files_v1",
+    "call_chain_entity_strategy": "direct_call_neighborhood_v1"
+  },
+  "retrieval": {
+    "candidate_k": 20,
+    "supplementary_k": 3,
+    "supplementary_candidate_k": 10,
+    "debug_enabled_by_default": false
+  }
+}

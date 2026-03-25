@@ -1,0 +1,452 @@
+[
+  {
+    "id": "file_001",
+    "category": "file_purpose",
+    "question": "What does Ippl.h do?",
+    "real_anwer": ""
+  },
+  {
+    "id": "file_002",
+    "category": "file_purpose",
+    "question": "What is IpplCore.h responsible for?",
+    "real_anwer": ""
+  },
+  {
+    "id": "file_003",
+    "category": "file_purpose",
+    "question": "What does FFT.hpp implement?",
+    "real_anwer": ""
+  },
+  {
+    "id": "file_004",
+    "category": "file_purpose",
+    "question": "What is the purpose of Types/IpplTypes.h?",
+    "real_anwer": ""
+  },
+  {
+    "id": "file_005",
+    "category": "file_purpose",
+    "question": "What is Types/Variant.h used for?",
+    "real_anwer": ""
+  },
+  {
+    "id": "location_001",
+    "category": "definition_location",
+    "question": "Where is FFT initialization implemented?",
+    "real_anwer": ""
+  },
+  {
+    "id": "location_002",
+    "category": "definition_location",
+    "question": "Where is NDIndex defined or used?",
+    "real_anwer": ""
+  },
+  {
+    "id": "location_003",
+    "category": "definition_location",
+    "question": "Where does IPPL set up the MPI environment?",
+    "real_anwer": ""
+  },
+  {
+    "id": "location_004",
+    "category": "definition_location",
+    "question": "In which file is FieldLayout introduced?",
+    "real_anwer": ""
+  },
+  {
+    "id": "location_005",
+    "category": "definition_location",
+    "question": "Where are particle layout classes implemented?",
+    "real_anwer": ""
+  },
+  {
+    "id": "how_001",
+    "category": "implementation_explanation",
+    "question": "How does the FFT transform workflow work in IPPL?",
+    "real_anwer": ""
+  },
+  {
+    "id": "how_002",
+    "category": "implementation_explanation",
+    "question": "How does FFTBase::setup() work?",
+    "real_anwer": ""
+  },
+  {
+    "id": "how_003",
+    "category": "implementation_explanation",
+    "question": "How are field layouts represented in IPPL?",
+    "real_anwer": ""
+  },
+  {
+    "id": "how_004",
+    "category": "implementation_explanation",
+    "question": "How does particle spatial layout work?",
+    "real_anwer": ""
+  },
+  {
+    "id": "how_005",
+    "category": "implementation_explanation",
+    "question": "How does IPPL handle FEM element and quadrature support?",
+    "real_anwer": ""
+  },
+  {
+    "id": "cross_001",
+    "category": "cross_file",
+    "question": "Which files does IpplCore.h pull together?",
+    "real_anwer": ""
+  },
+  {
+    "id": "cross_002",
+    "category": "cross_file",
+    "question": "What files are needed for FFT support?",
+    "real_anwer": ""
+  },
+  {
+    "id": "cross_003",
+    "category": "cross_file",
+    "question": "Which files are connected to NDIndex usage?",
+    "real_anwer": ""
+  },
+  {
+    "id": "cross_004",
+    "category": "cross_file",
+    "question": "How does Ippl.h relate to IpplCore.h?",
+    "real_anwer": ""
+  },
+  {
+    "id": "cross_005",
+    "category": "cross_file",
+    "question": "What other source files are important when understanding FFT.hpp?",
+    "real_anwer": ""
+  },
+  {
+    "id": "api_001",
+    "category": "api_interface",
+    "question": "What public functions are exposed by Ippl.h?",
+    "real_anwer": ""
+  },
+  {
+    "id": "api_002",
+    "category": "api_interface",
+    "question": "What does initialize() do in the IPPL environment?",
+    "real_anwer": ""
+  },
+  {
+    "id": "api_003",
+    "category": "api_interface",
+    "question": "What does finalize() do?",
+    "real_anwer": ""
+  },
+  {
+    "id": "api_004",
+    "category": "api_interface",
+    "question": "What are the main classes or interfaces involved in FFT?",
+    "real_anwer": ""
+  },
+  {
+    "id": "api_005",
+    "category": "api_interface",
+    "question": "What declarations exist in the field-related headers?",
+    "real_anwer": ""
+  },
+  {
+    "id": "dev_001",
+    "category": "developer_utility",
+    "question": "If I want to understand FFT in IPPL, which files should I read first?",
+    "real_anwer": ""
+  },
+  {
+    "id": "dev_002",
+    "category": "developer_utility",
+    "question": "If I want to understand field layouts, where should I start?",
+    "real_anwer": ""
+  },
+  {
+    "id": "dev_003",
+    "category": "developer_utility",
+    "question": "Which headers are umbrella headers versus implementation-heavy headers?",
+    "real_anwer": ""
+  },
+  {
+    "id": "dev_004",
+    "category": "developer_utility",
+    "question": "What are the core modules of the IPPL codebase?",
+    "real_anwer": ""
+  },
+  {
+    "id": "dev_005",
+    "category": "developer_utility",
+    "question": "Which files are central entry points for the library?",
+    "real_anwer": ""
+  },
+  {
+    "id": "arch_001",
+    "category": "architecture",
+    "question": "Explain how IPPL organizes fields, particles, and FFT support.",
+    "real_anwer": ""
+  },
+  {
+    "id": "arch_002",
+    "category": "architecture",
+    "question": "Explain the role of Ippl.h in the overall architecture.",
+    "real_anwer": ""
+  },
+  {
+    "id": "arch_003",
+    "category": "architecture",
+    "question": "Explain how template-heavy headers in Types/ are used.",
+    "real_anwer": ""
+  },
+  {
+    "id": "arch_004",
+    "category": "architecture",
+    "question": "Explain the difference between declaration-heavy and implementation-heavy headers in this codebase.",
+    "real_anwer": ""
+  },
+  {
+    "id": "algo_001",
+    "category": "algorithm",
+    "question": "How does the FFT workflow transform data between physical space and frequency space?",
+    "real_anwer": ""
+  },
+  {
+    "id": "algo_002",
+    "category": "algorithm",
+    "question": "What is the numerical role of FFTBase::setup()?",
+    "real_anwer": ""
+  },
+  {
+    "id": "algo_003",
+    "category": "algorithm",
+    "question": "How are forward and backward transforms handled in FFT.hpp?",
+    "real_anwer": ""
+  },
+  {
+    "id": "algo_004",
+    "category": "algorithm",
+    "question": "How does IPPL move data into and out of the heFFTe representation?",
+    "real_anwer": ""
+  },
+  {
+    "id": "algo_005",
+    "category": "algorithm",
+    "question": "Why are temporary fields used during FFT transforms?",
+    "real_anwer": ""
+  },
+  {
+    "id": "algo_006",
+    "category": "algorithm",
+    "question": "How does IPPL treat ghost cells when performing FFTs?",
+    "real_anwer": ""
+  },
+  {
+    "id": "algo_007",
+    "category": "algorithm",
+    "question": "What numerical assumptions are made about dimensionality in the FFT code?",
+    "real_anwer": ""
+  },
+  {
+    "id": "algo_008",
+    "category": "algorithm",
+    "question": "How is scaling handled in forward versus backward FFT transforms?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_001",
+    "category": "numerical_logic",
+    "question": "How does domainToBounds() convert IPPL domains into FFT or heFFTe bounds?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_002",
+    "category": "numerical_logic",
+    "question": "Why are domain bounds converted to long long values?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_003",
+    "category": "numerical_logic",
+    "question": "How are multidimensional indices represented numerically in IPPL?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_004",
+    "category": "numerical_logic",
+    "question": "What is the numerical meaning of NDIndex in the codebase?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_005",
+    "category": "numerical_logic",
+    "question": "How are field values distributed across local and global domains?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_006",
+    "category": "numerical_logic",
+    "question": "What is the numerical role of FieldLayout?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_007",
+    "category": "numerical_logic",
+    "question": "How does IPPL distinguish owned cells from ghost cells?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_008",
+    "category": "numerical_logic",
+    "question": "How do field layouts affect numerical operations on distributed fields?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_009",
+    "category": "numerical_logic",
+    "question": "How are particles assigned spatially in IPPL?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_010",
+    "category": "numerical_logic",
+    "question": "What numerical logic controls particle-to-domain mapping?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_011",
+    "category": "numerical_logic",
+    "question": "How does the particle layout support parallel decomposition?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_012",
+    "category": "numerical_logic",
+    "question": "How is neighborhood or domain ownership determined for particles?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_013",
+    "category": "numerical_logic",
+    "question": "What finite element spaces are implemented in IPPL?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_014",
+    "category": "numerical_logic",
+    "question": "How are quadrature rules used in the FEM code?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_015",
+    "category": "numerical_logic",
+    "question": "What is the difference between LagrangeSpace and NedelecSpace numerically?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_016",
+    "category": "numerical_logic",
+    "question": "How are interpolation operators constructed in the FEM modules?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_017",
+    "category": "numerical_logic",
+    "question": "What element types are supported and what numerical problems are they meant for?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_018",
+    "category": "numerical_logic",
+    "question": "How does IPPL decompose a numerical domain across processes?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_019",
+    "category": "numerical_logic",
+    "question": "What is the role of OrthogonalRecursiveBisection in load balancing?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_020",
+    "category": "numerical_logic",
+    "question": "How does communication strategy affect FFT computation?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_021",
+    "category": "numerical_logic",
+    "question": "What are the algorithmic differences between alltoall, alltoallv, and p2p communication modes in FFT setup?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_022",
+    "category": "numerical_logic",
+    "question": "Where does the code enforce dimension restrictions like 2D or 3D only?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_023",
+    "category": "numerical_logic",
+    "question": "How does the code guard against invalid transform directions?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_024",
+    "category": "numerical_logic",
+    "question": "What assumptions are made about precision types such as float versus double?",
+    "real_anwer": ""
+  },
+  {
+    "id": "num_025",
+    "category": "numerical_logic",
+    "question": "Where are numerical edge cases or unsupported cases handled?",
+    "real_anwer": ""
+  },
+  {
+    "id": "explain_001",
+    "category": "algorithm_explanation",
+    "question": "Explain the numerical algorithm implemented in FFT<CCTransform, ComplexField>::transform.",
+    "real_anwer": ""
+  },
+  {
+    "id": "explain_002",
+    "category": "algorithm_explanation",
+    "question": "Explain how FFT<RCTransform, RealField> handles real-to-complex transforms.",
+    "real_anwer": ""
+  },
+  {
+    "id": "explain_003",
+    "category": "algorithm_explanation",
+    "question": "Explain how IPPL maps distributed field domains into FFT boxes.",
+    "real_anwer": ""
+  },
+  {
+    "id": "explain_004",
+    "category": "algorithm_explanation",
+    "question": "Explain how the code copies data between Kokkos views and FFT work buffers.",
+    "real_anwer": ""
+  },
+  {
+    "id": "explain_005",
+    "category": "algorithm_explanation",
+    "question": "Explain the numerical logic behind using ghost-layer-free temporary arrays in FFT.",
+    "real_anwer": ""
+  },
+  {
+    "id": "explain_006",
+    "category": "algorithm_explanation",
+    "question": "Explain the role of heFFTe in IPPL's FFT implementation.",
+    "real_anwer": ""
+  },
+  {
+    "id": "explain_007",
+    "category": "algorithm_explanation",
+    "question": "Explain how FEM quadrature is represented and applied in the codebase.",
+    "real_anwer": ""
+  },
+  {
+    "id": "explain_008",
+    "category": "algorithm_explanation",
+    "question": "Explain how domain decomposition influences the numerical algorithm in IPPL.",
+    "real_anwer": ""
+  }
+]
