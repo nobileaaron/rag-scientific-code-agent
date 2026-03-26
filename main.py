@@ -17,12 +17,14 @@ from src.ingestion.code.header_chunker import HeaderChunker
 from src.ingestion.documentation.doc_chunker import DocChunker
 from src.ingestion.explanation_generator import EntityExplanationGenerator
 
-# Embedding
-from src.ingestion.embedder import Embedder
+# Structure Building - Builds higher-level entities for retrieval (file-level, module-level, call-chain-level)
 from src.structure.file_level_entity_builder import FileLevelEntityBuilder
 from src.structure.module_level_entity_builder import ModuleLevelEntityBuilder
 from src.structure.call_chain_entity_builder import CallChainEntityBuilder
 from src.structure.project_structure_builder import ProjectStructureBuilder
+
+# Embedding
+from src.ingestion.embedder import Embedder
 
 # Retrieval
 from src.retrieval.retriever import Retriever
@@ -36,7 +38,7 @@ from src.llm.llm_wrapper import LLMWrapper
 # Prompt
 from src.prompts.prompt_templates import get_prompt_template, get_prompt_template_signature
 
-
+# Paths
 VECTOR_STORE_DIR = Path("embeddings/vector_store")
 PROJECT_STRUCTURE_PATH = Path("embeddings/project_structure/project_structure.json")
 FILE_LEVEL_ENTITIES_PATH = Path("embeddings/project_structure/file_level_entities.json")

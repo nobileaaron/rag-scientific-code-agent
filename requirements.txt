@@ -1,0 +1,15 @@
+# Core numerical / vector store
+numpy
+faiss-cpu
+
+# LLM / prompting
+langchain
+langchain-community
+ollama
+
+# Embedding backends
+sentence-transformers
+
+# Parsing
+tree-sitter
+tree-sitter-languages
