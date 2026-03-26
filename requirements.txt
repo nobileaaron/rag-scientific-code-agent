@@ -1,13 +1,13 @@
 # Core numerical / vector store
-numpy
-faiss-cpu
+numpy==2.0.2
+faiss-cpu==1.13.0
 
 # LLM runtime
-ollama
+ollama==0.6.1
 
 # Embedding backends
-sentence-transformers
+sentence-transformers==5.1.2
 
 # Parsing
-tree-sitter
-tree-sitter-languages
+tree-sitter==0.21.3
+tree-sitter-languages==1.10.2
