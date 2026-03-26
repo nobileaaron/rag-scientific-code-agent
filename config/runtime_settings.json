@@ -29,11 +29,11 @@
     "call_chain_prompt_mode": "call_chain"
   },
   "models": {
-    "answer_model": "deepseek-coder",
-    "chunk_explanation_model": "deepseek-coder",
-    "file_level_model": "deepseek-coder",
-    "module_level_model": "deepseek-coder",
-    "call_chain_model": "deepseek-coder"
+    "answer_model": "qwen2.5-coder:7b",
+    "chunk_explanation_model": "qwen2.5-coder:7b",
+    "file_level_model": "qwen2.5-coder:7b",
+    "module_level_model": "qwen2.5-coder:7b",
+    "call_chain_model": "qwen2.5-coder:7b"
   },
   "strategies": {
     "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",

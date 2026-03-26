@@ -1,172 +1,250 @@
 # RAG Scientific Code Agent
-Retrieval-Augmented Generation (RAG) system for scientific code understanding of the IPPL (PSI) and OPALX code base.
-Upon Inputing a query the system retrieves relevant code files from the IPPL / OPALX framework and uses an LLM to explain algorithms, data flow and the used mathematical methods.
 
-## Overview 
-This project builds a RAG-based assistant explaining scientific C++ code.
+Retrieval-Augmented Generation system for scientific C++ code understanding, currently focused on the IPPL codebase.
 
-System:
-- Reads in raw data (data/raw/ippl)
-- Extracts function chunks
-- Parses C++ functions into variables (name, input, output, codebase)
-- Generates semantic Embeddings
-- Stores embeddings in a FAISS vector database
-- Usage of user query to retrieve relevant code base
-- Uses LLM (deepseek-codeer) to explain algorithms and numerical logic.
+The project ingests source code and documentation, builds a multi-granular structural representation of the codebase, embeds retrievable units at several levels, and uses an LLM to answer questions about architecture, file roles, workflows, and implementation details.
 
-## Architecture
+## Overview
 
-The system follows the depicted RAG pipeline:
+The current system supports:
 
-file_reader -> chunker -> embedder -> vector_store -> retriever -> llm_wrapper -> system_prompt -> llm_agent 
+- C++ source and header ingestion
+- documentation ingestion
+- entity-level explanation generation with an LLM
+- dense retrieval with metadata-aware reranking
+- exact filename and symbol injection
+- structural expansion after seed retrieval
+- multi-granular retrieval across function/symbol, file, module, and call-chain levels
 
-So if the user inputs a query it follows the pipeline:
+The main target use cases are questions like:
 
-query -> embedder (query_embed) -> retriever (FAISS) -> system_prompt -> llm_agent
+- What does `Ippl.h` do?
+- Where is `deleteAllBuffers` implemented?
+- What does the `Communicate` module do?
+- How does FFT work in IPPL?
 
-## Project Structure 
-rag-scientific-code-agent
-│
-├── src
-│   ├── ingestion
-│   │   ├── file_reader.py
-│   │   ├── chunker.py
-│   │   ├── embedder.py
-│   │   └── (parser.py)         // not implemented yet
-│   │
-│   ├── retrieval
-│   │   ├── vector_store.py
-│   │   └── retriever.py
-│   │
-│   ├── prompts
-│   │   └── system_prompt.py
-│   │
-│   ├── llm
-│   │   └── llm_wrapper.py
-│   │   
-│   │
-│   └── agent
-│       └── llm_agent.py
-│ 
-│ 
-├── test1                       // first test run
-├── data
-│   ├── processed
-│   └── raw
-│       ├── ippl 
-│       └── opalx
-│ 
-├── configs
-├── main.py
-└── README.md
+## Current Architecture
 
-# Installation 
-## clone repository:
-git clone https://github.com/nobileaaron/rag-scientific-code-agent
+At a high level, the runtime flow is:
 
-IMPORTANT: The raw code base of ippl/opalx is not contained in the repo and needs to be added seperately.
-## clone ippl framework into data/raw: 
-git clone https://github.com/ippl-framework/ippl.git data/raw/ippl
+1. Load runtime settings from [`config/runtime_settings.json`](/Users/aaron/semester_project/rag-scientific-code-agent/config/runtime_settings.json)
+2. Load raw source and documentation files
+3. Parse source files into code entities
+4. Build the project structure graph
+5. If needed, generate entity explanations and build retrievable artifacts
+6. Embed the retrievable records and persist the vector store
+7. Answer user queries through retrieval + LLM synthesis
 
-# Running the System
-Use the project virtual environment as the default interpreter:
+The main pipeline now looks like:
+
+`file_reader -> parsers -> explanation_generator -> structure builders -> chunkers/entity builders -> embedder -> vector_store -> retriever -> llm_agent`
+
+The query-time flow looks like:
+
+`query -> query_embed -> retriever -> reranker -> structural_expander -> llm_agent -> answer LLM`
+
+## Multi-Granular Retrieval
+
+The system no longer retrieves only function chunks. It now builds and retrieves multiple levels of context:
+
+- **Function / symbol level**
+  parsed functions, methods, declarations, classes, and structs.
+  Function and method bodies may be split into smaller chunks.
+
+- **File level**
+  One whole-file entity per file.
+  Uses either aggregated symbol summaries or raw-content fallback if no symbols were detected.
+
+- **Module level**
+  One entity per module/folder.
+  Aggregates descendant files, file-level summaries, and structural facts.
+
+- **Call-chain level**
+  One entity per callable symbol with local incoming/outgoing call relationships.
+  Summarizes a local workflow neighborhood around that symbol.
+
+## Structural Layer
+
+Before retrieval, the system builds a project structure snapshot and saves it to:
+
+- [`embeddings/project_structure/project_structure.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/project_structure.json)
+
+That structure currently contains:
+
+- `files`
+- `modules`
+- `symbols`
+- `relationships` with `include_edges`, `call_edges`, `ownership_edges`, and `inheritance_edges`
+- `indexes`
+- `status`
+- `summary`
+
+Module hierarchy is scope-aware, so source folders are separated from non-source areas such as tests or CI.
+
+## Generated Artifacts
+
+During a rebuild, the system can produce:
+
+- [`embeddings/project_structure/project_structure.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/project_structure.json)
+- [`embeddings/project_structure/file_level_entities.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/file_level_entities.json)
+- [`embeddings/project_structure/module_level_entities.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/module_level_entities.json)
+- [`embeddings/project_structure/call_chain_entities.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/call_chain_entities.json)
+- [`embeddings/vector_store`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/vector_store)
+
+The vector store persists:
+
+- embedding vectors
+- metadata for all retrievable records
+- a manifest describing the runtime settings used to build it
+
+If the manifest changes, the vector store is rebuilt automatically.
+
+## Key Components
+
+### Ingestion
+
+- [`src/ingestion/file_reader.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/file_reader.py)
+  - loads C++ source/header files and documentation files
+
+- [`src/ingestion/code/cpp_parser.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/code/cpp_parser.py)
+- [`src/ingestion/code/header_parser.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/code/header_parser.py)
+- [`src/ingestion/documentation/doc_parser.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/documentation/doc_parser.py)
+  - parse source code and documentation into structured entities
+
+- [`src/ingestion/explanation_generator.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/explanation_generator.py)
+  - generates LLM explanations for parsed entities before chunking
+
+- [`src/ingestion/code/cpp_function_chunker.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/code/cpp_function_chunker.py)
+- [`src/ingestion/code/header_chunker.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/code/header_chunker.py)
+- [`src/ingestion/documentation/doc_chunker.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/documentation/doc_chunker.py)
+  - turn parsed entities into retrievable chunk records
+
+- [`src/ingestion/embedder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/embedder.py)
+  - supports `ollama` and `sentence_transformer` embedding backends
+
+### Structure Builders
+
+- [`src/structure/project_structure_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/project_structure_builder.py)
+  - builds the project structure graph
+
+- [`src/structure/call_graph_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/call_graph_builder.py)
+  - builds approximate call edges using tree-sitter
+
+- [`src/structure/file_level_entity_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/file_level_entity_builder.py)
+  - builds whole-file entities
+
+- [`src/structure/module_level_entity_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/module_level_entity_builder.py)
+  - builds module/folder entities
+
+- [`src/structure/call_chain_entity_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/call_chain_entity_builder.py)
+  - builds local call-chain workflow entities
+
+### Retrieval
+
+- [`src/retrieval/vector_store.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/vector_store.py)
+  - FAISS-backed persistent vector store
+
+- [`src/retrieval/reranker.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/reranker.py)
+  - metadata-aware reranking
+  - exact filename extraction
+  - exact symbol extraction
+
+- [`src/retrieval/query_intent_router.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/query_intent_router.py)
+  - routes query types such as location, workflow, or file-purpose queries
+
+- [`src/retrieval/structural_expander.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/structural_expander.py)
+  - expands seed retrieval results with related entities from other levels
+
+- [`src/retrieval/retriever.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/retriever.py)
+  - combines dense retrieval, reranking, structural expansion, and supplementary retrieval
+
+- [`src/retrieval/debugger.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/debugger.py)
+  - prints a retrieval debug report when debug mode is enabled
+
+### Prompting and LLM Usage
+
+- [`src/prompts/prompt_templates.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/prompts/prompt_templates.py)
+  - prompt templates for entity explanations, file-level explanations, file-level fallback explanations, module-level explanations, call-chain explanations, and final retrieval-based answering
+
+- [`src/llm/llm_wrapper.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/llm/llm_wrapper.py)
+  - wraps the configured Ollama chat model
+
+- [`src/agent/llm_agent.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/agent/llm_agent.py)
+  - builds final retrieved context and asks the answer LLM
+
+## Runtime Settings
+
+Runtime behavior is configured in:
+
+- [`config/runtime_settings.json`](/Users/aaron/semester_project/rag-scientific-code-agent/config/runtime_settings.json)
+
+That file currently controls:
+
+- parser choice
+- chunk size
+- explanation generation settings
+- embedding backend and embedding model
+- prompt modes
+- LLM models for all explanation/answer stages
+- retrieval settings
+- strategy names used for manifest tracking
+
+## Installation
+
+Clone the repository:
 
 ```bash
-/Users/aaron/semester_project/.venv/bin/python main.py
+git clone https://github.com/nobileaaron/rag-scientific-code-agent
+cd rag-scientific-code-agent
 ```
 
-You can also use the repo-local launcher:
+The raw IPPL codebase is not included in the repository and needs to be added separately.
+
+Example:
+
+```bash
+git clone https://github.com/ippl-framework/ippl.git data/raw/ippl
+```
+
+## Running the System
+
+Run with your project Python environment:
+
+```bash
+python main.py
+```
+
+If you use the repo-local launcher:
 
 ```bash
 ./run_main.sh
 ```
 
-The project expects the `.venv` interpreter because structural analysis depends on
-tree-sitter packages installed there.
+The exact interpreter and models depend on how your environment is configured. On local development machines or servers, make sure the required Python packages and model backends are available.
 
+## Debugging
 
+Turn retrieval debugging on or off inside the interactive prompt with:
 
+```text
+:debug on
+:debug off
+```
 
+The debug report shows:
 
-# Debugging (implemented in debugger.py)
-Turn Debugging Mode on/off by typing ":debug on" or ":debug off" in query.
+- candidate pool size
+- exact filename and symbol matches
+- query intent
+- structural expansion mode
+- top reranked candidates
+- final retrieved context grouped by retrieval role
 
-Debugger shows, which chunks are chosen by the LLM and why.
+## Current Focus
 
-1. Candidate Pool Size - How many Chunks were considered before top results were chosen
-2. Exact Filenames detected - Which file names are in the Query & data/raw
-3. Combined - final total score used for ranking 
-4. Semantic - How well does the chunk match query by embedding similarity
-5. Metadata - How much the chunk matched through metadata - (filename, symbol name, source type or query tokens)
+The current architecture is centered on:
 
-# Ingestion
-
-1. File Reader (file_reader.py)
-differentiates between two type of files:
-- code reading              -> reading all C++ Source Code files [".cpp", ".hpp", ".h"]
-- documentation reading     -> reading all documentation files   [".md", ".rst", ".txt"]    
-
-
-2. Parsing (cpp_parser.py, header_parser.py, doc_parser.py)
-- cpp_parser.py             -> parses cpp files from source code
-
-The "Cpp-Parser" implements a structured representation of ".cpp" code. For this the system can use two different methods:
-
--Regex                      ->  System finds a function starting language pattern and recognizes it f.e. int PoissonSolver(int x, ...){.....} from the starting point the system looks for the last semicolon and stops there. (This Method often times leads to mystakes, since it doesn't respect the actual syntax of the cpp code and is more based on text patterns.)
-
-
--TreeSitter (recommended)   -> parser generator and incremental parsing system for source code, builds a system for source code. 
-
-TreeSitter uses following attributes for the code structure:
-----file-related fields----
-    1.  path - Full path to the file
-            example: data/raw/ippl/src/FFT/FFTSolver.cpp
-    2.  file - same file path, kept for compatibility with the rest of the pipeline
-    3.  file_name - extracts only the filename
-            example: FFTSolver.cpp
-    4.  base_name - filename without extension - useful to later connect .cpp with related .hppfile
-            example: FFTSolver
-
-----source classification fields----
-    5.  language - programming language of the parsed code
-        here: cpp (C++ the language)
-    6.  source_type - what kind of source the information came from
-            examples: cpp / hpp / h 
-    7.  entity_type - what kind of parsed this is this? - gives semantic label for the kind of structured object the parser found. 
-            examples: function definition, method declaration, class, doc section.
-    8.  chunk_type - 
-
-----symbol relationship fields---- 
-"How is a parsed code element related to other code elements?"
-    9.  symbol_name - gives the main name of the parsed entity
-            -> .cpp function: *function name
-            -> header method: *method name 
-            -> class/struct:  *class/struct name
-            -> doc chunk:     *section title
-    10. function_name - kept because pipeline expected this field from older versions
-    11. parent_symbol
-    12. class_name - gives the class this function belongs to (if available)
-
-----function signature fields----
-    13. return_type - returns type of the function
-            example: int, double, ...
-    14. parameters - parameter list of the function without parentheses
-            example: int, double, ...
-
-----location/sturcture fields----
-    15. section_path - structural location information?
-    16. namespace_path - 
-
-----chunk bookkeeping----
-    17. chunk_index - which chunk number is this within the parsed entity. (overwritten by chunker later)
-    18. total_chunks - how many chunks does the parsed entity contain. (overwritten by chunker later.)
-
-----content-----
-    19. code - takes the full definition text of the parsed entity 
-        
-
-
-
-
-
-
+- reliable structural understanding of the codebase
+- multi-granular retrieval
+- explanation generation at several abstraction levels
+- better grounding of final answers in retrieved evidence

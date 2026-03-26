@@ -18,7 +18,6 @@ class LLMAgent:
 
 
     def build_context(self, chunks):
-
         context = ""
 
         for chunk in chunks:
@@ -76,9 +75,6 @@ class LLMAgent:
             """
 
         return context
-    
-    
-
 
     def answer(self, query, k=5):
         # 1 retrieve relevant chunks
@@ -100,24 +96,8 @@ class LLMAgent:
 
         prompt = self.prompt_template.format(
             context=context,
-            question=query
+            question=query,
         )
-
-        # 4 call the LLM
-        #response = ollama.chat(
-            #model=self.model,
-            #messages=[
-        #{
-            #"role": "system",
-            #"content": system_prompt
-        #},
-        #{
-            #"role": "user",
-            #"content": user_prompt
-            
-        #}
-    #]   
-#)
 
         #return response["message"]["content"]
         return self.llm.generate(prompt)
