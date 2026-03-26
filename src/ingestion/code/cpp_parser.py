@@ -87,7 +87,11 @@ class TreeSitterParser:
 
         #import parser from tree_sitter and configure to cpp grammar
         self._parser = Parser()
-        self._parser.set_language(get_language("cpp"))
+        language = get_language("cpp")
+        if hasattr(self._parser, "set_language"):
+            self._parser.set_language(language)
+        else:
+            self._parser.language = language
         self.comment_extractor = CommentExtractor()
 
     #Take raw file text + tree-sitter node and return exact substring fo the file

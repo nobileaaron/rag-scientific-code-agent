@@ -14,7 +14,11 @@ class TreeSitterCallGraphBuilder:
             ) from exc
 
         self._parser = Parser()
-        self._parser.set_language(get_language("cpp"))
+        language = get_language("cpp")
+        if hasattr(self._parser, "set_language"):
+            self._parser.set_language(language)
+        else:
+            self._parser.language = language
         self.symbol_records = symbol_records
         self.callable_types = {
             "function_definition",

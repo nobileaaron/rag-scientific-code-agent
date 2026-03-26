@@ -233,7 +233,11 @@ class TreeSitterHeaderParser:
 
         self.header_extensions = {".h", ".hpp"}
         self._parser = Parser()
-        self._parser.set_language(get_language("cpp"))
+        language = get_language("cpp")
+        if hasattr(self._parser, "set_language"):
+            self._parser.set_language(language)
+        else:
+            self._parser.language = language
         self.comment_extractor = CommentExtractor()
 
     def extract_entities(self, files):
