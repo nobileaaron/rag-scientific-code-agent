@@ -1,6 +1,35 @@
 import hashlib
 
-from langchain.prompts import ChatPromptTemplate
+try:
+    from langchain.prompts import ChatPromptTemplate
+except ImportError:
+    try:
+        from langchain.prompts.chat import ChatPromptTemplate
+    except ImportError:
+        class _SimplePrompt:
+            def __init__(self, template):
+                self.template = template
+
+        class _SimpleMessage:
+            def __init__(self, role, template):
+                self.role = role
+                self.prompt = _SimplePrompt(template)
+
+        class ChatPromptTemplate:
+            def __init__(self, messages):
+                self.messages = [_SimpleMessage(role, template) for role, template in messages]
+
+            @classmethod
+            def from_messages(cls, messages):
+                return cls(messages)
+
+            def format(self, **kwargs):
+                rendered_parts = []
+                for message in self.messages:
+                    rendered_parts.append(
+                        f"{message.role.upper()}:\n{message.prompt.template.format(**kwargs)}"
+                    )
+                return "\n\n".join(rendered_parts)
 
 
 entity_explanation_prompt = ChatPromptTemplate.from_messages(

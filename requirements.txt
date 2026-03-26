@@ -2,9 +2,7 @@
 numpy
 faiss-cpu
 
-# LLM / prompting
-langchain
-langchain-community
+# LLM runtime
 ollama
 
 # Embedding backends
