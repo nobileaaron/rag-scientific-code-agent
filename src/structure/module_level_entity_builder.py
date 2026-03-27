@@ -131,7 +131,7 @@ class ModuleLevelEntityBuilder:
                         for entity in member_file_entities
                     ),
                     "file_level_modes": self._aggregate_unique(
-                        [[entity.get("file_level_mode", "")]]
+                        [[entity.get("file_level_mode", "")] if entity.get("file_level_mode", "") else []]
                         for entity in member_file_entities
                     ),
                     "generated_explanation": explanation,
