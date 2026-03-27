@@ -45,16 +45,22 @@ class CallChainEntityBuilder:
             if callee_symbol_id:
                 incoming_by_callee.setdefault(callee_symbol_id, []).append(edge)
 
+        candidate_symbols = [
+            symbol
+            for symbol in symbol_records
+            if symbol.get("chunk_type", symbol.get("entity_type", "")) in self.callable_types
+            and (
+                outgoing_by_caller.get(symbol["symbol_id"], [])
+                or incoming_by_callee.get(symbol["symbol_id"], [])
+            )
+        ]
+        total_call_chain_entities = len(candidate_symbols)
+        explained_count = 0
         call_chain_entities = []
-        for symbol in symbol_records:
-            if symbol.get("chunk_type", symbol.get("entity_type", "")) not in self.callable_types:
-                continue
-
+        for symbol in candidate_symbols:
             symbol_id = symbol["symbol_id"]
             outgoing_edges = outgoing_by_caller.get(symbol_id, [])
             incoming_edges = incoming_by_callee.get(symbol_id, [])
-            if not outgoing_edges and not incoming_edges:
-                continue
 
             file_entity = file_level_by_path.get(symbol.get("file_path", ""))
             module_entity = module_level_by_key.get(symbol.get("module_key", ""))
@@ -136,6 +142,11 @@ class CallChainEntityBuilder:
                     "explanation_generated_from": "call_chain_neighborhood",
                     "code": call_chain_facts,
                 }
+            )
+            explained_count += 1
+            print(
+                f"  explained {explained_count}/{total_call_chain_entities} "
+                "call_chain_level entities"
             )
 
         return call_chain_entities

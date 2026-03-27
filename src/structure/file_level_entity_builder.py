@@ -31,8 +31,11 @@ class FileLevelEntityBuilder:
         }
         relationships = project_structure.get("relationships", {})
         file_level_entities = []
+        file_records = project_structure.get("files", [])
+        total_files = len(file_records)
+        explained_count = 0
 
-        for file_record in project_structure.get("files", []):
+        for file_record in file_records:
             symbol_ids = file_record.get("symbols", [])
             symbol_records = [
                 symbols_by_id[symbol_id]
@@ -145,6 +148,8 @@ class FileLevelEntityBuilder:
                     "code": file_facts,
                 }
             )
+            explained_count += 1
+            print(f"  explained {explained_count}/{total_files} file_level entities")
 
         return file_level_entities
 

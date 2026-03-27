@@ -47,6 +47,8 @@ class EntityExplanationGenerator:
         if not entities:
             return entities
 
+        batch_target = self._count_batch_target(entities)
+        batch_explained = 0
         print(
             f"annotating {len(entities)} {entity_level} entities for explanation generation..."
         )
@@ -77,15 +79,10 @@ class EntityExplanationGenerator:
                 self._mark_skipped(entity, "skipped_by_pilot")
                 continue
 
-            if self.stats["explained"] < 5 or self.stats["explained"] % 10 == 0:
-                print(
-                    "  explaining "
-                    f"[{entity['entity_level']}] {entity.get('chunk_type', '')} "
-                    f"{entity.get('symbol_name', '')} "
-                    f"({entity.get('path', entity.get('file', ''))})"
-                )
-
             self._generate_explanation(entity)
+            if entity.get("generated_explanation_status") == "ok":
+                batch_explained += 1
+                print(f"  explained {batch_explained}/{batch_target} {entity_level} entities")
 
         return entities
 
@@ -138,6 +135,13 @@ class EntityExplanationGenerator:
 
         alnum_chars = sum(char.isalnum() for char in stripped)
         return alnum_chars < max(25, self.min_content_length // 3)
+
+    def _count_batch_target(self, entities):
+        eligible_count = sum(1 for entity in entities if self._skip_reason(entity) is None)
+        if self.pilot_limit is None:
+            return eligible_count
+        remaining = max(self.pilot_limit - self.generated_count, 0)
+        return min(eligible_count, remaining)
 
     def _mark_skipped(self, entity, status):
         entity["generated_explanation_status"] = status

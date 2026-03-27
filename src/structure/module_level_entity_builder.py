@@ -24,12 +24,29 @@ class ModuleLevelEntityBuilder:
         module_to_files = indexes.get("module_to_files", {})
         module_to_submodules = indexes.get("module_to_submodules", {})
         module_entities = []
+        candidate_module_records = [
+            module_record
+            for module_record in project_structure.get("modules", [])
+            if module_record.get("module_path") != "root"
+        ]
+        explained_count = 0
+        total_modules = 0
 
-        for module_record in project_structure.get("modules", []):
+        for module_record in candidate_module_records:
             module_key = module_record["module_key"]
-            if module_record.get("module_path") == "root":
-                continue
+            descendant_module_keys = self._descendant_modules(module_key, module_to_submodules)
+            descendant_file_paths = sorted(
+                {
+                    file_path
+                    for descendant_module_key in descendant_module_keys
+                    for file_path in module_to_files.get(descendant_module_key, [])
+                }
+            )
+            if descendant_file_paths:
+                total_modules += 1
 
+        for module_record in candidate_module_records:
+            module_key = module_record["module_key"]
             descendant_module_keys = self._descendant_modules(module_key, module_to_submodules)
             descendant_file_paths = sorted(
                 {
@@ -126,6 +143,8 @@ class ModuleLevelEntityBuilder:
                     "code": module_facts,
                 }
             )
+            explained_count += 1
+            print(f"  explained {explained_count}/{total_modules} module_level entities")
 
         return module_entities
 

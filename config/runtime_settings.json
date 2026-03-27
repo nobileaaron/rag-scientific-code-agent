@@ -13,7 +13,7 @@
       "code_block"
     ],
     "chunk_explanation_min_content_length": 120,
-    "chunk_explanation_pilot_limit": 25
+    "chunk_explanation_pilot_limit": null
   },
   "embedding": {
     "backend": "ollama",
