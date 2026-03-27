@@ -269,11 +269,20 @@ Incoming Calls:
         values = []
         seen = set()
         for items in nested_lists:
-            for item in items:
+            for item in self._flatten_items(items):
                 if item and item not in seen:
                     seen.add(item)
                     values.append(item)
-        return sorted(values)
+        return sorted(values, key=str)
+
+    def _flatten_items(self, items):
+        if items is None:
+            return
+        if isinstance(items, (list, tuple, set)):
+            for item in items:
+                yield from self._flatten_items(item)
+            return
+        yield items
 
     def _short_summary(self, text):
         cleaned = " ".join(text.split())
