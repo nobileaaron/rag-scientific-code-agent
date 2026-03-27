@@ -4,6 +4,8 @@ Retrieval-Augmented Generation system for scientific C++ code understanding, cur
 
 The project ingests source code and documentation, builds a multi-granular structural representation of the codebase, embeds retrievable units at several levels, and uses an LLM to answer questions about architecture, file roles, workflows, and implementation details.
 
+For a repo-layout-oriented overview, see [`PROJECT_OVERVIEW.md`](/Users/aaron/semester_project/rag-scientific-code-agent/PROJECT_OVERVIEW.md).
+
 ## Overview
 
 The current system supports:
