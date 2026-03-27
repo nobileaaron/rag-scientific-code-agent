@@ -14,7 +14,7 @@ set -euo pipefail
 
 ulimit -c unlimited
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 
 # Adjust these if your cluster environment changes later.
 PYTHON_MODULE="${PYTHON_MODULE:-Python/3.11.11}"
