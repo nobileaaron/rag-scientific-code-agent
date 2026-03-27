@@ -55,4 +55,4 @@ if ! ollama list >/dev/null 2>&1; then
 fi
 
 echo "Running main.py..."
-python main.py
+python -u main.py
