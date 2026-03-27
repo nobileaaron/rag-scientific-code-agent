@@ -239,7 +239,7 @@ class ProjectStructureBuilder:
     def _build_call_edges(self, code_entities, symbol_records):
         try:
             call_graph_builder = TreeSitterCallGraphBuilder(symbol_records)
-        except ImportError as exc:
+        except Exception as exc:
             return [], {
                 "backend": "tree_sitter",
                 "available": False,

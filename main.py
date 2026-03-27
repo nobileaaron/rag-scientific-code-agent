@@ -1,4 +1,5 @@
 # ----- INGESTION -----
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -44,12 +45,130 @@ PROJECT_STRUCTURE_PATH = Path("embeddings/project_structure/project_structure.js
 FILE_LEVEL_ENTITIES_PATH = Path("embeddings/project_structure/file_level_entities.json")
 MODULE_LEVEL_ENTITIES_PATH = Path("embeddings/project_structure/module_level_entities.json")
 CALL_CHAIN_ENTITIES_PATH = Path("embeddings/project_structure/call_chain_entities.json")
+EXPLANATIONS_DIR = Path("embeddings/explanations")
+FUNCTION_LEVEL_EXPLANATIONS_PATH = EXPLANATIONS_DIR / "function_level_explanations.json"
+DOCUMENTATION_SECTION_EXPLANATIONS_PATH = (
+    EXPLANATIONS_DIR / "documentation_section_level_explanations.json"
+)
+FILE_LEVEL_EXPLANATIONS_PATH = EXPLANATIONS_DIR / "file_level_explanations.json"
+MODULE_LEVEL_EXPLANATIONS_PATH = EXPLANATIONS_DIR / "module_level_explanations.json"
+CALL_CHAIN_LEVEL_EXPLANATIONS_PATH = EXPLANATIONS_DIR / "call_chain_level_explanations.json"
 SETTINGS_PATH = Path("config/runtime_settings.json")
 
 
 def load_runtime_settings(settings_path):
     with Path(settings_path).open("r", encoding="utf-8") as file:
         return json.load(file)
+
+
+def build_explanation_snapshot_key(entity):
+    path = entity.get("path", entity.get("file", ""))
+    chunk_type = entity.get("chunk_type", entity.get("entity_type", ""))
+    source_type = entity.get("source_type", entity.get("doc_type", entity.get("file_type", "")))
+    symbol_name = entity.get(
+        "symbol_name",
+        entity.get("function_name", entity.get("section_title", "")),
+    )
+    parent_symbol = entity.get("parent_symbol", entity.get("class_name", ""))
+    section_path = entity.get("section_path", entity.get("parameters", ""))
+    return_type = entity.get("return_type", "")
+    content = entity.get("code", entity.get("content", ""))
+    key_text = "\n".join(
+        [
+            str(path),
+            str(chunk_type),
+            str(source_type),
+            str(symbol_name),
+            str(parent_symbol),
+            str(section_path),
+            str(return_type),
+            str(content),
+        ]
+    )
+    return hashlib.sha256(key_text.encode("utf-8")).hexdigest()
+
+
+def save_explanation_snapshots(entities, output_path, entity_level):
+    snapshot_records = []
+    for entity in entities:
+        if not entity.get("generated_explanation_status"):
+            continue
+
+        snapshot_records.append(
+            {
+                "entity_key": build_explanation_snapshot_key(entity),
+                "entity_id": entity.get("entity_id", ""),
+                "entity_level": entity_level,
+                "path": entity.get("path", entity.get("file", "")),
+                "file_name": entity.get("file_name", ""),
+                "symbol_name": entity.get(
+                    "symbol_name",
+                    entity.get("function_name", entity.get("section_title", "")),
+                ),
+                "parent_symbol": entity.get("parent_symbol", entity.get("class_name", "")),
+                "chunk_type": entity.get("chunk_type", entity.get("entity_type", "")),
+                "source_type": entity.get("source_type", entity.get("doc_type", "")),
+                "module_key": entity.get("module_key", ""),
+                "generated_explanation": entity.get("generated_explanation", ""),
+                "generated_explanation_status": entity.get("generated_explanation_status", ""),
+                "generated_explanation_error": entity.get("generated_explanation_error", ""),
+                "generated_explanation_prompt_mode": entity.get(
+                    "generated_explanation_prompt_mode", ""
+                ),
+                "generated_explanation_model": entity.get("generated_explanation_model", ""),
+            }
+        )
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as file:
+        json.dump(snapshot_records, file, indent=2, ensure_ascii=False)
+        file.write("\n")
+
+    print(f"Saved {len(snapshot_records)} {entity_level} explanation snapshots to {output_path}.")
+
+
+def load_explanation_snapshots(snapshot_path):
+    snapshot_path = Path(snapshot_path)
+    if not snapshot_path.exists():
+        return {}
+
+    with snapshot_path.open("r", encoding="utf-8") as file:
+        records = json.load(file)
+
+    snapshot_map = {
+        record["entity_key"]: record
+        for record in records
+        if record.get("generated_explanation_status") == "ok"
+        and record.get("generated_explanation", "").strip()
+    }
+    print(f"Loaded {len(snapshot_map)} explanation snapshots from {snapshot_path}.")
+    return snapshot_map
+
+
+def apply_saved_explanations(entities, snapshot_records, entity_level):
+    if not snapshot_records:
+        return entities
+
+    restored_count = 0
+    for entity in entities:
+        snapshot = snapshot_records.get(build_explanation_snapshot_key(entity))
+        if snapshot is None:
+            continue
+
+        entity["entity_level"] = entity_level
+        entity["generated_explanation"] = snapshot.get("generated_explanation", "")
+        entity["generated_explanation_status"] = snapshot.get("generated_explanation_status", "")
+        entity["generated_explanation_error"] = snapshot.get("generated_explanation_error", "")
+        entity["generated_explanation_prompt_mode"] = snapshot.get(
+            "generated_explanation_prompt_mode", ""
+        )
+        entity["generated_explanation_model"] = snapshot.get("generated_explanation_model", "")
+        entity["explanation_generated_from"] = "saved_explanation_snapshot"
+        restored_count += 1
+
+    print(f"Restored {restored_count} {entity_level} explanations from saved snapshots.")
+    return entities
 
 
 def print_ingestion_stats(source_files, documentation_files, chunks):
@@ -114,12 +233,20 @@ def build_documentation_chunks(
     documentation_files,
     max_chunk_size,
     explanation_generator=None,
+    saved_explanations=None,
     return_sections=False,
 ):
     print("parsing documentation files...")
     doc_parser = DocParser()
     doc_sections = doc_parser.parse(documentation_files)
     print(f"Parsed {len(doc_sections)} documentation sections.")
+
+    if saved_explanations:
+        doc_sections = apply_saved_explanations(
+            doc_sections,
+            saved_explanations,
+            entity_level="documentation_section_level",
+        )
 
     if explanation_generator is not None:
         doc_sections = explanation_generator.enrich_entities(
@@ -138,7 +265,12 @@ def build_documentation_chunks(
     return doc_chunks
 
 
-def build_code_entities(files, parser_type, explanation_generator=None):
+def build_code_entities(
+    files,
+    parser_type,
+    explanation_generator=None,
+    saved_explanations=None,
+):
     cpp_files = [file for file in files if file["path"].endswith(".cpp")]
     header_files = [file for file in files if file["path"].endswith((".h", ".hpp"))]
 
@@ -151,6 +283,18 @@ def build_code_entities(files, parser_type, explanation_generator=None):
     header_parser = create_header_parser(parser_type)
     header_entities = header_parser.extract_entities(header_files)
     print(f"Parsed {len(header_entities)} header entities.")
+
+    if saved_explanations:
+        cpp_functions = apply_saved_explanations(
+            cpp_functions,
+            saved_explanations,
+            entity_level="function_level",
+        )
+        header_entities = apply_saved_explanations(
+            header_entities,
+            saved_explanations,
+            entity_level="function_level",
+        )
 
     if explanation_generator is not None:
         cpp_functions = explanation_generator.enrich_entities(
@@ -350,7 +494,13 @@ def main():
     chunks = []
 
     explanation_generator = None
+    function_level_snapshots = {}
+    documentation_section_snapshots = {}
     if vector_store is None:
+        function_level_snapshots = load_explanation_snapshots(FUNCTION_LEVEL_EXPLANATIONS_PATH)
+        documentation_section_snapshots = load_explanation_snapshots(
+            DOCUMENTATION_SECTION_EXPLANATIONS_PATH
+        )
         explanation_llm = LLMWrapper(model=chunk_explanation_model)
         explanation_generator = EntityExplanationGenerator(
             explanation_llm,
@@ -372,7 +522,14 @@ def main():
         source_files,
         parser_type,
         explanation_generator=explanation_generator,
+        saved_explanations=function_level_snapshots,
     )
+    if vector_store is None:
+        save_explanation_snapshots(
+            code_entities,
+            FUNCTION_LEVEL_EXPLANATIONS_PATH,
+            "function_level",
+        )
 
     print("building project structure...")
     structure_builder = ProjectStructureBuilder(raw_data_path)
@@ -390,11 +547,17 @@ def main():
             code_entities,
             max_chunk_size,
         )
-        doc_chunks, _ = build_documentation_chunks(
+        doc_chunks, doc_sections = build_documentation_chunks(
             documentation_files,
             max_chunk_size,
             explanation_generator=explanation_generator,
+            saved_explanations=documentation_section_snapshots,
             return_sections=True,
+        )
+        save_explanation_snapshots(
+            doc_sections,
+            DOCUMENTATION_SECTION_EXPLANATIONS_PATH,
+            "documentation_section_level",
         )
         file_level_builder = FileLevelEntityBuilder(
             LLMWrapper(model=file_level_model),
@@ -418,6 +581,11 @@ def main():
             file_contents,
         )
         file_level_builder.save(file_level_entities, FILE_LEVEL_ENTITIES_PATH)
+        save_explanation_snapshots(
+            file_level_entities,
+            FILE_LEVEL_EXPLANATIONS_PATH,
+            "file_level",
+        )
         print(f"Built {len(file_level_entities)} file-level entities.")
         print(f"Saved file-level entities to {FILE_LEVEL_ENTITIES_PATH}.\n")
 
@@ -435,6 +603,11 @@ def main():
             file_level_entities,
         )
         module_level_builder.save(module_level_entities, MODULE_LEVEL_ENTITIES_PATH)
+        save_explanation_snapshots(
+            module_level_entities,
+            MODULE_LEVEL_EXPLANATIONS_PATH,
+            "module_level",
+        )
         print(f"Built {len(module_level_entities)} module-level entities.")
         print(f"Saved module-level entities to {MODULE_LEVEL_ENTITIES_PATH}.\n")
 
@@ -454,6 +627,11 @@ def main():
             module_level_entities,
         )
         call_chain_builder.save(call_chain_entities, CALL_CHAIN_ENTITIES_PATH)
+        save_explanation_snapshots(
+            call_chain_entities,
+            CALL_CHAIN_LEVEL_EXPLANATIONS_PATH,
+            "call_chain_level",
+        )
         print(f"Built {len(call_chain_entities)} call-chain entities.")
         print(f"Saved call-chain entities to {CALL_CHAIN_ENTITIES_PATH}.\n")
 

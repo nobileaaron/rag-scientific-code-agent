@@ -37,6 +37,7 @@ class EntityExplanationGenerator:
             "seen": 0,
             "eligible": 0,
             "explained": 0,
+            "loaded_from_snapshot": 0,
             "skipped_by_type": 0,
             "skipped_low_information": 0,
             "skipped_by_pilot": 0,
@@ -74,6 +75,9 @@ class EntityExplanationGenerator:
                 continue
 
             self.stats["eligible"] += 1
+            if self._has_existing_explanation(entity):
+                self.stats["loaded_from_snapshot"] += 1
+                continue
             if self.pilot_limit is not None and self.generated_count >= self.pilot_limit:
                 self.stats["skipped_by_pilot"] += 1
                 self._mark_skipped(entity, "skipped_by_pilot")
@@ -91,6 +95,7 @@ class EntityExplanationGenerator:
         print(f"Seen entities: {self.stats['seen']}")
         print(f"Eligible entities: {self.stats['eligible']}")
         print(f"Explained entities: {self.stats['explained']}")
+        print(f"Loaded from snapshot: {self.stats['loaded_from_snapshot']}")
         print(f"Skipped by type: {self.stats['skipped_by_type']}")
         print(f"Skipped low-information entities: {self.stats['skipped_low_information']}")
         print(f"Skipped by pilot limit: {self.stats['skipped_by_pilot']}")
@@ -100,11 +105,11 @@ class EntityExplanationGenerator:
         self.entity_counter += 1
         entity.setdefault("entity_id", self._build_entity_id(entity, entity_level))
         entity["entity_level"] = entity_level
-        entity["explanation_generated_from"] = "full_entity"
+        entity.setdefault("explanation_generated_from", "full_entity")
         entity.setdefault("generated_explanation", "")
         entity.setdefault("generated_explanation_error", "")
-        entity["generated_explanation_prompt_mode"] = self.prompt_mode
-        entity["generated_explanation_model"] = getattr(self.llm, "model", "unknown")
+        entity.setdefault("generated_explanation_prompt_mode", self.prompt_mode)
+        entity.setdefault("generated_explanation_model", getattr(self.llm, "model", "unknown"))
 
     def _build_entity_id(self, entity, entity_level):
         symbol = entity.get("symbol_name", entity.get("function_name", "anonymous"))
@@ -137,7 +142,11 @@ class EntityExplanationGenerator:
         return alnum_chars < max(25, self.min_content_length // 3)
 
     def _count_batch_target(self, entities):
-        eligible_count = sum(1 for entity in entities if self._skip_reason(entity) is None)
+        eligible_count = sum(
+            1
+            for entity in entities
+            if self._skip_reason(entity) is None and not self._has_existing_explanation(entity)
+        )
         if self.pilot_limit is None:
             return eligible_count
         remaining = max(self.pilot_limit - self.generated_count, 0)
@@ -147,6 +156,12 @@ class EntityExplanationGenerator:
         entity["generated_explanation_status"] = status
         entity["generated_explanation"] = ""
         entity["generated_explanation_error"] = ""
+
+    def _has_existing_explanation(self, entity):
+        return (
+            entity.get("generated_explanation_status") == "ok"
+            and bool(entity.get("generated_explanation", "").strip())
+        )
 
     def _generate_explanation(self, entity):
         try:
