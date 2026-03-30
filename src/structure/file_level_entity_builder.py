@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from src.ingestion.explanation_snapshots import restore_saved_explanation
 from src.prompts.prompt_templates import get_prompt_template
 
 
@@ -19,7 +20,7 @@ class FileLevelEntityBuilder:
         self.fallback_prompt_template = get_prompt_template(fallback_prompt_mode)
         self.raw_content_char_limit = raw_content_char_limit
 
-    def build(self, project_structure, code_entities, file_contents):
+    def build(self, project_structure, code_entities, file_contents, saved_explanations=None):
         symbols_by_id = {
             symbol["symbol_id"]: symbol
             for symbol in project_structure.get("symbols", [])
@@ -77,13 +78,6 @@ class FileLevelEntityBuilder:
                     "No symbol-level entities were detected for this file."
                 )
             )
-            explanation = self.llm.generate(
-                prompt_template.format(
-                    context=file_facts,
-                    question=question,
-                )
-            ).strip()
-
             contained_symbol_names = [symbol["symbol_name"] for symbol in symbol_records]
             contained_symbol_types = [
                 f"{symbol['symbol_name']} ({symbol['chunk_type']})"
@@ -104,50 +98,62 @@ class FileLevelEntityBuilder:
                 }
             )
 
-            file_level_entities.append(
-                {
-                    "entity_id": f"file_level::{file_record['path']}",
-                    "entity_level": "file_level",
-                    "path": file_record["path"],
-                    "file": file_record["path"],
-                    "file_name": file_record["file_name"],
-                    "base_name": file_record["base_name"],
-                    "source_type": self._precise_source_type(file_record["path"]),
-                    "symbol_name": file_record["file_name"],
-                    "function_name": file_record["file_name"],
-                    "parent_symbol": file_record["module_key"],
-                    "chunk_type": "file_level",
-                    "entity_type": "file_level",
-                    "language": self._language_for_file(file_record["path"]),
-                    "section_path": file_record["module_key"],
-                    "namespace_path": "",
-                    "chunk_index": 1,
-                    "total_chunks": 1,
-                    "return_type": f"file:{self._precise_source_type(file_record['path'])}",
-                    "parameters": file_record["module_key"],
-                    "leading_comment": "",
-                    "include_paths": file_record.get("include_paths", []),
-                    "referenced_files": file_record.get("referenced_files", []),
-                    "contained_symbol_ids": symbol_ids,
-                    "contained_symbol_names": contained_symbol_names,
-                    "contained_symbol_types": contained_symbol_types,
-                    "owned_symbols": owned_symbols,
-                    "inherited_base_symbols": inherited_base_symbols,
-                    "module_scope": file_record["module_scope"],
-                    "module_path": file_record["module_path"],
-                    "module_key": file_record["module_key"],
-                    "file_level_mode": file_level_mode,
-                    "parsed_symbol_count": len(symbol_records),
-                    "raw_content_included": file_level_mode == "raw_content_fallback",
-                    "generated_explanation": explanation,
-                    "generated_explanation_prompt_mode": prompt_mode,
-                    "generated_explanation_model": getattr(self.llm, "model", "unknown"),
-                    "generated_explanation_status": "ok",
-                    "generated_explanation_error": "",
-                    "explanation_generated_from": "aggregated_file_facts",
-                    "code": file_facts,
-                }
-            )
+            file_level_entity = {
+                "entity_id": f"file_level::{file_record['path']}",
+                "entity_level": "file_level",
+                "path": file_record["path"],
+                "file": file_record["path"],
+                "file_name": file_record["file_name"],
+                "base_name": file_record["base_name"],
+                "source_type": self._precise_source_type(file_record["path"]),
+                "symbol_name": file_record["file_name"],
+                "function_name": file_record["file_name"],
+                "parent_symbol": file_record["module_key"],
+                "chunk_type": "file_level",
+                "entity_type": "file_level",
+                "language": self._language_for_file(file_record["path"]),
+                "section_path": file_record["module_key"],
+                "namespace_path": "",
+                "chunk_index": 1,
+                "total_chunks": 1,
+                "return_type": f"file:{self._precise_source_type(file_record['path'])}",
+                "parameters": file_record["module_key"],
+                "leading_comment": "",
+                "include_paths": file_record.get("include_paths", []),
+                "referenced_files": file_record.get("referenced_files", []),
+                "contained_symbol_ids": symbol_ids,
+                "contained_symbol_names": contained_symbol_names,
+                "contained_symbol_types": contained_symbol_types,
+                "owned_symbols": owned_symbols,
+                "inherited_base_symbols": inherited_base_symbols,
+                "module_scope": file_record["module_scope"],
+                "module_path": file_record["module_path"],
+                "module_key": file_record["module_key"],
+                "file_level_mode": file_level_mode,
+                "parsed_symbol_count": len(symbol_records),
+                "raw_content_included": file_level_mode == "raw_content_fallback",
+                "generated_explanation": "",
+                "generated_explanation_prompt_mode": prompt_mode,
+                "generated_explanation_model": getattr(self.llm, "model", "unknown"),
+                "generated_explanation_status": "",
+                "generated_explanation_error": "",
+                "explanation_generated_from": "aggregated_file_facts",
+                "code": file_facts,
+            }
+            if not restore_saved_explanation(
+                file_level_entity,
+                saved_explanations,
+                entity_level="file_level",
+            ):
+                file_level_entity["generated_explanation"] = self.llm.generate(
+                    prompt_template.format(
+                        context=file_facts,
+                        question=question,
+                    )
+                ).strip()
+                file_level_entity["generated_explanation_status"] = "ok"
+
+            file_level_entities.append(file_level_entity)
             explained_count += 1
             print(f"  explained {explained_count}/{total_files} file_level entities")
 

@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from src.ingestion.explanation_snapshots import restore_saved_explanation
 from src.prompts.prompt_templates import get_prompt_template
 
 
@@ -16,7 +17,14 @@ class CallChainEntityBuilder:
             "method_declaration",
         }
 
-    def build(self, project_structure, code_entities, file_level_entities, module_level_entities):
+    def build(
+        self,
+        project_structure,
+        code_entities,
+        file_level_entities,
+        module_level_entities,
+        saved_explanations=None,
+    ):
         symbol_records = project_structure.get("symbols", [])
         call_edges = project_structure.get("relationships", {}).get("call_edges", [])
         symbols_by_id = {
@@ -74,16 +82,6 @@ class CallChainEntityBuilder:
                 file_entity,
                 module_entity,
             )
-            explanation = self.llm.generate(
-                self.prompt_template.format(
-                    context=call_chain_facts,
-                    question=(
-                        f"Explain the local call-chain role of {self._display_symbol(symbol)} "
-                        "using only the provided call-chain facts."
-                    ),
-                )
-            ).strip()
-
             related_file_paths = self._aggregate_unique(
                 [[edge.get("caller_file_path", "")] for edge in incoming_edges]
                 + [[edge.get("callee_file_path", "")] for edge in outgoing_edges]
@@ -101,48 +99,63 @@ class CallChainEntityBuilder:
                 [[edge.get("caller_symbol", "")] for edge in incoming_edges]
             )
 
-            call_chain_entities.append(
-                {
-                    "entity_id": f"call_chain::{symbol_id}",
-                    "entity_level": "call_chain_level",
-                    "path": symbol.get("file_path", ""),
-                    "file": symbol.get("file_path", ""),
-                    "file_name": Path(symbol.get("file_path", "")).name if symbol.get("file_path", "") else "",
-                    "base_name": Path(symbol.get("file_path", "")).stem if symbol.get("file_path", "") else "",
-                    "source_type": symbol.get("source_type", ""),
-                    "symbol_name": symbol.get("symbol_name", ""),
-                    "function_name": symbol.get("symbol_name", ""),
-                    "parent_symbol": symbol.get("parent_symbol", ""),
-                    "chunk_type": "call_chain_level",
-                    "entity_type": "call_chain_level",
-                    "language": self._language_for_source_type(symbol.get("source_type", "")),
-                    "section_path": symbol.get("module_key", ""),
-                    "namespace_path": symbol.get("namespace_path", ""),
-                    "chunk_index": 1,
-                    "total_chunks": 1,
-                    "return_type": f"call_chain:{symbol.get('chunk_type', '')}",
-                    "parameters": symbol.get("module_key", ""),
-                    "leading_comment": "",
-                    "include_paths": file_entity.get("include_paths", []) if file_entity else [],
-                    "referenced_files": sorted(Path(file_path).name for file_path in related_file_paths if file_path),
-                    "module_scope": symbol.get("module_scope", ""),
-                    "module_path": symbol.get("module_path", ""),
-                    "module_key": symbol.get("module_key", ""),
-                    "caller_symbols": caller_symbols,
-                    "callee_symbols": resolved_callee_symbols,
-                    "incoming_call_count": len(incoming_edges),
-                    "outgoing_call_count": len(outgoing_edges),
-                    "related_file_paths": related_file_paths,
-                    "related_module_keys": related_module_keys,
-                    "generated_explanation": explanation,
-                    "generated_explanation_prompt_mode": self.prompt_mode,
-                    "generated_explanation_model": getattr(self.llm, "model", "unknown"),
-                    "generated_explanation_status": "ok",
-                    "generated_explanation_error": "",
-                    "explanation_generated_from": "call_chain_neighborhood",
-                    "code": call_chain_facts,
-                }
-            )
+            call_chain_entity = {
+                "entity_id": f"call_chain::{symbol_id}",
+                "entity_level": "call_chain_level",
+                "path": symbol.get("file_path", ""),
+                "file": symbol.get("file_path", ""),
+                "file_name": Path(symbol.get("file_path", "")).name if symbol.get("file_path", "") else "",
+                "base_name": Path(symbol.get("file_path", "")).stem if symbol.get("file_path", "") else "",
+                "source_type": symbol.get("source_type", ""),
+                "symbol_name": symbol.get("symbol_name", ""),
+                "function_name": symbol.get("symbol_name", ""),
+                "parent_symbol": symbol.get("parent_symbol", ""),
+                "chunk_type": "call_chain_level",
+                "entity_type": "call_chain_level",
+                "language": self._language_for_source_type(symbol.get("source_type", "")),
+                "section_path": symbol.get("module_key", ""),
+                "namespace_path": symbol.get("namespace_path", ""),
+                "chunk_index": 1,
+                "total_chunks": 1,
+                "return_type": f"call_chain:{symbol.get('chunk_type', '')}",
+                "parameters": symbol.get("module_key", ""),
+                "leading_comment": "",
+                "include_paths": file_entity.get("include_paths", []) if file_entity else [],
+                "referenced_files": sorted(Path(file_path).name for file_path in related_file_paths if file_path),
+                "module_scope": symbol.get("module_scope", ""),
+                "module_path": symbol.get("module_path", ""),
+                "module_key": symbol.get("module_key", ""),
+                "caller_symbols": caller_symbols,
+                "callee_symbols": resolved_callee_symbols,
+                "incoming_call_count": len(incoming_edges),
+                "outgoing_call_count": len(outgoing_edges),
+                "related_file_paths": related_file_paths,
+                "related_module_keys": related_module_keys,
+                "generated_explanation": "",
+                "generated_explanation_prompt_mode": self.prompt_mode,
+                "generated_explanation_model": getattr(self.llm, "model", "unknown"),
+                "generated_explanation_status": "",
+                "generated_explanation_error": "",
+                "explanation_generated_from": "call_chain_neighborhood",
+                "code": call_chain_facts,
+            }
+            if not restore_saved_explanation(
+                call_chain_entity,
+                saved_explanations,
+                entity_level="call_chain_level",
+            ):
+                call_chain_entity["generated_explanation"] = self.llm.generate(
+                    self.prompt_template.format(
+                        context=call_chain_facts,
+                        question=(
+                            f"Explain the local call-chain role of {self._display_symbol(symbol)} "
+                            "using only the provided call-chain facts."
+                        ),
+                    )
+                ).strip()
+                call_chain_entity["generated_explanation_status"] = "ok"
+
+            call_chain_entities.append(call_chain_entity)
             explained_count += 1
             print(
                 f"  explained {explained_count}/{total_call_chain_entities} "

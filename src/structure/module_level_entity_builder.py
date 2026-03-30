@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from src.ingestion.explanation_snapshots import restore_saved_explanation
 from src.prompts.prompt_templates import get_prompt_template
 
 
@@ -11,7 +12,7 @@ class ModuleLevelEntityBuilder:
         self.prompt_template = get_prompt_template(prompt_mode)
         self.file_summary_char_limit = file_summary_char_limit
 
-    def build(self, project_structure, file_level_entities):
+    def build(self, project_structure, file_level_entities, saved_explanations=None):
         file_level_by_path = {
             entity["path"]: entity
             for entity in file_level_entities
@@ -74,75 +75,80 @@ class ModuleLevelEntityBuilder:
                 file_records,
                 member_file_entities,
             )
-            explanation = self.llm.generate(
-                self.prompt_template.format(
-                    context=module_facts,
-                    question=(
-                        f"Explain the role of module {module_record['module_key']} using only "
-                        "the provided module facts and file-level summaries."
-                    ),
-                )
-            ).strip()
+            module_entity = {
+                "entity_id": f"module_level::{module_key}",
+                "entity_level": "module_level",
+                "path": module_record["module_key"],
+                "file": module_record["module_key"],
+                "file_name": module_record["module_name"],
+                "base_name": module_record["module_name"],
+                "source_type": "module",
+                "symbol_name": module_record["module_name"],
+                "function_name": module_record["module_name"],
+                "parent_symbol": module_record.get("parent_module", ""),
+                "chunk_type": "module_level",
+                "entity_type": "module_level",
+                "language": "text",
+                "section_path": module_record["module_key"],
+                "namespace_path": "",
+                "chunk_index": 1,
+                "total_chunks": 1,
+                "return_type": f"module:{module_record['module_scope']}",
+                "parameters": module_record.get("parent_module", ""),
+                "leading_comment": "",
+                "include_paths": self._aggregate_unique(
+                    file_record.get("include_paths", [])
+                    for file_record in file_records
+                ),
+                "referenced_files": self._aggregate_unique(
+                    file_record.get("referenced_files", [])
+                    for file_record in file_records
+                ),
+                "module_scope": module_record["module_scope"],
+                "module_path": module_record["module_path"],
+                "module_key": module_key,
+                "module_name": module_record["module_name"],
+                "parent_module": module_record.get("parent_module", ""),
+                "descendant_module_keys": descendant_module_keys,
+                "contained_file_paths": descendant_file_paths,
+                "contained_file_names": [Path(file_path).name for file_path in descendant_file_paths],
+                "contained_symbol_names": self._aggregate_unique(
+                    entity.get("contained_symbol_names", [])
+                    for entity in member_file_entities
+                ),
+                "contained_symbol_types": self._aggregate_unique(
+                    entity.get("contained_symbol_types", [])
+                    for entity in member_file_entities
+                ),
+                "file_level_modes": self._aggregate_unique(
+                    [[entity.get("file_level_mode", "")] if entity.get("file_level_mode", "") else []]
+                    for entity in member_file_entities
+                ),
+                "generated_explanation": "",
+                "generated_explanation_prompt_mode": self.prompt_mode,
+                "generated_explanation_model": getattr(self.llm, "model", "unknown"),
+                "generated_explanation_status": "",
+                "generated_explanation_error": "",
+                "explanation_generated_from": "aggregated_module_facts",
+                "code": module_facts,
+            }
+            if not restore_saved_explanation(
+                module_entity,
+                saved_explanations,
+                entity_level="module_level",
+            ):
+                module_entity["generated_explanation"] = self.llm.generate(
+                    self.prompt_template.format(
+                        context=module_facts,
+                        question=(
+                            f"Explain the role of module {module_record['module_key']} using only "
+                            "the provided module facts and file-level summaries."
+                        ),
+                    )
+                ).strip()
+                module_entity["generated_explanation_status"] = "ok"
 
-            module_entities.append(
-                {
-                    "entity_id": f"module_level::{module_key}",
-                    "entity_level": "module_level",
-                    "path": module_record["module_key"],
-                    "file": module_record["module_key"],
-                    "file_name": module_record["module_name"],
-                    "base_name": module_record["module_name"],
-                    "source_type": "module",
-                    "symbol_name": module_record["module_name"],
-                    "function_name": module_record["module_name"],
-                    "parent_symbol": module_record.get("parent_module", ""),
-                    "chunk_type": "module_level",
-                    "entity_type": "module_level",
-                    "language": "text",
-                    "section_path": module_record["module_key"],
-                    "namespace_path": "",
-                    "chunk_index": 1,
-                    "total_chunks": 1,
-                    "return_type": f"module:{module_record['module_scope']}",
-                    "parameters": module_record.get("parent_module", ""),
-                    "leading_comment": "",
-                    "include_paths": self._aggregate_unique(
-                        file_record.get("include_paths", [])
-                        for file_record in file_records
-                    ),
-                    "referenced_files": self._aggregate_unique(
-                        file_record.get("referenced_files", [])
-                        for file_record in file_records
-                    ),
-                    "module_scope": module_record["module_scope"],
-                    "module_path": module_record["module_path"],
-                    "module_key": module_key,
-                    "module_name": module_record["module_name"],
-                    "parent_module": module_record.get("parent_module", ""),
-                    "descendant_module_keys": descendant_module_keys,
-                    "contained_file_paths": descendant_file_paths,
-                    "contained_file_names": [Path(file_path).name for file_path in descendant_file_paths],
-                    "contained_symbol_names": self._aggregate_unique(
-                        entity.get("contained_symbol_names", [])
-                        for entity in member_file_entities
-                    ),
-                    "contained_symbol_types": self._aggregate_unique(
-                        entity.get("contained_symbol_types", [])
-                        for entity in member_file_entities
-                    ),
-                    "file_level_modes": self._aggregate_unique(
-                        [[entity.get("file_level_mode", "")] if entity.get("file_level_mode", "") else []]
-                        for entity in member_file_entities
-                    ),
-                    "generated_explanation": explanation,
-                    "generated_explanation_prompt_mode": self.prompt_mode,
-                    "generated_explanation_model": getattr(self.llm, "model", "unknown"),
-                    "generated_explanation_status": "ok",
-                    "generated_explanation_error": "",
-                    "explanation_generated_from": "aggregated_module_facts",
-                    "code": module_facts,
-                }
-            )
+            module_entities.append(module_entity)
             explained_count += 1
             print(f"  explained {explained_count}/{total_modules} module_level entities")
 
