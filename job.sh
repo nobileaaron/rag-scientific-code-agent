@@ -15,6 +15,7 @@ set -euo pipefail
 ulimit -c unlimited
 
 SCRIPT_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
+SETTINGS_PATH="${SETTINGS_PATH:-$SCRIPT_DIR/config/runtime_settings.json}"
 
 # Adjust these if your cluster environment changes later.
 PYTHON_MODULE="${PYTHON_MODULE:-Python/3.11.11}"
@@ -53,6 +54,52 @@ if ! ollama list >/dev/null 2>&1; then
     echo "Ollama did not become ready within the expected time."
     exit 1
 fi
+
+echo "Checking configured Ollama models..."
+mapfile -t REQUIRED_OLLAMA_MODELS < <(
+python - "$SETTINGS_PATH" <<'PY'
+import json
+import sys
+
+settings_path = sys.argv[1]
+with open(settings_path, "r", encoding="utf-8") as f:
+    settings = json.load(f)
+
+models = []
+if settings.get("embedding", {}).get("backend") == "ollama":
+    embedding_model = settings.get("embedding", {}).get("ollama_model")
+    if embedding_model:
+        models.append(embedding_model)
+
+for key in (
+    "answer_model",
+    "chunk_explanation_model",
+    "file_level_model",
+    "module_level_model",
+    "call_chain_model",
+):
+    model_name = settings.get("models", {}).get(key)
+    if model_name and model_name not in models:
+        models.append(model_name)
+
+for model_name in models:
+    print(model_name)
+PY
+)
+
+for model_name in "${REQUIRED_OLLAMA_MODELS[@]}"; do
+    if [ -z "$model_name" ]; then
+        continue
+    fi
+
+    if ollama show "$model_name" >/dev/null 2>&1; then
+        echo "Model already available: $model_name"
+        continue
+    fi
+
+    echo "Pulling missing model: $model_name"
+    ollama pull "$model_name"
+done
 
 echo "Running main.py..."
 python -u main.py
