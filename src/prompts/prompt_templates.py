@@ -78,8 +78,7 @@ retrieval_answer_prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             (
-                "You are an expert assistant for understanding the IPPL "
-                "(Independent Parallel Particle Layer) scientific C++ codebase. "
+                "You are an expert assistant for understanding the IPPL C++ codebase."
                 "Use only the provided retrieved context. Do not invent alternative "
                 "expansions for names or abbreviations if their meaning is unclear "
                 "from the available evidence. Do not infer behavior, project meaning, "
@@ -105,9 +104,13 @@ Answer in this structure:
 1. Direct Answer
 2. Supporting Evidence
 3. Uncertainty or Missing Context
+4. Explanation of Reasoning
 
 In "Supporting Evidence", name the relevant file paths and symbols.
 Keep the answer grounded in the retrieved context.
+
+In "Explanation of Reasoning", explain exactly what retrieved information supports each part of your answer.
+List the specific pieces of evidence that led you to each conclusion, and how they connect to the question.
 """,
         ),
     ]
@@ -275,16 +278,71 @@ Give a structured explanation of:
 
 def get_prompt_template_signature(prompt_mode):
     prompt_template = get_prompt_template(prompt_mode)
-    message_parts = []
-
-    for message in prompt_template.messages:
-        prompt = getattr(message, "prompt", None)
-        message_type = type(message).__name__
-        template = getattr(prompt, "template", str(message))
-        message_parts.append(f"{message_type}:{template}")
-
-    signature_text = "\n---\n".join(message_parts)
+    signature_text = _build_prompt_signature_text(prompt_template)
     return hashlib.sha256(signature_text.encode("utf-8")).hexdigest()
+
+
+def get_compatible_prompt_template_signatures(prompt_mode):
+    prompt_template = get_prompt_template(prompt_mode)
+    signatures = {
+        hashlib.sha256(_build_prompt_signature_text(prompt_template).encode("utf-8")).hexdigest(),
+        hashlib.sha256(
+            _build_legacy_prompt_signature_text(
+                prompt_template,
+                system_message_type="SystemMessagePromptTemplate",
+                user_message_type="HumanMessagePromptTemplate",
+            ).encode("utf-8")
+        ).hexdigest(),
+        hashlib.sha256(
+            _build_legacy_prompt_signature_text(
+                prompt_template,
+                system_message_type="_SimpleMessage",
+                user_message_type="_SimpleMessage",
+            ).encode("utf-8")
+        ).hexdigest(),
+    }
+    return signatures
+
+
+def _build_prompt_signature_text(prompt_template):
+    message_parts = []
+    for message in prompt_template.messages:
+        template = _extract_message_template(message)
+        role = _extract_message_role(message)
+        message_parts.append(f"{role}:{template}")
+    return "\n---\n".join(message_parts)
+
+
+def _build_legacy_prompt_signature_text(
+    prompt_template,
+    system_message_type,
+    user_message_type,
+):
+    message_parts = []
+    for message in prompt_template.messages:
+        template = _extract_message_template(message)
+        role = _extract_message_role(message)
+        message_type = system_message_type if role == "system" else user_message_type
+        message_parts.append(f"{message_type}:{template}")
+    return "\n---\n".join(message_parts)
+
+
+def _extract_message_template(message):
+    prompt = getattr(message, "prompt", None)
+    return getattr(prompt, "template", str(message))
+
+
+def _extract_message_role(message):
+    role = getattr(message, "role", None)
+    if role:
+        return str(role).lower()
+
+    message_type_name = type(message).__name__.lower()
+    if "system" in message_type_name:
+        return "system"
+    if "human" in message_type_name or "user" in message_type_name:
+        return "user"
+    return message_type_name
 
 
 def get_prompt_template(prompt_mode):

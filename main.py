@@ -40,7 +40,11 @@ from src.agent.llm_agent import LLMAgent
 from src.llm.llm_wrapper import LLMWrapper
 
 # Prompt
-from src.prompts.prompt_templates import get_prompt_template, get_prompt_template_signature
+from src.prompts.prompt_templates import (
+    get_compatible_prompt_template_signatures,
+    get_prompt_template,
+    get_prompt_template_signature,
+)
 
 # Paths
 VECTOR_STORE_DIR = Path("embeddings/vector_store")
@@ -347,10 +351,28 @@ def load_persisted_vector_store(vector_store_dir, expected_manifest):
         return None
 
     vector_store, stored_manifest = VectorStore.load(vector_store_dir)
-    manifest_matches = all(
-        stored_manifest.get(key) == value
-        for key, value in expected_manifest.items()
-    )
+    prompt_signature_keys = {
+        "chunk_explanation_prompt_signature": "chunk_explanation_prompt_mode",
+        "file_level_prompt_signature": "file_level_prompt_mode",
+        "file_level_fallback_prompt_signature": "file_level_fallback_prompt_mode",
+        "module_level_prompt_signature": "module_level_prompt_mode",
+        "call_chain_prompt_signature": "call_chain_prompt_mode",
+    }
+
+    manifest_matches = True
+    for key, value in expected_manifest.items():
+        stored_value = stored_manifest.get(key)
+        prompt_mode_key = prompt_signature_keys.get(key)
+        if prompt_mode_key is not None:
+            compatible_signatures = get_compatible_prompt_template_signatures(
+                expected_manifest[prompt_mode_key]
+            )
+            if stored_value in compatible_signatures:
+                continue
+
+        if stored_value != value:
+            manifest_matches = False
+            break
 
     if not manifest_matches:
         print("Persisted vector store manifest does not match current settings. Rebuilding.")
