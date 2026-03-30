@@ -8,6 +8,14 @@ from sentence_transformers import SentenceTransformer
 
 
 class Embedder:
+    EMBEDDING_PROMPT_FALLBACKS = [
+        None,
+        {"leading_comment": 500, "generated_explanation": 1500, "code": 5000},
+        {"leading_comment": 300, "generated_explanation": 750, "code": 3000},
+        {"leading_comment": 200, "generated_explanation": 250, "code": 1500},
+        {"leading_comment": 0, "generated_explanation": 0, "code": 800},
+    ]
+
     def __init__(
         self,
         backend="ollama",
@@ -43,20 +51,40 @@ class Embedder:
 
     def _ollama_embed(self, chunks):
         embeddings = []
-        for chunk in chunks:
-            prompt = self._build_chunk_embedding_prompt(chunk)
+        total_chunks = len(chunks)
+        for index, chunk in enumerate(chunks, start=1):
             symbol_name = chunk.get("symbol_name", chunk.get("function_name", ""))
-            try:
-                response = ollama.embeddings(
-                    model=self.ollama_model,
-                    prompt=prompt,
-                )
-            except ResponseError as exc:
+            response = None
+            last_error = None
+            for attempt_index, prompt_limits in enumerate(self.EMBEDDING_PROMPT_FALLBACKS, start=1):
+                prompt = self._build_chunk_embedding_prompt(chunk, prompt_limits=prompt_limits)
+                try:
+                    response = ollama.embeddings(
+                        model=self.ollama_model,
+                        prompt=prompt,
+                    )
+                    break
+                except ResponseError as exc:
+                    last_error = exc
+                    if not self._is_context_length_error(exc):
+                        raise RuntimeError(
+                            f"Embedding failed for {symbol_name} in {chunk['file']} "
+                            f"(chunk length: {len(chunk['code'])} chars)."
+                        ) from exc
+                    if attempt_index < len(self.EMBEDDING_PROMPT_FALLBACKS):
+                        print(
+                            f"Embedding prompt too long for {symbol_name} in {chunk['file']}; "
+                            f"retrying with a shorter prompt (attempt {attempt_index + 1}/"
+                            f"{len(self.EMBEDDING_PROMPT_FALLBACKS)})."
+                        )
+            if response is None:
                 raise RuntimeError(
-                    f"Embedding failed for {symbol_name} in {chunk['file']} "
-                    f"(chunk length: {len(chunk['code'])} chars). Reduce chunk size."
-                ) from exc
+                    f"Embedding failed for {symbol_name} in {chunk['file']} even after "
+                    f"shortening the prompt (chunk length: {len(chunk['code'])} chars)."
+                ) from last_error
             embeddings.append(response["embedding"])
+            if index % 100 == 0 or index == total_chunks:
+                print(f"Embedded {index}/{total_chunks} chunks...")
         return embeddings
 
     def query_embed(self, text):
@@ -70,7 +98,7 @@ class Embedder:
         )
         return response["embedding"]
 
-    def _build_chunk_embedding_prompt(self, chunk):
+    def _build_chunk_embedding_prompt(self, chunk, prompt_limits=None):
         file_name = Path(chunk["file"]).name
         symbol_name = chunk.get("symbol_name", chunk.get("function_name", ""))
         source_type = chunk.get("source_type", "")
@@ -78,8 +106,19 @@ class Embedder:
         parent_symbol = chunk.get("parent_symbol", "")
         language = chunk.get("language", "")
         section_path = chunk.get("section_path", chunk.get("parameters", ""))
-        leading_comment = chunk.get("leading_comment", "")
-        generated_explanation = chunk.get("generated_explanation", "")
+        limits = prompt_limits or {}
+        leading_comment = self._truncate_for_embedding(
+            chunk.get("leading_comment", ""),
+            limits.get("leading_comment"),
+        )
+        generated_explanation = self._truncate_for_embedding(
+            chunk.get("generated_explanation", ""),
+            limits.get("generated_explanation"),
+        )
+        code = self._truncate_for_embedding(
+            chunk.get("code", ""),
+            limits.get("code"),
+        )
 
         return f"""
 File: {file_name}
@@ -94,7 +133,7 @@ Leading Comment:
 Generated Explanation:
 {generated_explanation}
 Code:
-{chunk['code']}
+{code}
 """
 
     def _build_query_embedding_prompt(self, text):
@@ -142,3 +181,22 @@ Code:
         if "how" in lowered:
             return "explain implementation details"
         return "answer question using retrieved context"
+
+    def _truncate_for_embedding(self, text, max_chars):
+        if max_chars is None:
+            return text
+        if max_chars <= 0:
+            return ""
+        if len(text) <= max_chars:
+            return text
+
+        marker = "\n[... truncated for embedding ...]\n"
+        if max_chars <= len(marker):
+            return text[:max_chars]
+
+        head_chars = (max_chars - len(marker)) // 2
+        tail_chars = max_chars - len(marker) - head_chars
+        return text[:head_chars] + marker + text[-tail_chars:]
+
+    def _is_context_length_error(self, error):
+        return "context length" in str(error).lower()
