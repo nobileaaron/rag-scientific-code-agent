@@ -6,12 +6,43 @@ from src.prompts.prompt_templates import get_prompt_template
 
 
 class FileLevelEntityBuilder:
+    """Build one higher-level retrieval entity per file.
+
+    The builder supports two modes:
+
+    - ``symbol_aggregated``: used when the file has parsed symbols. In this
+      mode we summarize the file from its symbol-level structure and previously
+      generated symbol explanations.
+    - ``raw_content_fallback``: used when no symbol-level structure was found.
+      In this mode we rely on the raw file content plus lightweight dependency
+      information.
+
+    The main design goal is to keep file-level chunks compact enough to be
+    useful to the answering LLM. Earlier versions emitted large dossiers with
+    repeated symbol lines, ownership relationships, inheritance fragments, and
+    raw file excerpts all at once. The current version instead produces a
+    smaller "summary card" for ``symbol_aggregated`` files:
+
+    - file identity
+    - a short file summary
+    - a capped list of key symbols
+    - capped include/reference lists
+
+    This keeps file-level chunks informative without letting them dominate the
+    final answer prompt.
+    """
+
     def __init__(
         self,
         llm,
         prompt_mode="file_level",
         fallback_prompt_mode="file_level_fallback",
         raw_content_char_limit=4000,
+        max_key_symbols=10,
+        max_include_paths=6,
+        max_referenced_files=6,
+        file_summary_char_limit=500,
+        symbol_summary_char_limit=140,
     ):
         self.llm = llm
         self.prompt_mode = prompt_mode
@@ -19,8 +50,24 @@ class FileLevelEntityBuilder:
         self.prompt_template = get_prompt_template(prompt_mode)
         self.fallback_prompt_template = get_prompt_template(fallback_prompt_mode)
         self.raw_content_char_limit = raw_content_char_limit
+        self.max_key_symbols = max_key_symbols
+        self.max_include_paths = max_include_paths
+        self.max_referenced_files = max_referenced_files
+        self.file_summary_char_limit = file_summary_char_limit
+        self.symbol_summary_char_limit = symbol_summary_char_limit
 
     def build(self, project_structure, code_entities, file_contents, saved_explanations=None):
+        """Build file-level entities for every file record in the project structure.
+
+        ``code_entities`` contains parsed symbol-level entities (functions,
+        classes, structs, methods, etc.). We use those entities to decide whether
+        a file should be handled in ``symbol_aggregated`` mode and to reuse any
+        saved explanations already attached to the symbol-level entities.
+
+        ``saved_explanations`` lets us restore previously generated file-level
+        explanations. If restore fails, we ask the configured LLM to generate a
+        new explanation from the aggregated file facts.
+        """
         symbols_by_id = {
             symbol["symbol_id"]: symbol
             for symbol in project_structure.get("symbols", [])
@@ -78,11 +125,15 @@ class FileLevelEntityBuilder:
                     "No symbol-level entities were detected for this file."
                 )
             )
-            contained_symbol_names = [symbol["symbol_name"] for symbol in symbol_records]
-            contained_symbol_types = [
-                f"{symbol['symbol_name']} ({symbol['chunk_type']})"
-                for symbol in symbol_records
-            ]
+            contained_symbol_names = self._dedupe_preserving_order(
+                [symbol["symbol_name"] for symbol in symbol_records]
+            )
+            contained_symbol_types = self._dedupe_preserving_order(
+                [
+                    f"{symbol['symbol_name']} ({symbol['chunk_type']})"
+                    for symbol in symbol_records
+                ]
+            )
             owned_symbols = sorted(
                 {
                     edge["owned_symbol"]
@@ -175,51 +226,94 @@ class FileLevelEntityBuilder:
         raw_content,
         file_level_mode,
     ):
+        """Build the text payload later stored in the file-level entity ``code`` field.
+
+        This text is the evidence package shown to:
+        - the file-level explanation LLM during ingestion
+        - the answering LLM later, if the file-level entity is retrieved
+
+        The payload is intentionally mode-specific:
+        - ``symbol_aggregated`` files get a compact summary card
+        - ``raw_content_fallback`` files get a smaller raw-content-oriented view
+        """
         include_paths = file_record.get("include_paths", [])
         referenced_files = file_record.get("referenced_files", [])
-        ownership_edges = [
-            edge
-            for edge in relationships.get("ownership_edges", [])
-            if edge.get("file_path") == file_record["path"]
-        ]
-        inheritance_edges = [
-            edge
-            for edge in relationships.get("inheritance_edges", [])
-            if edge.get("file_path") == file_record["path"]
-        ]
-
-        symbol_lines = []
-        for symbol in symbol_records:
-            symbol_id = symbol["symbol_id"]
-            explained_entity = explained_entities.get(symbol_id)
-            explanation_summary = self._short_explanation(
-                explained_entity.get("generated_explanation", "") if explained_entity else ""
+        if file_level_mode == "symbol_aggregated":
+            return self._build_symbol_aggregated_file_facts(
+                file_record,
+                symbol_records,
+                explained_entities,
+                include_paths,
+                referenced_files,
             )
-            symbol_line = (
-                f"- {symbol['symbol_name']} ({symbol['chunk_type']})"
-                f" parent={symbol.get('parent_symbol', '') or 'none'}"
-            )
-            if explanation_summary:
-                symbol_line += f" | summary={explanation_summary}"
-            symbol_lines.append(symbol_line)
 
-        ownership_lines = [
-            f"- {edge['owner_symbol']} owns {edge['owned_symbol']}"
-            for edge in ownership_edges
-        ]
-        inheritance_lines = [
-            f"- {edge['derived_symbol']} inherits {edge['base_symbol']}"
-            for edge in inheritance_edges
-        ]
-        raw_content_block = self._format_raw_content(raw_content)
-
-        include_text = "\n".join(f"- {include_path}" for include_path in include_paths) or "- none"
-        referenced_text = (
-            "\n".join(f"- {file_name}" for file_name in referenced_files) or "- none"
+        return self._build_raw_fallback_file_facts(
+            file_record,
+            include_paths,
+            referenced_files,
+            raw_content,
         )
-        symbol_text = "\n".join(symbol_lines) or "- none"
-        ownership_text = "\n".join(ownership_lines) or "- none"
-        inheritance_text = "\n".join(inheritance_lines) or "- none"
+
+    def _build_symbol_aggregated_file_facts(
+        self,
+        file_record,
+        symbol_records,
+        explained_entities,
+        include_paths,
+        referenced_files,
+    ):
+        """Build a compact summary card for files with parsed symbol structure.
+
+        Earlier versions dumped nearly every available structural detail into the
+        file facts. That made retrieval chunks noisy and repetitive. This helper
+        intentionally keeps only the information most useful for downstream
+        answer generation:
+
+        - file identity
+        - short file summary
+        - capped key symbol list
+        - capped include/reference lists
+        """
+        ranked_symbols = self._rank_symbols_for_file_summary(symbol_records)
+        key_symbol_lines = self._build_key_symbol_lines(ranked_symbols, explained_entities)
+        file_summary = self._build_file_summary(file_record, ranked_symbols, explained_entities)
+        include_text = self._format_bulleted_list(include_paths, self.max_include_paths)
+        referenced_text = self._format_bulleted_list(
+            referenced_files,
+            self.max_referenced_files,
+        )
+
+        return f"""File Path: {file_record['path']}
+Module Key: {file_record['module_key']}
+Source Type: {self._precise_source_type(file_record['path'])}
+
+File Summary:
+{file_summary}
+
+Key Symbols:
+{key_symbol_lines}
+
+Include Paths:
+{include_text}
+
+Referenced Files:
+{referenced_text}
+"""
+
+    def _build_raw_fallback_file_facts(
+        self,
+        file_record,
+        include_paths,
+        referenced_files,
+        raw_content,
+    ):
+        """Build a fallback view for files without parsed symbol-level structure."""
+        raw_content_block = self._format_raw_content(raw_content)
+        include_text = self._format_bulleted_list(include_paths, self.max_include_paths)
+        referenced_text = self._format_bulleted_list(
+            referenced_files,
+            self.max_referenced_files,
+        )
 
         return f"""File Path: {file_record['path']}
 File Name: {file_record['file_name']}
@@ -228,10 +322,7 @@ Source Type: {self._precise_source_type(file_record['path'])}
 Module Scope: {file_record['module_scope']}
 Module Path: {file_record['module_path']}
 Module Key: {file_record['module_key']}
-File-Level Mode: {file_level_mode}
-
-Contained Symbols:
-{symbol_text}
+File-Level Mode: raw_content_fallback
 
 Include Paths:
 {include_text}
@@ -239,23 +330,155 @@ Include Paths:
 Referenced Files:
 {referenced_text}
 
-Ownership Relationships:
-{ownership_text}
-
-Inheritance Relationships:
-{inheritance_text}
-
 Raw File Content Fallback:
 {raw_content_block}
 """
 
-    def _short_explanation(self, explanation):
+    def _short_explanation(self, explanation, char_limit=220):
+        """Normalize whitespace and cap explanatory text to a small preview."""
         cleaned = " ".join(explanation.split())
         if not cleaned:
             return ""
-        if len(cleaned) <= 220:
+        if len(cleaned) <= char_limit:
             return cleaned
-        return cleaned[:217] + "..."
+        return cleaned[: max(char_limit - 3, 0)] + "..."
+
+    def _dedupe_preserving_order(self, items):
+        """Remove duplicates while keeping the first-seen ordering stable."""
+        unique_items = []
+        seen_items = set()
+
+        for item in items:
+            if item in seen_items:
+                continue
+            seen_items.add(item)
+            unique_items.append(item)
+
+        return unique_items
+
+    def _rank_symbols_for_file_summary(self, symbol_records):
+        """Order symbols by how useful they are for describing the whole file.
+
+        The ranking is intentionally simple and explainable:
+        - classes / structs first, because they often define the file's main API
+        - definitions next, because they expose real behavior
+        - declarations after that
+        - everything else last
+        """
+        def rank_key(symbol):
+            chunk_type = symbol.get("chunk_type", "")
+            priority = self._symbol_priority(chunk_type)
+            symbol_name = str(symbol.get("symbol_name", "")).lower()
+            return (priority, symbol_name)
+
+        return sorted(symbol_records, key=rank_key)
+
+    def _symbol_priority(self, chunk_type):
+        """Return a smaller-is-better ranking bucket for symbol selection."""
+        if chunk_type in {"class", "struct"}:
+            return 0
+        if chunk_type in {"function_definition", "method_definition"}:
+            return 1
+        if chunk_type == "method_declaration":
+            return 2
+        return 3
+
+    def _build_key_symbol_lines(self, ranked_symbols, explained_entities):
+        """Render the small symbol list shown in ``symbol_aggregated`` file facts.
+
+        Each line may include a very short symbol explanation preview when one is
+        available. The list is deduplicated and capped so a large file does not
+        flood the final prompt with every member and specialization.
+        """
+        key_symbol_lines = []
+        for symbol in ranked_symbols:
+            symbol_id = symbol["symbol_id"]
+            explained_entity = explained_entities.get(symbol_id)
+            explanation_summary = self._short_explanation(
+                explained_entity.get("generated_explanation", "") if explained_entity else "",
+                char_limit=self.symbol_summary_char_limit,
+            )
+            symbol_line = f"- {symbol['symbol_name']} ({symbol['chunk_type']})"
+            if explanation_summary:
+                symbol_line += f": {explanation_summary}"
+            key_symbol_lines.append(symbol_line)
+
+        key_symbol_lines = self._dedupe_preserving_order(key_symbol_lines)
+        if not key_symbol_lines:
+            return "- none"
+
+        capped_lines = key_symbol_lines[: self.max_key_symbols]
+        if len(key_symbol_lines) > self.max_key_symbols:
+            capped_lines.append(
+                f"- [additional symbols omitted: {len(key_symbol_lines) - self.max_key_symbols}]"
+            )
+        return "\n".join(capped_lines)
+
+    def _build_file_summary(self, file_record, ranked_symbols, explained_entities):
+        """Synthesize a short file summary from the best available symbol summaries.
+
+        We prefer existing symbol-level explanations because they are already the
+        most semantically dense descriptions available. If none exist, we fall
+        back to a lightweight structural summary derived from symbol names and
+        types. This avoids forcing raw file content into the file-level facts
+        when symbol structure is already available.
+        """
+        summary_fragments = []
+        for symbol in ranked_symbols:
+            explained_entity = explained_entities.get(symbol["symbol_id"])
+            if explained_entity is None:
+                continue
+            explanation_summary = self._short_explanation(
+                explained_entity.get("generated_explanation", ""),
+                char_limit=180,
+            )
+            if not explanation_summary:
+                continue
+            summary_fragments.append(explanation_summary)
+            if len(summary_fragments) >= 3:
+                break
+
+        if summary_fragments:
+            summary_text = " ".join(self._dedupe_preserving_order(summary_fragments))
+            return self._short_explanation(
+                summary_text,
+                char_limit=self.file_summary_char_limit,
+            )
+
+        symbol_descriptions = self._dedupe_preserving_order(
+            [
+                f"{symbol['symbol_name']} ({symbol['chunk_type']})"
+                for symbol in ranked_symbols[: self.max_key_symbols]
+            ]
+        )
+        if symbol_descriptions:
+            summary_text = (
+                f"{self._precise_source_type(file_record['path']).capitalize()} file in module "
+                f"{file_record['module_key']} with key symbols: "
+                + ", ".join(symbol_descriptions)
+                + "."
+            )
+            return self._short_explanation(
+                summary_text,
+                char_limit=self.file_summary_char_limit,
+            )
+
+        return (
+            f"{self._precise_source_type(file_record['path']).capitalize()} file in module "
+            f"{file_record['module_key']}."
+        )
+
+    def _format_bulleted_list(self, items, max_items):
+        """Render a deduplicated, capped bullet list with an omission marker."""
+        unique_items = self._dedupe_preserving_order([str(item) for item in items if str(item).strip()])
+        if not unique_items:
+            return "- none"
+
+        capped_items = unique_items[:max_items]
+        lines = [f"- {item}" for item in capped_items]
+        if len(unique_items) > max_items:
+            lines.append(f"- [additional items omitted: {len(unique_items) - max_items}]")
+        return "\n".join(lines)
 
     def _precise_source_type(self, file_path):
         suffix = Path(file_path).suffix.lower()

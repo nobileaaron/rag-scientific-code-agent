@@ -3,6 +3,31 @@ from pathlib import Path
 
 
 class MetadataReranker:
+    ENTITY_TARGET_WEIGHTS = {
+        # Strong enough to overcome many exact-symbol collisions such as "FFT",
+        # where dozens of symbol-level chunks share the same lexical signal but
+        # the query explicitly asks for a module/file/call-chain entity first.
+        "preferred_entity_level": 14.0,
+        # Used when the target entity matches the named subject in a
+        # target-specific way, such as a file-level chunk whose base name is
+        # "FFT" for the query "explain the FFT file".
+        "target_subject_match": 14.0,
+        # A smaller extra nudge for subtype hints such as "class" or "method".
+        "preferred_chunk_type": 5.0,
+        # Mild penalty for tracked entity levels that clearly do not match the
+        # user's explicit request. This keeps non-preferred chunks eligible,
+        # but makes it less likely that they outrank the requested entity kind.
+        "mismatched_entity_level": -8.0,
+    }
+
+    TRACKED_ENTITY_LEVELS = {
+        "function_level",
+        "file_level",
+        "module_level",
+        "call_chain_level",
+        "documentation_section_level",
+    }
+
     def __init__(self):
         self.file_extension_pattern = re.compile(
             r"\b[A-Za-z0-9_\-]+\.(?:cpp|hpp|h|md|rst|txt)\b",
@@ -40,24 +65,38 @@ class MetadataReranker:
             "which",
         }
 
-    def rerank(self, query, candidates, k=5, return_diagnostics=False):
+    def rerank(
+        self,
+        query,
+        candidates,
+        k=5,
+        return_diagnostics=False,
+        retrieval_preferences=None,
+    ):
         normalized_query = query.lower()
         query_tokens = self._extract_query_tokens(query)
         exact_filenames = self.extract_exact_filenames(query)
         exact_symbols = self.extract_exact_symbols(query)
+        retrieval_preferences = retrieval_preferences or {}
 
         rescored_candidates = []
         for candidate in candidates:
             chunk = candidate["chunk"]
             distance = candidate["distance"]
             semantic_score = 1.0 / (1.0 + max(distance, 0.0))
-            metadata_score = self._metadata_score(
+            lexical_metadata_score = self._metadata_score(
                 normalized_query,
                 query_tokens,
                 exact_filenames,
                 exact_symbols,
                 chunk,
             )
+            entity_target_score = self._entity_target_score(
+                chunk,
+                retrieval_preferences,
+                exact_symbols,
+            )
+            metadata_score = lexical_metadata_score + entity_target_score
             combined_score = semantic_score + metadata_score
 
             rescored_candidates.append(
@@ -65,6 +104,8 @@ class MetadataReranker:
                     "chunk": chunk,
                     "distance": distance,
                     "semantic_score": semantic_score,
+                    "lexical_metadata_score": lexical_metadata_score,
+                    "entity_target_score": entity_target_score,
                     "metadata_score": metadata_score,
                     "combined_score": combined_score,
                 }
@@ -84,6 +125,13 @@ class MetadataReranker:
                     "query_tokens": sorted(query_tokens),
                     "exact_filenames": sorted(exact_filenames),
                     "exact_symbols": sorted(exact_symbols),
+                    "entity_target": retrieval_preferences.get("entity_target", ""),
+                    "preferred_entity_levels": list(
+                        retrieval_preferences.get("preferred_entity_levels", ())
+                    ),
+                    "preferred_chunk_types": list(
+                        retrieval_preferences.get("preferred_chunk_types", ())
+                    ),
                     "reranked_candidates": rescored_candidates,
                 },
             }
@@ -146,6 +194,95 @@ class MetadataReranker:
             score += 2.0
 
         return score
+
+    def _entity_target_score(self, chunk, retrieval_preferences, exact_symbols):
+        """Score how well a chunk matches an explicit entity-level request.
+
+        This layer intentionally sits on top of the normal lexical metadata
+        score. The lexical score answers "does this chunk look related to the
+        query tokens?", while this method answers "is this the kind of entity
+        the user explicitly asked for?".
+
+        Example:
+        - Query: "explain the FFT module"
+        - Symbol-level chunks named FFT are still lexically relevant.
+        - Module-level chunks should nevertheless win the primary ranking.
+        """
+
+        explicit_target = str(retrieval_preferences.get("entity_target", "") or "")
+        preferred_entity_levels = {
+            str(entity_level)
+            for entity_level in retrieval_preferences.get("preferred_entity_levels", ())
+            if entity_level
+        }
+        preferred_chunk_types = {
+            str(chunk_type)
+            for chunk_type in retrieval_preferences.get("preferred_chunk_types", ())
+            if chunk_type
+        }
+
+        if not explicit_target and not preferred_entity_levels and not preferred_chunk_types:
+            return 0.0
+
+        entity_level = str(chunk.get("entity_level", "") or "")
+        chunk_type = str(chunk.get("chunk_type", chunk.get("entity_type", "")) or "")
+        score = 0.0
+
+        if preferred_entity_levels and entity_level in preferred_entity_levels:
+            score += self.ENTITY_TARGET_WEIGHTS["preferred_entity_level"]
+        elif explicit_target and entity_level in self.TRACKED_ENTITY_LEVELS:
+            score += self.ENTITY_TARGET_WEIGHTS["mismatched_entity_level"]
+
+        if self._chunk_matches_target_subject(chunk, explicit_target, exact_symbols):
+            score += self.ENTITY_TARGET_WEIGHTS["target_subject_match"]
+
+        if preferred_chunk_types and chunk_type in preferred_chunk_types:
+            score += self.ENTITY_TARGET_WEIGHTS["preferred_chunk_type"]
+
+        return score
+
+    def _chunk_matches_target_subject(self, chunk, explicit_target, exact_symbols):
+        if not explicit_target or not exact_symbols:
+            return False
+
+        exact_symbols = {str(symbol).lower() for symbol in exact_symbols if symbol}
+        entity_level = str(chunk.get("entity_level", "") or "")
+        symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
+        module_key = str(chunk.get("module_key", "") or "").lower()
+        module_path = str(chunk.get("module_path", "") or "").lower()
+        base_name = str(chunk.get("base_name", "") or "").lower()
+        file_name = str(chunk.get("file_name", "") or "").lower()
+        file_stem = file_name.rsplit(".", 1)[0] if "." in file_name else file_name
+
+        if explicit_target == "file_level" and entity_level == "file_level":
+            return (
+                symbol_name in exact_symbols
+                or base_name in exact_symbols
+                or file_stem in exact_symbols
+            )
+
+        if explicit_target == "module_level" and entity_level == "module_level":
+            module_key_tail = module_key.split(":")[-1] if ":" in module_key else module_key
+            module_path_tail = module_path.split("/")[-1] if "/" in module_path else module_path
+            return (
+                symbol_name in exact_symbols
+                or module_key_tail in exact_symbols
+                or module_path_tail in exact_symbols
+            )
+
+        if explicit_target == "call_chain_level" and entity_level == "call_chain_level":
+            return symbol_name in exact_symbols
+
+        if explicit_target == "function_level" and entity_level == "function_level":
+            return symbol_name in exact_symbols
+
+        if (
+            explicit_target == "documentation_section_level"
+            and entity_level == "documentation_section_level"
+        ):
+            return symbol_name in exact_symbols or base_name in exact_symbols
+
+        return False
 
     def extract_exact_filenames(self, query):
         return {

@@ -188,35 +188,135 @@ class EntityExplanationGenerator:
         symbol_name = entity.get("symbol_name", entity.get("function_name", ""))
         parent_symbol = entity.get("parent_symbol", entity.get("class_name", ""))
         chunk_type = entity.get("chunk_type", entity.get("entity_type", ""))
-        source_type = entity.get("source_type", "")
         file_path = entity.get("path", entity.get("file", ""))
-        language = entity.get("language", "")
-        section_path = entity.get("section_path", entity.get("parameters", ""))
+        section_path = entity.get("section_path", "")
+        parameters = entity.get("parameters", "")
         return_type = entity.get("return_type", "")
         leading_comment = entity.get("leading_comment", "")
         references = self.reference_extractor.extract(entity.get("code", ""))
-        include_paths = ", ".join(references["include_paths"]) or "No linked includes found."
-        referenced_files = (
-            ", ".join(references["referenced_files"]) or "No referenced files found."
+        include_text = ", ".join(references["include_paths"]) if references["include_paths"] else ""
+        referenced_files_text = (
+            ", ".join(references["referenced_files"]) if references["referenced_files"] else ""
+        )
+        display_entity_level = self._display_entity_level(entity.get("entity_level", ""))
+        display_chunk_type = self._display_chunk_type(chunk_type)
+        display_parent_symbol = self._display_parent_symbol(symbol_name, parent_symbol)
+        display_section_or_parameters = self._display_section_or_parameters(
+            section_path=section_path,
+            parameters=parameters,
+            symbol_name=symbol_name,
+            parent_symbol=parent_symbol,
+            file_path=file_path,
         )
 
-        return f"""
-Entity Level: {entity.get("entity_level", "")}
-Explanation Source: full entity before splitting into retrieval chunks
-Source Type: {source_type}
-Chunk Type: {chunk_type}
-Symbol: {symbol_name}
-Parent Symbol: {parent_symbol}
-Path: {file_path}
-Language: {language}
-Return Type: {return_type}
-Parameters / Section Path: {section_path}
-Leading Comment:
-{leading_comment or "No comment found."}
-Include Paths:
-{include_paths}
-Referenced Files:
-{referenced_files}
-Content:
-{entity["code"]}
-"""
+        context_lines = [
+            f"Entity Level: {display_entity_level}",
+            f"Symbol: {symbol_name or 'unknown'}",
+            f"Path: {file_path or 'unknown'}",
+        ]
+        if self._should_show_chunk_type(display_chunk_type, display_entity_level):
+            context_lines.append(f"Chunk Type: {display_chunk_type}")
+        if self._should_show_return_type(chunk_type, return_type):
+            context_lines.append(f"Return Type: {return_type}")
+        if display_section_or_parameters:
+            context_lines.append(
+                f"Parameters / Section Path: {display_section_or_parameters}"
+            )
+        if display_parent_symbol:
+            context_lines.append(f"Parent Symbol: {display_parent_symbol}")
+        if leading_comment:
+            context_lines.extend(
+                [
+                    "Leading Comment:",
+                    leading_comment,
+                ]
+            )
+        if include_text:
+            context_lines.append(f"Include Paths: {include_text}")
+        if referenced_files_text:
+            context_lines.append(f"Referenced Files: {referenced_files_text}")
+        context_lines.extend(
+            [
+                "Content:",
+                entity["code"],
+            ]
+        )
+
+        return "\n".join(context_lines)
+
+    def _display_entity_level(self, entity_level):
+        normalized = str(entity_level or "").strip()
+        if normalized == "function_level":
+            return "symbol_level"
+        return normalized or "unknown"
+
+    def _display_chunk_type(self, chunk_type):
+        return str(chunk_type or "").strip() or "unknown"
+
+    def _should_show_chunk_type(self, display_chunk_type, display_entity_level):
+        normalized_chunk_type = str(display_chunk_type or "").strip()
+        normalized_entity_level = str(display_entity_level or "").strip()
+        if not normalized_chunk_type:
+            return False
+        return normalized_chunk_type != normalized_entity_level
+
+    def _should_show_return_type(self, chunk_type, return_type):
+        normalized_return_type = str(return_type or "").strip()
+        normalized_chunk_type = str(chunk_type or "").strip()
+        if not normalized_return_type:
+            return False
+        return normalized_chunk_type in {
+            "function_definition",
+            "function_declaration",
+            "method_definition",
+            "method_declaration",
+        }
+
+    def _display_parent_symbol(self, symbol_name, parent_symbol):
+        normalized_symbol_name = str(symbol_name or "").strip()
+        normalized_parent_symbol = str(parent_symbol or "").strip()
+        if not normalized_parent_symbol:
+            return ""
+        if normalized_parent_symbol == normalized_symbol_name:
+            return ""
+        return normalized_parent_symbol
+
+    def _display_section_or_parameters(
+        self,
+        *,
+        section_path,
+        parameters,
+        symbol_name,
+        parent_symbol,
+        file_path,
+    ):
+        for value in (section_path, parameters):
+            if self._is_informative_context_value(
+                value,
+                symbol_name=symbol_name,
+                parent_symbol=parent_symbol,
+                file_path=file_path,
+            ):
+                return str(value).strip()
+        return ""
+
+    def _is_informative_context_value(
+        self,
+        value,
+        *,
+        symbol_name,
+        parent_symbol,
+        file_path,
+    ):
+        normalized_value = str(value or "").strip()
+        if not normalized_value:
+            return False
+        if normalized_value.lower() in {"none", "unknown"}:
+            return False
+
+        comparison_values = {
+            str(symbol_name or "").strip(),
+            str(parent_symbol or "").strip(),
+            str(file_path or "").strip(),
+        }
+        return normalized_value not in comparison_values

@@ -33,6 +33,8 @@ from src.ingestion.embedder import Embedder
 # Retrieval
 from src.retrieval.retriever import Retriever
 from src.retrieval.vector_store import VectorStore
+
+# Debugging
 from src.retrieval.debugger import RetrievalDebugger
 
 # LLM
@@ -679,12 +681,18 @@ def main():
     # 7 INITIALIZING AGENT
 
     retrieval_debugger = RetrievalDebugger(enabled=retrieval_debug_default)
-    agent = LLMAgent(retriever, llm, prompt_template, retrieval_debugger)
+    agent = LLMAgent(
+        retriever,
+        llm,
+        prompt_template,
+        retrieval_debugger,
+        prompt_mode=answer_prompt_mode,
+    )
 
     print("\nSystem ready. Ask questions about the code and documentation.")
     print(f"Answer prompt mode: {answer_prompt_mode}")
     print(f"Chunk explanation prompt mode: {chunk_explanation_prompt_mode}")
-    print("Use ':debug on' or ':debug off' to toggle retrieval debugging.\n")
+    print("Use ':debug on' or ':debug off' to toggle retrieval and prompt debugging.\n")
 
     while True:
         query = input("Query: ")
@@ -694,12 +702,12 @@ def main():
 
         if query.lower() == ":debug on":
             retrieval_debugger.enabled = True
-            print("Retrieval debugging enabled.\n")
+            print("Retrieval and prompt debugging enabled.\n")
             continue
 
         if query.lower() == ":debug off":
             retrieval_debugger.enabled = False
-            print("Retrieval debugging disabled.\n")
+            print("Retrieval and prompt debugging disabled.\n")
             continue
 
         answer = agent.answer(query)

@@ -23,13 +23,17 @@ except ImportError:
             def from_messages(cls, messages):
                 return cls(messages)
 
-            def format(self, **kwargs):
-                rendered_parts = []
-                for message in self.messages:
-                    rendered_parts.append(
-                        f"{message.role.upper()}:\n{message.prompt.template.format(**kwargs)}"
+            def format_messages(self, **kwargs):
+                return [
+                    _SimpleMessage(
+                        message.role,
+                        message.prompt.template.format(**kwargs),
                     )
-                return "\n\n".join(rendered_parts)
+                    for message in self.messages
+                ]
+
+            def format(self, **kwargs):
+                return render_prompt_text(self, **kwargs)
 
 
 entity_explanation_prompt = ChatPromptTemplate.from_messages(
@@ -37,17 +41,34 @@ entity_explanation_prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             (
-                "You are an expert assistant for scientific C++ code analysis. "
-                "This prompt is used during ingestion after parsing, when a single parsed "
-                "entity or documentation section is being explained before retrieval. "
-                "Use only the provided context. Explain the role of the code in the "
-                "IPPL (Independent Parallel Particle Layer) codebase, the main algorithmic "
-                "ideas, the data that moves through it, and the numerical meaning when it "
-                "is visible. If the context is incomplete, say so clearly instead of "
-                "inventing details. Do not invent alternative expansions for names or "
-                "abbreviations if their meaning is unclear from the available evidence. "
-                "Do not infer behavior or project meaning from names alone; prefer "
-                "describing the visible operations, interfaces, and data flow."
+                "You are an expert assistant for scientific C++ code and numerical methods."
+
+                "You are given one parsed code entity or one documentation section."
+                "Explain only that local context clearly and conservatively."
+
+                "Explain the role of the code entity or documentation section, the main algorithmic idea, the data flow and the numerical meaning when visible."
+                
+                "Be precise, concise and technical."
+                "Use domain-specific terminology."
+                
+                "If the context is incomplete, say so clearly instead of inventing details."
+                
+                "Do not invent alternative expansions for names or abbrevations if their meaning is unclear from the available evidence."
+                "Do not infer behavior or project meaning from names alone; prefer escribing the visible operations, interfaces, and data flow."
+                
+                "Provide a structured explanation in the following format:"
+                "1. Identity: what this code, function, class, or section is."
+                "2. Role: what it appears to be doing."
+                "3. Purpose: what is the likely purpose of this code or section."
+                "4. Main Idea: the main algorithmic idea."
+                "5. Data Flow: Key variables, structures, or data flow visible in the context."
+                "6. Numerical Meaning: important scientific, mathematical, or numerical ideas."
+                "7. Uncertainty: any uncertainty due to missing context."
+                "8. Keywords: 3-5 technical terms"
+
+                "Do not repeat the same claim across sections."
+
+
             ),
         ),
         (
@@ -60,13 +81,6 @@ Context:
 
 Task:
 {question}
-
-Give a structured explanation of:
-1. what this code, function, class, or section is and appears to do.
-2. the main algorithmic idea,
-3. the important data flow,
-4. the numerical or scientific meaning,
-5. any uncertainty due to missing context.
 """,
         ),
     ]
@@ -78,7 +92,7 @@ retrieval_answer_prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             (
-                "You are an expert assistant for understanding the IPPL C++ codebase."
+                "You are an expert assistant for understanding the IPPL C++ codebase. "
                 "Use only the provided retrieved context. Do not invent alternative "
                 "expansions for names or abbreviations if their meaning is unclear "
                 "from the available evidence. Do not infer behavior, project meaning, "
@@ -122,15 +136,18 @@ file_level_explanation_prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             (
-                "You are an expert assistant for scientific C++ codebase analysis. "
+                "You are an expert assistant for scientific C++ code and numerical methods. "
+
                 "This prompt is used during ingestion to explain one whole file from "
                 "structured facts gathered about that file. Use only the provided file "
-                "facts, structural relationships, contained symbol summaries, and any "
-                "raw file content that is included as fallback evidence. Do not infer "
-                "behavior or project meaning from names alone. Prefer describing what "
-                "the file contains, what it depends on, and how it appears to fit into "
-                "the IPPL (Independent Parallel Particle Layer) codebase. If the facts "
-                "are incomplete, say so clearly instead of inventing details."
+                "facts, key symbol summaries, dependency signals, and any raw fallback "
+                "evidence that is included. Do not infer behavior or project meaning "
+                "from names alone. Prefer producing a compact retrieval-friendly file "
+                "summary rather than a long walkthrough. Synthesize the evidence into "
+                "a short explanation of the file's role, main abstractions, important "
+                "dependencies, and scientific or numerical relevance when visible. "
+                "Avoid repeating the same claim across sections. If the facts are "
+                "incomplete, say so clearly instead of inventing details."
             ),
         ),
         (
@@ -144,12 +161,15 @@ File Facts:
 Task:
 {question}
 
-Give a structured explanation of:
-1. the likely role of the file,
-2. the main abstractions or symbols it contains,
-3. the important structural dependencies or relationships,
-4. what this suggests about the file's place in the codebase,
-5. any uncertainty due to missing context.
+Give a concise structured explanation with these sections:
+1. Role
+2. Key Abstractions
+3. Important Dependencies
+4. Scientific or Numerical Relevance
+5. Keywords: 3-5 technical terms
+6. Uncertainty
+
+Keep each section short. Summarize the file as a whole instead of describing every symbol individually.
 """,
         ),
     ]
@@ -278,8 +298,7 @@ Give a structured explanation of:
 
 def get_prompt_template_signature(prompt_mode):
     prompt_template = get_prompt_template(prompt_mode)
-    signature_text = _build_prompt_signature_text(prompt_template)
-    return hashlib.sha256(signature_text.encode("utf-8")).hexdigest()
+    return get_prompt_template_signature_from_template(prompt_template)
 
 
 def get_compatible_prompt_template_signatures(prompt_mode):
@@ -302,6 +321,41 @@ def get_compatible_prompt_template_signatures(prompt_mode):
         ).hexdigest(),
     }
     return signatures
+
+
+def get_prompt_template_signature_from_template(prompt_template):
+    signature_text = _build_prompt_signature_text(prompt_template)
+    return hashlib.sha256(signature_text.encode("utf-8")).hexdigest()
+
+
+def render_prompt_messages(prompt_template, **kwargs):
+    if hasattr(prompt_template, "format_messages"):
+        try:
+            formatted_messages = prompt_template.format_messages(**kwargs)
+            return [_normalize_formatted_message(message) for message in formatted_messages]
+        except Exception:
+            pass
+
+    rendered_messages = []
+    for message in prompt_template.messages:
+        rendered_messages.append(
+            {
+                "role": _extract_message_role(message),
+                "content": _extract_message_template(message).format(**kwargs),
+            }
+        )
+    return rendered_messages
+
+
+def render_prompt_text(prompt_template, **kwargs):
+    return render_prompt_text_from_messages(render_prompt_messages(prompt_template, **kwargs))
+
+
+def render_prompt_text_from_messages(messages):
+    rendered_parts = []
+    for message in messages:
+        rendered_parts.append(f"{message['role'].upper()}:\n{message['content']}")
+    return "\n\n".join(rendered_parts)
 
 
 def _build_prompt_signature_text(prompt_template):
@@ -343,6 +397,27 @@ def _extract_message_role(message):
     if "human" in message_type_name or "user" in message_type_name:
         return "user"
     return message_type_name
+
+
+def _normalize_formatted_message(message):
+    role = getattr(message, "type", None) or getattr(message, "role", None)
+    role = str(role).lower() if role else _extract_message_role(message)
+
+    if role == "human":
+        role = "user"
+    elif role == "ai":
+        role = "assistant"
+
+    content = getattr(message, "content", None)
+    if isinstance(content, list):
+        content = "\n".join(str(part) for part in content)
+    elif content is None:
+        content = _extract_message_template(message)
+
+    return {
+        "role": role,
+        "content": str(content),
+    }
 
 
 def get_prompt_template(prompt_mode):

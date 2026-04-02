@@ -218,16 +218,30 @@ class ProjectStructureBuilder:
 
     def _build_ownership_edges(self, symbol_records):
         ownership_edges = []
+        seen_edges = set()
 
         for symbol in symbol_records:
             parent_symbol = symbol.get("parent_symbol", "")
             if not parent_symbol:
                 continue
 
+            owned_symbol = symbol["symbol_name"]
+            if parent_symbol == owned_symbol:
+                continue
+
+            edge_key = (
+                symbol["file_path"],
+                parent_symbol,
+                owned_symbol,
+            )
+            if edge_key in seen_edges:
+                continue
+            seen_edges.add(edge_key)
+
             ownership_edges.append(
                 {
                     "owner_symbol": parent_symbol,
-                    "owned_symbol": symbol["symbol_name"],
+                    "owned_symbol": owned_symbol,
                     "owned_symbol_id": symbol["symbol_id"],
                     "file_path": symbol["file_path"],
                     "relationship": "owns_symbol",

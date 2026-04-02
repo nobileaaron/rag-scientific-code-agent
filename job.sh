@@ -16,6 +16,7 @@ ulimit -c unlimited
 
 SCRIPT_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 SETTINGS_PATH="${SETTINGS_PATH:-$SCRIPT_DIR/config/runtime_settings.json}"
+FORCE_CLEAN_REBUILD="${FORCE_CLEAN_REBUILD:-1}"
 
 # Adjust these if your cluster environment changes later.
 PYTHON_MODULE="${PYTHON_MODULE:-Python/3.11.11}"
@@ -29,6 +30,15 @@ export OLLAMA_MODELS="${OLLAMA_MODELS:-$OLLAMA_HOME/models}"
 
 cd "$SCRIPT_DIR"
 source .venv/bin/activate
+
+if [ "$FORCE_CLEAN_REBUILD" = "1" ]; then
+    echo "Forcing a clean rebuild of generated artifacts..."
+    rm -rf "$SCRIPT_DIR/embeddings/vector_store"
+    rm -rf "$SCRIPT_DIR/embeddings/project_structure"
+    rm -rf "$SCRIPT_DIR/embeddings/explanations"
+else
+    echo "FORCE_CLEAN_REBUILD=0, reusing persisted artifacts when available."
+fi
 
 echo "Starting Ollama server..."
 ollama serve >> "$OLLAMA_LOG" 2>&1 &

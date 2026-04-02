@@ -10,10 +10,10 @@ from sentence_transformers import SentenceTransformer
 class Embedder:
     EMBEDDING_PROMPT_FALLBACKS = [
         None,
-        {"leading_comment": 500, "generated_explanation": 1500, "code": 5000},
-        {"leading_comment": 300, "generated_explanation": 750, "code": 3000},
-        {"leading_comment": 200, "generated_explanation": 250, "code": 1500},
-        {"leading_comment": 0, "generated_explanation": 0, "code": 800},
+        {"generated_explanation": 1500, "code": 5000},
+        {"generated_explanation": 750, "code": 3000},
+        {"generated_explanation": 250, "code": 1500},
+        {"generated_explanation": 0, "code": 800},
     ]
 
     def __init__(
@@ -101,16 +101,10 @@ class Embedder:
     def _build_chunk_embedding_prompt(self, chunk, prompt_limits=None):
         file_name = Path(chunk["file"]).name
         symbol_name = chunk.get("symbol_name", chunk.get("function_name", ""))
-        source_type = chunk.get("source_type", "")
         chunk_type = chunk.get("chunk_type", chunk.get("entity_type", ""))
         parent_symbol = chunk.get("parent_symbol", "")
-        language = chunk.get("language", "")
         section_path = chunk.get("section_path", chunk.get("parameters", ""))
         limits = prompt_limits or {}
-        leading_comment = self._truncate_for_embedding(
-            chunk.get("leading_comment", ""),
-            limits.get("leading_comment"),
-        )
         generated_explanation = self._truncate_for_embedding(
             chunk.get("generated_explanation", ""),
             limits.get("generated_explanation"),
@@ -123,13 +117,9 @@ class Embedder:
         return f"""
 File: {file_name}
 Symbol: {symbol_name}
-Source Type: {source_type}
 Chunk Type: {chunk_type}
 Parent Symbol: {parent_symbol}
-Language: {language}
 Section Path: {section_path}
-Leading Comment:
-{leading_comment}
 Generated Explanation:
 {generated_explanation}
 Code:
@@ -138,18 +128,14 @@ Code:
 
     def _build_query_embedding_prompt(self, text):
         file_name = self._extract_file_name(text)
-        source_type = self._infer_source_type(file_name)
         intent = self._infer_intent(text)
 
         return f"""
 File: {file_name}
 Symbol:
-Source Type: {source_type}
 Chunk Type: query
 Parent Symbol:
-Language:
 Section Path:
-Leading Comment:
 Intent: {intent}
 Code:
 {text}
@@ -158,19 +144,6 @@ Code:
     def _extract_file_name(self, text):
         match = self.file_extension_pattern.search(text)
         return match.group(0) if match else ""
-
-    def _infer_source_type(self, file_name):
-        if not file_name:
-            return ""
-
-        suffix = Path(file_name).suffix.lower()
-        if suffix in {".h", ".hpp"}:
-            return "header"
-        if suffix == ".cpp":
-            return "cpp"
-        if suffix in {".md", ".rst", ".txt"}:
-            return "documentation"
-        return ""
 
     def _infer_intent(self, text):
         lowered = text.lower()

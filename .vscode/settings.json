@@ -1,6 +1,6 @@
 {
   "python.defaultInterpreterPath": "/Users/aaron/semester_project/.venv/bin/python",
   "python.terminal.activateEnvironment": true,
-  "workbench.colorTheme": "Default Dark+",
+  "workbench.colorTheme": "Dark+",
   "editor.semanticHighlighting.enabled": "configuredByTheme"
 }

@@ -5,6 +5,12 @@ from src.retrieval.structural_expander import StructuralExpander
 
 
 class Retriever:
+    # Primary retrieval should prefer a smaller strong set over always filling
+    # all k slots with weak tail matches. The gate below keeps a candidate only
+    # while its score stays in the same rough quality band as the best results.
+    PRIMARY_SCORE_RELATIVE_FLOOR = 0.4
+    PRIMARY_SCORE_GAP_THRESHOLD = 8.0
+    PRIMARY_SCORE_ABSOLUTE_FLOOR = 1.25
 
     def __init__(
         self,
@@ -40,6 +46,7 @@ class Retriever:
             exact_filenames=exact_filenames,
             exact_symbols=exact_symbols,
         )
+        retrieval_preferences = intent_result.get("retrieval_preferences", {})
 
         # 1 embed the query
         query_embedding = self.embedder.query_embed(query)
@@ -49,10 +56,15 @@ class Retriever:
         semantic_candidates = self.vector_store.search(query_embedding, candidate_count)
         exact_filename_candidates = self.vector_store.get_chunks_by_filenames(exact_filenames)
         exact_symbol_candidates = self.vector_store.get_chunks_by_symbols(exact_symbols)
+        target_aligned_candidates = self._retrieve_target_aligned_candidates(
+            exact_symbols,
+            retrieval_preferences,
+        )
         candidates = self._merge_candidates(
             semantic_candidates,
             exact_filename_candidates,
             exact_symbol_candidates,
+            target_aligned_candidates,
         )
 
         # 3 rerank candidates using metadata-aware boosting
@@ -61,12 +73,18 @@ class Retriever:
             candidates,
             k,
             return_diagnostics=True,
+            retrieval_preferences=retrieval_preferences,
+        )
+        primary_candidate_selection = self._select_primary_candidates(
+            reranked["diagnostics"].get("reranked_candidates", []),
+            k,
         )
         primary_chunks = self._ensure_exact_filename_chunks(
-            reranked["chunks"],
+            [candidate["chunk"] for candidate in primary_candidate_selection["selected"]],
             exact_filenames,
             exact_symbols,
             k,
+            retrieval_preferences=retrieval_preferences,
         )
         structural_result = self.structural_expander.expand(
             query,
@@ -89,8 +107,30 @@ class Retriever:
         reranked["diagnostics"]["semantic_candidate_count"] = len(semantic_candidates)
         reranked["diagnostics"]["exact_filename_candidate_count"] = len(exact_filename_candidates)
         reranked["diagnostics"]["exact_symbol_candidate_count"] = len(exact_symbol_candidates)
+        reranked["diagnostics"]["target_aligned_candidate_count"] = len(
+            target_aligned_candidates
+        )
+        reranked["diagnostics"]["primary_selected_count"] = len(
+            primary_candidate_selection["selected"]
+        )
+        reranked["diagnostics"]["primary_score_filtered_count"] = len(
+            primary_candidate_selection["filtered_out"]
+        )
+        reranked["diagnostics"]["primary_score_gate"] = primary_candidate_selection[
+            "gate"
+        ]
+        reranked["diagnostics"]["primary_score_filtered_candidates"] = (
+            primary_candidate_selection["filtered_out"]
+        )
         reranked["diagnostics"]["query_intent"] = intent_result["intent"]
         reranked["diagnostics"]["query_intent_reasons"] = intent_result["reasons"]
+        reranked["diagnostics"]["entity_target"] = intent_result.get("entity_target", "")
+        reranked["diagnostics"]["preferred_entity_levels"] = list(
+            retrieval_preferences.get("preferred_entity_levels", ())
+        )
+        reranked["diagnostics"]["preferred_chunk_types"] = list(
+            retrieval_preferences.get("preferred_chunk_types", ())
+        )
         reranked["diagnostics"]["structural_expansion_mode"] = structural_result["diagnostics"]["mode"]
         reranked["diagnostics"]["structural_expansion_count"] = structural_result["diagnostics"]["count"]
         reranked["diagnostics"]["structural_expansion_reasons"] = structural_result["diagnostics"]["reasons"]
@@ -122,17 +162,33 @@ class Retriever:
 
         return merged_candidates
 
-    def _ensure_exact_filename_chunks(self, chunks, exact_filenames, exact_symbols, k):
+    def _ensure_exact_filename_chunks(
+        self,
+        chunks,
+        exact_filenames,
+        exact_symbols,
+        k,
+        retrieval_preferences=None,
+    ):
+        # At this point "chunks" already passed reranking and the low-score
+        # gate, so exact matches should only be reordered within this accepted
+        # subset. We intentionally do not re-fetch exact chunks from the vector
+        # store here, because that could smuggle weak tail matches back into the
+        # primary context after the score gate excluded them.
         if not exact_filenames and not exact_symbols:
             return chunks[:k]
 
-        exact_filename_chunks = self.vector_store.get_chunks_by_filenames(exact_filenames)
-        exact_symbol_chunks = self.vector_store.get_chunks_by_symbols(exact_symbols)
         prioritized_chunks = []
         seen_keys = set()
 
-        for candidate in exact_filename_chunks + exact_symbol_chunks:
-            chunk = candidate["chunk"]
+        # First keep exact matches that already survived reranking and score
+        # filtering, preserving the reranker's entity-aware ordering. This
+        # avoids a metadata-order fallback where exact symbol collisions (for
+        # example many chunks named "FFT") can undo the explicit module/file/
+        # function preference from the query itself.
+        for chunk in chunks:
+            if not self._chunk_matches_exact_target(chunk, exact_filenames, exact_symbols):
+                continue
             chunk_key = self._chunk_key(chunk)
             if chunk_key in seen_keys:
                 continue
@@ -159,6 +215,209 @@ class Retriever:
             chunk.get("chunk_index", 1),
             chunk.get("code", ""),
         )
+
+    def _chunk_matches_exact_target(self, chunk, exact_filenames, exact_symbols):
+        file_name = str(chunk.get("file_name", "")).lower()
+        symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", ""))).lower()
+        return file_name in exact_filenames or symbol_name in exact_symbols
+
+    def _prioritize_exact_chunks_for_target(self, chunks, retrieval_preferences):
+        preferred_entity_levels = {
+            str(entity_level)
+            for entity_level in (retrieval_preferences or {}).get(
+                "preferred_entity_levels",
+                (),
+            )
+            if entity_level
+        }
+        preferred_chunk_types = {
+            str(chunk_type)
+            for chunk_type in (retrieval_preferences or {}).get(
+                "preferred_chunk_types",
+                (),
+            )
+            if chunk_type
+        }
+
+        def sort_key(chunk):
+            entity_level = str(chunk.get("entity_level", "") or "")
+            chunk_type = str(chunk.get("chunk_type", chunk.get("entity_type", "")) or "")
+            symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "")
+            file_path = str(chunk.get("path", chunk.get("file", "")) or "")
+            return (
+                0 if entity_level in preferred_entity_levels else 1,
+                0 if chunk_type in preferred_chunk_types else 1,
+                file_path,
+                symbol_name,
+            )
+
+        return sorted(chunks, key=sort_key)
+
+    def _select_primary_candidates(self, reranked_candidates, k):
+        """Keep only the strong prefix of reranked candidates for primary use.
+
+        The retrieval system can still keep broader candidates in diagnostics,
+        but the final primary set should not be padded with obviously weak tail
+        results just to hit k. The gate is intentionally conservative:
+
+        - always keep the top candidate
+        - keep following candidates while they stay in the same rough score band
+        - once a candidate drops far below the best result and also shows a
+          strong cliff from the previous accepted score, stop accepting the tail
+
+        This works better than a single absolute threshold because retrieval
+        scores vary a lot across query types.
+        """
+
+        if not reranked_candidates:
+            return {
+                "selected": [],
+                "filtered_out": [],
+                "gate": {},
+            }
+
+        top_score = float(reranked_candidates[0].get("combined_score", 0.0))
+        relative_floor_score = top_score * self.PRIMARY_SCORE_RELATIVE_FLOOR
+        minimum_allowed_score = max(
+            self.PRIMARY_SCORE_ABSOLUTE_FLOOR,
+            relative_floor_score,
+        )
+
+        selected = [reranked_candidates[0]]
+        filtered_out = []
+        stop_reason = "kept_top_k_or_fewer"
+        stop_index = None
+
+        for index, candidate in enumerate(reranked_candidates[1:], start=2):
+            if len(selected) >= k:
+                break
+
+            current_score = float(candidate.get("combined_score", 0.0))
+            previous_score = float(selected[-1].get("combined_score", 0.0))
+            below_relative_floor = current_score < relative_floor_score
+            below_absolute_floor = current_score < self.PRIMARY_SCORE_ABSOLUTE_FLOOR
+            large_gap_from_previous = (
+                previous_score - current_score
+            ) >= self.PRIMARY_SCORE_GAP_THRESHOLD
+
+            if below_relative_floor and (below_absolute_floor or large_gap_from_previous):
+                filtered_out.append(candidate)
+                filtered_out.extend(reranked_candidates[index:])
+                stop_reason = "stopped_on_large_score_cliff"
+                stop_index = index
+                break
+
+            selected.append(candidate)
+
+        return {
+            "selected": selected,
+            "filtered_out": filtered_out,
+            "gate": {
+                "top_score": top_score,
+                "relative_floor": self.PRIMARY_SCORE_RELATIVE_FLOOR,
+                "relative_floor_score": relative_floor_score,
+                "absolute_floor": self.PRIMARY_SCORE_ABSOLUTE_FLOOR,
+                "minimum_allowed_score": minimum_allowed_score,
+                "gap_threshold": self.PRIMARY_SCORE_GAP_THRESHOLD,
+                "stop_reason": stop_reason,
+                "stop_index": stop_index,
+            },
+        }
+
+    def _retrieve_target_aligned_candidates(self, exact_symbols, retrieval_preferences):
+        """Inject higher-level candidates that match the query's named subject.
+
+        Exact symbol lookup works well when the requested entity and the stored
+        symbol share the same name. File-level chunks are a common exception:
+        users often ask for "the FFT file", while the stored file-level symbols
+        are named ``FFT.h`` or ``FFT.hpp`` rather than ``FFT``. This helper
+        bridges that gap by injecting entity-target-specific candidates from
+        metadata before reranking.
+        """
+
+        exact_symbols = {
+            str(symbol).lower()
+            for symbol in (exact_symbols or set())
+            if symbol
+        }
+        if not exact_symbols:
+            return []
+
+        entity_target = str(
+            (retrieval_preferences or {}).get("entity_target", "") or ""
+        )
+        if not entity_target:
+            return []
+
+        injected_candidates = []
+        seen_keys = set()
+
+        for chunk in self.vector_store.metadata:
+            if not self._chunk_matches_target_aligned_exact_symbol(
+                chunk,
+                exact_symbols,
+                entity_target,
+            ):
+                continue
+
+            chunk_key = self._chunk_key(chunk)
+            if chunk_key in seen_keys:
+                continue
+            seen_keys.add(chunk_key)
+            injected_candidates.append(
+                {
+                    "chunk": chunk,
+                    "distance": 0.0,
+                    "injected": True,
+                    "injection_reason": "entity_target_alignment",
+                }
+            )
+
+        return injected_candidates
+
+    def _chunk_matches_target_aligned_exact_symbol(
+        self,
+        chunk,
+        exact_symbols,
+        entity_target,
+    ):
+        entity_level = str(chunk.get("entity_level", "") or "")
+        symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
+        module_key = str(chunk.get("module_key", "") or "").lower()
+        module_path = str(chunk.get("module_path", "") or "").lower()
+        base_name = str(chunk.get("base_name", "") or "").lower()
+        file_name = str(chunk.get("file_name", "") or "").lower()
+        file_stem = file_name.rsplit(".", 1)[0] if "." in file_name else file_name
+
+        if entity_target == "file_level" and entity_level == "file_level":
+            return (
+                symbol_name in exact_symbols
+                or base_name in exact_symbols
+                or file_stem in exact_symbols
+            )
+
+        if entity_target == "module_level" and entity_level == "module_level":
+            module_key_tail = module_key.split(":")[-1] if ":" in module_key else module_key
+            module_path_tail = module_path.split("/")[-1] if "/" in module_path else module_path
+            return (
+                symbol_name in exact_symbols
+                or module_key_tail in exact_symbols
+                or module_path_tail in exact_symbols
+            )
+
+        if entity_target == "call_chain_level" and entity_level == "call_chain_level":
+            return symbol_name in exact_symbols
+
+        if entity_target == "function_level" and entity_level == "function_level":
+            return symbol_name in exact_symbols
+
+        if (
+            entity_target == "documentation_section_level"
+            and entity_level == "documentation_section_level"
+        ):
+            return symbol_name in exact_symbols or base_name in exact_symbols
+
+        return False
 
     def _retrieve_supplementary_chunks(self, query, primary_chunks):
         referenced_files = self._collect_referenced_files(primary_chunks)
@@ -189,6 +448,7 @@ class Retriever:
             candidates,
             self.supplementary_k,
             return_diagnostics=False,
+            retrieval_preferences=None,
         )
 
         return {
