@@ -1,0 +1,9 @@
+/psi/home/ext-nobile_a/rag-scientific-code-agent/.venv/lib/python3.11/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language(path, name) is deprecated. Use Language(ptr, name) instead.
+  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
+Traceback (most recent call last):
+  File "/psi/home/ext-nobile_a/rag-scientific-code-agent/main.py", line 721, in <module>
+    main()
+  File "/psi/home/ext-nobile_a/rag-scientific-code-agent/main.py", line 698, in main
+    query = input("Query: ")
+            ^^^^^^^^^^^^^^^^
+EOFError: EOF when reading a line
