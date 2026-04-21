@@ -22,7 +22,7 @@ The main target use cases are questions like:
 
 - What does `Ippl.h` do?
 - Where is `deleteAllBuffers` implemented?
-- What does the `Communicate` module do?
+- Which numerical method do we use to generate simulation XY?
 - How does FFT work in IPPL?
 
 ## Current Architecture
