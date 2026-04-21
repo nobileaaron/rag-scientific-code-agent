@@ -27,11 +27,20 @@ class CppFunctionChunker:
 
         return chunks
 
+    def _prepend_leading_comment(self, function):
+        comment = (function.get("leading_comment") or "").strip()
+        code = function.get("code") or ""
+        if not comment:
+            return code
+        if code.lstrip().startswith(comment.strip()):
+            return code
+        return comment + "\n\n" + code
+
     def chunk_functions(self, functions):
         chunks = []
 
         for function in functions:
-            split_chunks = self._split_function(function["code"])
+            split_chunks = self._split_function(self._prepend_leading_comment(function))
             file_path = function["file"]
             file_name = Path(file_path).name
             total_chunks = len(split_chunks)

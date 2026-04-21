@@ -1,5 +1,6 @@
 # ----- INGESTION -----
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -323,6 +324,7 @@ def build_vector_store_manifest(
         "raw_data_path": raw_data_path,
         "parser_type": parser_type,
         "max_chunk_size": max_chunk_size,
+        "chunker_version": "2.0-leading-comment-prepended",
         "embedding_backend": embedder.embedding_backend,
         "embedding_model": embedder.embedding_model_name,
         "chunk_explanation_prompt_mode": chunk_explanation_prompt_mode,
@@ -348,9 +350,21 @@ def build_vector_store_manifest(
     }
 
 
+def vector_store_rebuild_allowed():
+    return os.environ.get("RAG_ALLOW_REBUILD", "0") == "1"
+
+
 def load_persisted_vector_store(vector_store_dir, expected_manifest):
+    rebuild_allowed = vector_store_rebuild_allowed()
+
     if not VectorStore.persisted_files_exist(vector_store_dir):
-        return None
+        if rebuild_allowed:
+            return None
+        raise SystemExit(
+            f"No persisted vector store found at {vector_store_dir}. "
+            "Rebuilding is only enabled when running via `sbatch job.sh` "
+            "(set RAG_ALLOW_REBUILD=1 to build from `python main.py`)."
+        )
 
     vector_store, stored_manifest = VectorStore.load(vector_store_dir)
     prompt_signature_keys = {
@@ -377,12 +391,18 @@ def load_persisted_vector_store(vector_store_dir, expected_manifest):
             break
 
     if not manifest_matches:
-        print("Persisted vector store manifest does not match current settings. Rebuilding.")
         print("Stored manifest:")
         print(json.dumps(stored_manifest, indent=2))
         print("Expected manifest:")
         print(json.dumps(expected_manifest, indent=2))
-        return None
+        if rebuild_allowed:
+            print("Persisted vector store manifest does not match current settings. Rebuilding.")
+            return None
+        print(
+            "Persisted vector store manifest does not match current settings, "
+            "but rebuilding is only enabled when running via `sbatch job.sh`. "
+            "Reusing the persisted store as-is."
+        )
 
     print(f"Loaded persisted vector store from {vector_store_dir}.")
     return vector_store

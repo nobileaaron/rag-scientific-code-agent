@@ -112,4 +112,4 @@ for model_name in "${REQUIRED_OLLAMA_MODELS[@]}"; do
 done
 
 echo "Running main.py..."
-python -u main.py
+RAG_ALLOW_REBUILD=1 python -u main.py

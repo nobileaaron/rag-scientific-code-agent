@@ -72,6 +72,24 @@ class RetrievalDebugger:
         if supplementary_files:
             print(f"Supplementary files: {', '.join(supplementary_files)}")
 
+        noise_filter = diagnostics.get("noise_filter", {})
+        if noise_filter:
+            dropped_count = noise_filter.get("dropped_count", 0)
+            print(
+                f"Noise filter: dropped={dropped_count} "
+                f"query_mentions_tests={noise_filter.get('query_mentions_tests', False)} "
+                f"intent={noise_filter.get('intent', '')}"
+            )
+            for dropped in noise_filter.get("dropped", [])[: self.max_candidates]:
+                reasons = ", ".join(dropped.get("reasons", []))
+                print(
+                    f"  - {dropped.get('path', '')} "
+                    f"symbol={dropped.get('symbol_name', '')} "
+                    f"role={dropped.get('retrieval_role', '')} "
+                    f"level={dropped.get('entity_level', '')} "
+                    f"reasons=[{reasons}]"
+                )
+
         query_tokens = diagnostics.get("query_tokens", [])
         if query_tokens:
             print(f"Query tokens: {', '.join(query_tokens)}")

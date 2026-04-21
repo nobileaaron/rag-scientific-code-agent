@@ -195,45 +195,25 @@ class CallChainEntityBuilder:
         outgoing_lines = []
         for edge in outgoing_edges:
             callee_display = self._edge_callee_display(edge)
-            line = (
-                f"- {callee_display} "
-                f"[resolution={edge.get('resolution_type', '')}, "
-                f"confidence={edge.get('confidence', '')}]"
+            callee_keywords = self._edge_symbol_keywords(
+                edge.get("callee_symbol_id", ""),
+                explained_entities,
             )
-            callee_file_entity = file_level_by_path.get(edge.get("callee_file_path", ""))
-            callee_module_entity = module_level_by_key.get(edge.get("callee_module_key", ""))
-            callee_file_summary = self._short_summary(
-                callee_file_entity.get("generated_explanation", "") if callee_file_entity else ""
-            )
-            callee_module_summary = self._short_summary(
-                callee_module_entity.get("generated_explanation", "") if callee_module_entity else ""
-            )
-            if callee_file_summary:
-                line += f" | file_summary={callee_file_summary}"
-            if callee_module_summary:
-                line += f" | module_summary={callee_module_summary}"
+            line = f"- {callee_display}"
+            if callee_keywords:
+                line += f" | keywords={callee_keywords}"
             outgoing_lines.append(line)
 
         incoming_lines = []
         for edge in incoming_edges:
             caller_display = self._edge_caller_display(edge)
-            line = (
-                f"- {caller_display} "
-                f"[resolution={edge.get('resolution_type', '')}, "
-                f"confidence={edge.get('confidence', '')}]"
+            caller_keywords = self._edge_symbol_keywords(
+                edge.get("caller_symbol_id", ""),
+                explained_entities,
             )
-            caller_file_entity = file_level_by_path.get(edge.get("caller_file_path", ""))
-            caller_module_entity = module_level_by_key.get(edge.get("caller_module_key", ""))
-            caller_file_summary = self._short_summary(
-                caller_file_entity.get("generated_explanation", "") if caller_file_entity else ""
-            )
-            caller_module_summary = self._short_summary(
-                caller_module_entity.get("generated_explanation", "") if caller_module_entity else ""
-            )
-            if caller_file_summary:
-                line += f" | file_summary={caller_file_summary}"
-            if caller_module_summary:
-                line += f" | module_summary={caller_module_summary}"
+            line = f"- {caller_display}"
+            if caller_keywords:
+                line += f" | keywords={caller_keywords}"
             incoming_lines.append(line)
 
         outgoing_text = "\n".join(outgoing_lines) or "- none"
@@ -267,16 +247,19 @@ Incoming Calls:
         callee_parent_symbol = edge.get("callee_parent_symbol", "")
         if callee_symbol:
             if callee_parent_symbol:
-                return f"{callee_parent_symbol}::{callee_symbol}"
-            return callee_symbol
-        return edge.get("raw_call", "")
+                return self._clean_symbol_display(f"{callee_parent_symbol}::{callee_symbol}")
+            return self._clean_symbol_display(callee_symbol)
+        return self._clean_symbol_display(edge.get("raw_call", ""))
 
     def _edge_caller_display(self, edge):
         caller_symbol = edge.get("caller_symbol", "")
         caller_parent_symbol = edge.get("caller_parent_symbol", "")
         if caller_parent_symbol:
-            return f"{caller_parent_symbol}::{caller_symbol}"
-        return caller_symbol
+            return self._clean_symbol_display(f"{caller_parent_symbol}::{caller_symbol}")
+        return self._clean_symbol_display(caller_symbol)
+
+    def _clean_symbol_display(self, value):
+        return " ".join(str(value).split())
 
     def _aggregate_unique(self, nested_lists):
         values = []
@@ -304,6 +287,80 @@ Incoming Calls:
         if len(cleaned) <= self.summary_char_limit:
             return cleaned
         return cleaned[: self.summary_char_limit - 3] + "..."
+
+    def _edge_symbol_keywords(self, symbol_id, explained_entities):
+        if not symbol_id:
+            return ""
+
+        explanation = explained_entities.get(symbol_id, {}).get("generated_explanation", "")
+        role_text = self._extract_role_text(explanation)
+        return self._compact_keywords(role_text or explanation)
+
+    def _extract_role_text(self, explanation):
+        if not explanation:
+            return ""
+
+        markers = [
+            "### Role",
+            "## Role",
+            "**Role**",
+            "2. **Role**",
+            "2. Role",
+            "Role:",
+        ]
+        lower_explanation = explanation.lower()
+        starts = [
+            lower_explanation.find(marker.lower())
+            for marker in markers
+            if lower_explanation.find(marker.lower()) != -1
+        ]
+        if not starts:
+            return ""
+
+        start = min(starts)
+        section_text = explanation[start:]
+        stop_markers = [
+            "\n### ",
+            "\n## ",
+            "\n**",
+            "\n1. ",
+            "\n2. ",
+            "\n3. ",
+            "\n4. ",
+            "\n5. ",
+        ]
+        stops = [
+            section_text.find(marker, 1)
+            for marker in stop_markers
+            if section_text.find(marker, 1) != -1
+        ]
+        if stops:
+            section_text = section_text[: min(stops)]
+        return section_text
+
+    def _compact_keywords(self, text, max_words=12):
+        cleaned = " ".join(text.split())
+        if not cleaned:
+            return ""
+
+        replacements = {
+            "**": "",
+            "###": "",
+            "##": "",
+            "Role:": "",
+            "Role": "",
+            "2.": "",
+            "-": " ",
+            "`": "",
+        }
+        for old, new in replacements.items():
+            cleaned = cleaned.replace(old, new)
+
+        words = [word.strip(" ,.;:()[]{}") for word in cleaned.split()]
+        words = [word for word in words if word]
+        if not words:
+            return ""
+        return " ".join(words[:max_words])
 
     def _symbol_id(self, entity):
         file_path = entity.get("path", entity.get("file", ""))

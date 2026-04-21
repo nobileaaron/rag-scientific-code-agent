@@ -168,12 +168,90 @@ User Question:
 )
 
 
+retrieval_answer_v2_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            (
+                "You are an expert assistant for the IPPL (Independent Parallel Particle Layer) "
+                "scientific C++ codebase.\n\n"
+
+                "IPPL is a performance-portable toolkit for particle-mesh simulations. "
+                "It builds on Kokkos (portable parallelism across CPU/GPU), heFFTe "
+                "(distributed FFTs), and MPI. Questions will be about the code in this "
+                "repository; answer them using the retrieved context below.\n\n"
+
+                "GROUNDING RULES (STRICT):\n"
+                "1. Every factual claim in your answer must be traceable to a specific "
+                "retrieved chunk. If you cannot point to a chunk that supports a claim, "
+                "do not make the claim.\n"
+                "2. Do not fall back on general textbook knowledge about FFTs, PDEs, "
+                "numerical methods, or C++. If the retrieved context does not discuss it, "
+                "do not write about it.\n"
+                "3. If the retrieved context is insufficient to answer the question, "
+                "say so in one sentence, then list what the chunks DO cover. Do not "
+                "pad with speculation.\n"
+                "4. Prefer paraphrasing or directly quoting short phrases from the "
+                "'Generated Explanation' or 'Content' fields of each chunk.\n"
+                "5. Use the 'Key Symbols', 'Include Paths', and 'Referenced Files' "
+                "fields as supporting structural signals, not as primary evidence on "
+                "their own.\n\n"
+
+                "OUTPUT FORMAT (exactly two sections):\n\n"
+                "Answer:\n"
+                "A direct, technical answer to the user's question. Be specific. "
+                "Name the actual types, classes, files, and backends mentioned in "
+                "the retrieved context. Do not add an introduction or conclusion.\n\n"
+                "Evidence:\n"
+                "A short bullet list. Each bullet is 'path : symbol — one-line "
+                "paraphrase of what that chunk said'. Include 2-6 bullets. Only cite "
+                "chunks you actually used.\n\n"
+                "Do not add any other sections. Do not repeat the user question. "
+                "Do not summarize your own answer at the end.\n\n"
+
+                "EXAMPLE OF THE EXPECTED STYLE:\n"
+                "User Question: What does the Field module do?\n"
+                "Answer:\n"
+                "The Field module defines BareField, IPPL's core distributed field "
+                "data structure, along with halo-cell exchange and boundary-condition "
+                "handling for mesh-based quantities. BareField exposes getDomain, "
+                "getLayout, and getOwned accessors used by decomposition and solver "
+                "code.\n"
+                "Evidence:\n"
+                "- src/Field/BareField.h : BareField — core field class holding domain "
+                "and layout accessors used across IPPL.\n"
+                "- src/Field/HaloCells.hpp : HaloCells — manages ghost-region exchange "
+                "between distributed field partitions.\n"
+                "- src/Field/BcTypes.hpp : ExtrapolateFace, PeriodicFace — boundary-"
+                "condition application on field faces.\n"
+            ),
+        ),
+        (
+            "user",
+            """
+User Question:
+{question}
+
+Retrieved Context:
+{context}
+
+User Question (repeat):
+{question}
+
+Answer using ONLY the retrieved context, in exactly the two sections
+(Answer, Evidence) described in the system prompt.
+""",
+        ),
+    ]
+)
+
+
 file_level_explanation_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
             (
-                "You are an expert assistant for scientific C++ code and numerical methods. "
+                "You are an expert assistant for scientific C++ code and numerical methods.\n\n"
 
                 "This prompt is used during ingestion to explain one whole file from "
                 "structured facts gathered about that file. Use only the provided file "
@@ -184,7 +262,24 @@ file_level_explanation_prompt = ChatPromptTemplate.from_messages(
                 "a short explanation of the file's role, main abstractions, important "
                 "dependencies, and scientific or numerical relevance when visible. "
                 "Avoid repeating the same claim across sections. If the facts are "
-                "incomplete, say so clearly instead of inventing details."
+                "incomplete, say so clearly instead of inventing details.\n\n"
+
+                "CLASS FAMILIES AND SPECIALIZATIONS:\n"
+                "Many scientific C++ files define several specializations, overloads, "
+                "or tag-dispatched variants of the same template or class family "
+                "(for example a single header may declare FFT<CCTransform, ...>, "
+                "FFT<RCTransform, ...>, FFT<SineTransform, ...>, and so on). "
+                "When the Key Symbols list contains multiple entries that share a "
+                "common template/class name or a common prefix, describe the FAMILY, "
+                "not just one variant.\n"
+                "- In the Identity and Role sections, name the whole family and list "
+                "  the distinguishing tag types or specialization parameters.\n"
+                "- Do not pick a single specialization as if it were the whole file.\n"
+                "- If a base class (for example FFTBase) appears alongside specializations, "
+                "  say that the file defines both the base and its specializations.\n"
+                "- If the file also declares enums, tag classes, or backend selection "
+                "  helpers that configure the family (e.g. FFTComm, HeffteBackendType), "
+                "  mention them in Key Abstractions.\n"
             ),
         ),
         (
@@ -306,8 +401,11 @@ call_chain_explanation_prompt = ChatPromptTemplate.from_messages(
                 "Prefer describing what the central symbol appears to call, what calls "
                 "it, and what this suggests about its role in a workflow or local "
                 "execution path inside the IPPL (Independent Parallel Particle Layer) "
-                "codebase. If the relationships are incomplete or approximate, say so "
-                "clearly instead of inventing details."
+                "codebase. Incoming and outgoing call entries are intentionally compact: "
+                "treat each entry as a symbol name plus short role keywords, and do not "
+                "expand those keywords into unsupported long explanations. If the "
+                "relationships are incomplete or approximate, say so clearly instead of "
+                "inventing details."
             ),
         ),
         (
@@ -462,6 +560,8 @@ def get_prompt_template(prompt_mode):
         return entity_explanation_prompt
     if prompt_mode == "retrieval_answer":
         return retrieval_answer_prompt
+    if prompt_mode == "retrieval_answer_v2":
+        return retrieval_answer_v2_prompt
     if prompt_mode == "file_level":
         return file_level_explanation_prompt
     if prompt_mode == "file_level_fallback":
@@ -474,6 +574,7 @@ def get_prompt_template(prompt_mode):
     if prompt_mode not in {
         "general",
         "retrieval_answer",
+        "retrieval_answer_v2",
         "file_level",
         "file_level_fallback",
         "module_level",
@@ -481,6 +582,7 @@ def get_prompt_template(prompt_mode):
     }:
         raise ValueError(
             "Unsupported prompt mode: "
-            f"{prompt_mode}. Available modes: general, retrieval_answer, file_level, "
-            "file_level_fallback, module_level, call_chain"
+            f"{prompt_mode}. Available modes: general, retrieval_answer, "
+            "retrieval_answer_v2, file_level, file_level_fallback, module_level, "
+            "call_chain"
         )

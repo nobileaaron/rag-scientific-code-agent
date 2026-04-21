@@ -8,6 +8,11 @@ from sentence_transformers import SentenceTransformer
 
 
 class Embedder:
+    BGE_CODE_MODEL_NAMES = {"BAAI/bge-code-v1", "baai/bge-code-v1"}
+    BGE_CODE_QUERY_INSTRUCTION = (
+        "Given a natural language question about a scientific C++ codebase, "
+        "retrieve relevant code, symbol, file, module, or call-chain chunks."
+    )
     EMBEDDING_PROMPT_FALLBACKS = [
         None,
         {"generated_explanation": 1500, "code": 5000},
@@ -27,7 +32,13 @@ class Embedder:
         self.transformer_model_name = transformer_model_name
         self.transformer_model = None
         if self.backend == "sentence_transformer":
-            self.transformer_model = SentenceTransformer(self.transformer_model_name)
+            model_kwargs = {}
+            if self._is_bge_code_model():
+                model_kwargs["trust_remote_code"] = True
+            self.transformer_model = SentenceTransformer(
+                self.transformer_model_name,
+                **model_kwargs,
+            )
         self.file_extension_pattern = re.compile(
             r"\b[A-Za-z0-9_\-]+\.(?:cpp|hpp|h|md|rst|txt)\b",
             re.IGNORECASE,
@@ -46,7 +57,10 @@ class Embedder:
     def embed_chunks(self, chunks):
         if self.backend == "sentence_transformer":
             prompts = [self._build_chunk_embedding_prompt(chunk) for chunk in chunks]
-            return self.transformer_model.encode(prompts).tolist()
+            return self.transformer_model.encode(
+                prompts,
+                normalize_embeddings=True,
+            ).tolist()
         return self._ollama_embed(chunks)
 
     def _ollama_embed(self, chunks):
@@ -90,7 +104,14 @@ class Embedder:
     def query_embed(self, text):
         prompt = self._build_query_embedding_prompt(text)
         if self.backend == "sentence_transformer":
-            return self.transformer_model.encode([prompt])[0].tolist()
+            encode_kwargs = {}
+            if self._is_bge_code_model():
+                encode_kwargs["prompt"] = self._bge_code_query_prompt()
+            return self.transformer_model.encode(
+                [prompt],
+                normalize_embeddings=True,
+                **encode_kwargs,
+            )[0].tolist()
 
         response = ollama.embeddings(
             model=self.ollama_model,
@@ -140,6 +161,12 @@ Intent: {intent}
 Code:
 {text}
 """
+
+    def _is_bge_code_model(self):
+        return self.transformer_model_name in self.BGE_CODE_MODEL_NAMES
+
+    def _bge_code_query_prompt(self):
+        return f"<instruct>{self.BGE_CODE_QUERY_INSTRUCTION}\n<query>"
 
     def _extract_file_name(self, text):
         match = self.file_extension_pattern.search(text)

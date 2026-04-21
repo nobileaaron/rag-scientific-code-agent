@@ -16,12 +16,12 @@
     "chunk_explanation_pilot_limit": null
   },
   "embedding": {
-    "backend": "ollama",
+    "backend": "sentence_transformer",
     "ollama_model": "nomic-embed-text",
-    "sentence_transformer_model": "all-MiniLM-L6-v2"
+    "sentence_transformer_model": "BAAI/bge-code-v1"
   },
   "prompts": {
-    "answer_prompt_mode": "retrieval_answer",
+    "answer_prompt_mode": "retrieval_answer_v2",
     "chunk_explanation_prompt_mode": "general",
     "file_level_prompt_mode": "file_level",
     "file_level_fallback_prompt_mode": "file_level_fallback",
@@ -29,11 +29,11 @@
     "call_chain_prompt_mode": "call_chain"
   },
   "models": {
-    "answer_model": "qwen2.5-coder:7b",
-    "chunk_explanation_model": "qwen2.5-coder:7b",
-    "file_level_model": "qwen2.5-coder:7b",
-    "module_level_model": "qwen2.5-coder:7b",
-    "call_chain_model": "qwen2.5-coder:7b"
+    "answer_model": "qwen2.5-coder:32b-instruct-q4_K_M",
+    "chunk_explanation_model": "qwen2.5-coder:14b",
+    "file_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
+    "module_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
+    "call_chain_model": "qwen2.5-coder:32b-instruct-q4_K_M"
   },
   "strategies": {
     "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",

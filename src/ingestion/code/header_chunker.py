@@ -33,11 +33,20 @@ class HeaderChunker:
 
         return [chunk for chunk in chunks if chunk]
 
+    def _prepend_leading_comment(self, entity):
+        comment = (entity.get("leading_comment") or "").strip()
+        code = entity.get("code") or ""
+        if not comment:
+            return code
+        if code.lstrip().startswith(comment.strip()):
+            return code
+        return comment + "\n\n" + code
+
     def chunk_entities(self, entities):
         chunks = []
 
         for entity in entities:
-            split_chunks = self._split_code(entity["code"])
+            split_chunks = self._split_code(self._prepend_leading_comment(entity))
             file_path = entity["file"]
             file_name = Path(file_path).name
             total_chunks = len(split_chunks)

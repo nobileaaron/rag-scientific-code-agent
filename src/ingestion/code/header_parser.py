@@ -4,6 +4,34 @@ from pathlib import Path
 from src.ingestion.code.comment_extractor import CommentExtractor
 
 
+def attach_top_of_file_comment_to_primary(file_entities, file_leading_comment):
+    if not file_entities or not file_leading_comment:
+        return
+
+    primary = None
+    for entity in file_entities:
+        if entity.get("entity_type") not in {"class", "struct"}:
+            continue
+        if entity.get("symbol_name") == entity.get("base_name"):
+            primary = entity
+            break
+    if primary is None:
+        for entity in file_entities:
+            if entity.get("entity_type") in {"class", "struct"}:
+                primary = entity
+                break
+    if primary is None:
+        primary = file_entities[0]
+
+    existing = primary.get("leading_comment", "")
+    if existing and file_leading_comment in existing:
+        return
+    if existing:
+        primary["leading_comment"] = file_leading_comment + "\n\n" + existing
+    else:
+        primary["leading_comment"] = file_leading_comment
+
+
 class RegexHeaderParser:
     def __init__(self):
         self.comment_extractor = CommentExtractor()
@@ -35,6 +63,7 @@ class RegexHeaderParser:
                 continue
 
             content = file["content"]
+            file_entities = []
             seen_entities = set()
             for type_match in self.type_pattern.finditer(content):
                 block_start = type_match.start()
@@ -43,7 +72,7 @@ class RegexHeaderParser:
                 inherits = (type_match.group(3) or "").strip()
 
                 self._append_unique_entity(
-                    entities,
+                    file_entities,
                     seen_entities,
                     self._build_entity(
                         content=content,
@@ -59,16 +88,22 @@ class RegexHeaderParser:
                 )
 
                 self._extend_unique_entities(
-                    entities,
+                    file_entities,
                     seen_entities,
                     self._extract_members(file["path"], class_name, block_code)
                 )
 
             self._extend_unique_entities(
-                entities,
+                file_entities,
                 seen_entities,
                 self._extract_free_function_definitions(file["path"], content),
             )
+
+            file_leading_comment = self.comment_extractor.extract_top_of_file_comment(content)
+            if file_leading_comment:
+                attach_top_of_file_comment_to_primary(file_entities, file_leading_comment)
+
+            entities.extend(file_entities)
 
         return entities
 
@@ -250,6 +285,7 @@ class TreeSitterHeaderParser:
 
             content = file["content"]
             tree = self._parser.parse(content.encode("utf-8"))
+            file_entities = []
             seen_entities = set()
 
             for node in self._walk(tree.root_node):
@@ -258,16 +294,22 @@ class TreeSitterHeaderParser:
                     if entity is None:
                         continue
 
-                    self._append_unique_entity(entities, seen_entities, entity)
+                    self._append_unique_entity(file_entities, seen_entities, entity)
                     self._extend_unique_entities(
-                        entities,
+                        file_entities,
                         seen_entities,
                         self._extract_member_entities(content, file["path"], entity["name"], node),
                     )
                 elif node.type == "function_definition":
                     entity = self._extract_free_function_definition(content, file["path"], node)
                     if entity is not None:
-                        self._append_unique_entity(entities, seen_entities, entity)
+                        self._append_unique_entity(file_entities, seen_entities, entity)
+
+            file_leading_comment = self.comment_extractor.extract_top_of_file_comment(content)
+            if file_leading_comment:
+                attach_top_of_file_comment_to_primary(file_entities, file_leading_comment)
+
+            entities.extend(file_entities)
 
         return entities
 

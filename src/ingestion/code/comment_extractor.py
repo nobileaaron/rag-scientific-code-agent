@@ -2,6 +2,32 @@ class CommentExtractor:
     def __init__(self, max_blank_lines=1):
         self.max_blank_lines = max_blank_lines
 
+    def extract_top_of_file_comment(self, content):
+        lines = content.splitlines()
+        index = 0
+
+        while index < len(lines) and not lines[index].strip():
+            index += 1
+        if index >= len(lines):
+            return ""
+
+        first = lines[index].strip()
+        if first.startswith("//"):
+            start = index
+            while index < len(lines) and lines[index].strip().startswith("//"):
+                index += 1
+            block = [lines[i].strip() for i in range(start, index)]
+            return "\n".join(block).strip()
+        if first.startswith("/*"):
+            start = index
+            while index < len(lines) and "*/" not in lines[index]:
+                index += 1
+            if index >= len(lines):
+                return ""
+            block = [lines[i].rstrip() for i in range(start, index + 1)]
+            return "\n".join(block).strip()
+        return ""
+
     def extract_leading_comment(self, content, start_index):
         prefix_lines = content[:start_index].splitlines()
         if not prefix_lines:

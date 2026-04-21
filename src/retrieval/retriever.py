@@ -12,6 +12,23 @@ class Retriever:
     PRIMARY_SCORE_GAP_THRESHOLD = 8.0
     PRIMARY_SCORE_ABSOLUTE_FLOOR = 1.25
 
+    # Scopes/files treated as build or test infrastructure. These are dropped
+    # from the final retrieved context unless the query itself is about tests
+    # or the build system, because otherwise they displace real code chunks.
+    TEST_MODULE_SCOPES = frozenset({"test", "tests", "unit_test", "unit_tests"})
+    BUILD_FILE_NAMES = frozenset({"cmakelists.txt"})
+    TEST_QUERY_KEYWORDS = (
+        "test",
+        "tests",
+        "unit test",
+        "unit_test",
+        "unittest",
+        "cmake",
+        "cmakelists",
+        "build",
+        "integration test",
+    )
+
     def __init__(
         self,
         embedder,
@@ -95,7 +112,7 @@ class Retriever:
             query,
             primary_chunks,
         )
-        reranked["chunks"] = (
+        combined_chunks = (
             self._tag_chunks(primary_chunks, "primary")
             + self._tag_chunks(structural_result["chunks"], "structural_expansion")
             + self._tag_chunks(
@@ -103,6 +120,12 @@ class Retriever:
                 "supplementary",
             )
         )
+        filtered_chunks, filter_diagnostics = self._filter_noise_chunks(
+            combined_chunks,
+            query,
+            intent_result,
+        )
+        reranked["chunks"] = filtered_chunks
         reranked["diagnostics"]["candidate_count"] = len(candidates)
         reranked["diagnostics"]["semantic_candidate_count"] = len(semantic_candidates)
         reranked["diagnostics"]["exact_filename_candidate_count"] = len(exact_filename_candidates)
@@ -136,6 +159,7 @@ class Retriever:
         reranked["diagnostics"]["structural_expansion_reasons"] = structural_result["diagnostics"]["reasons"]
         reranked["diagnostics"]["supplementary_files"] = supplementary_result["files"]
         reranked["diagnostics"]["supplementary_chunk_count"] = len(supplementary_result["chunks"])
+        reranked["diagnostics"]["noise_filter"] = filter_diagnostics
         return reranked
 
     def _merge_candidates(self, semantic_candidates, *injected_candidate_groups):
@@ -497,3 +521,82 @@ class Retriever:
 
     def _tag_chunks(self, chunks, retrieval_role):
         return [{**chunk, "retrieval_role": retrieval_role} for chunk in chunks]
+
+    def _filter_noise_chunks(self, chunks, query, intent_result):
+        """Drop chunks that are structurally adjacent but unhelpful for the query.
+
+        Two classes of noise are handled here:
+
+        1. Build/test infrastructure (``test:*`` / ``unit_tests:*`` module
+           scopes, ``CMakeLists.txt`` files). These get pulled in by module
+           expansion because the test tree mirrors source module names, but
+           they displace real content when the user is asking about code
+           behavior rather than the build system. Dropped unless the query
+           explicitly mentions tests or cmake.
+
+        2. Call-chain supplementary chunks for ``module_overview`` queries.
+           Supplementary retrieval is seeded by files referenced from primary
+           chunks, which for module questions pulls in unrelated accessor
+           methods (e.g. ``BareField::getIndex``) just because FFT code calls
+           them. Those entries dilute the context without answering the
+           question.
+
+        Diagnostics record every drop so debug mode still shows what was cut.
+        """
+
+        query_mentions_tests = self._query_mentions_tests(query)
+        intent = intent_result.get("intent", "")
+        kept = []
+        dropped = []
+
+        for chunk in chunks:
+            drop_reasons = []
+
+            if not query_mentions_tests:
+                if self._is_test_scope_chunk(chunk):
+                    drop_reasons.append("test_scope_without_test_query")
+                if self._is_build_file_chunk(chunk):
+                    drop_reasons.append("build_file_without_test_query")
+
+            if (
+                intent == "module_overview"
+                and chunk.get("retrieval_role") == "supplementary"
+                and chunk.get("entity_level") == "call_chain_level"
+            ):
+                drop_reasons.append("call_chain_supplementary_for_module_overview")
+
+            if drop_reasons:
+                dropped.append(
+                    {
+                        "path": chunk.get("path", chunk.get("file", "")),
+                        "symbol_name": chunk.get(
+                            "symbol_name", chunk.get("function_name", "")
+                        ),
+                        "entity_level": chunk.get("entity_level", ""),
+                        "retrieval_role": chunk.get("retrieval_role", ""),
+                        "reasons": drop_reasons,
+                    }
+                )
+                continue
+
+            kept.append(chunk)
+
+        diagnostics = {
+            "query_mentions_tests": query_mentions_tests,
+            "intent": intent,
+            "dropped_count": len(dropped),
+            "dropped": dropped,
+        }
+        return kept, diagnostics
+
+    def _query_mentions_tests(self, query):
+        lowered = query.lower()
+        return any(keyword in lowered for keyword in self.TEST_QUERY_KEYWORDS)
+
+    def _is_test_scope_chunk(self, chunk):
+        module_scope = str(chunk.get("module_scope", "") or "").lower()
+        return module_scope in self.TEST_MODULE_SCOPES
+
+    def _is_build_file_chunk(self, chunk):
+        file_name = str(chunk.get("file_name", "") or "").lower()
+        return file_name in self.BUILD_FILE_NAMES

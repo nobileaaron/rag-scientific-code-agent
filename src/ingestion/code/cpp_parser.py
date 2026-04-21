@@ -4,6 +4,32 @@ from pathlib import Path
 from src.ingestion.code.comment_extractor import CommentExtractor
 
 
+def attach_top_of_file_comment_to_first_function(file_functions, file_leading_comment):
+    if not file_functions or not file_leading_comment:
+        return
+
+    primary = None
+    for function in file_functions:
+        if function.get("symbol_name") == function.get("base_name"):
+            primary = function
+            break
+    if primary is None:
+        for function in file_functions:
+            if function.get("class_name") == function.get("base_name"):
+                primary = function
+                break
+    if primary is None:
+        primary = file_functions[0]
+
+    existing = primary.get("leading_comment", "")
+    if existing and file_leading_comment in existing:
+        return
+    if existing:
+        primary["leading_comment"] = file_leading_comment + "\n\n" + existing
+    else:
+        primary["leading_comment"] = file_leading_comment
+
+
 class RegexParser:
     def __init__(self):
         self.comment_extractor = CommentExtractor()
@@ -39,11 +65,12 @@ class RegexParser:
         for file in files:
             content = file["content"]
             path = file["path"]
+            file_functions = []
 
             for match in self.function_pattern.finditer(content):
                 start_index = match.start()
                 function_code = self._extract_full_function(content, start_index)
-                functions.append(
+                file_functions.append(
                     {
                         "path": path,
                         "file": path,
@@ -70,6 +97,12 @@ class RegexParser:
                         "code": function_code,
                     }
                 )
+
+            file_leading_comment = self.comment_extractor.extract_top_of_file_comment(content)
+            if file_leading_comment:
+                attach_top_of_file_comment_to_first_function(file_functions, file_leading_comment)
+
+            functions.extend(file_functions)
 
         return functions
 
@@ -219,6 +252,7 @@ class TreeSitterParser:
             content = file["content"]
             path = file["path"]
             tree = self._parser.parse(bytes(content, "utf-8"))
+            file_functions = []
 
             for node in self._walk(tree.root_node):
                 if node.type != "function_definition":
@@ -226,7 +260,13 @@ class TreeSitterParser:
 
                 function_data = self._extract_function_from_node(content, path, node)
                 if function_data is not None:
-                    functions.append(function_data)
+                    file_functions.append(function_data)
+
+            file_leading_comment = self.comment_extractor.extract_top_of_file_comment(content)
+            if file_leading_comment:
+                attach_top_of_file_comment_to_first_function(file_functions, file_leading_comment)
+
+            functions.extend(file_functions)
 
         return functions
 
