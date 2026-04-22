@@ -22,14 +22,30 @@ FORCE_CLEAN_REBUILD="${FORCE_CLEAN_REBUILD:-1}"
 PYTHON_MODULE="${PYTHON_MODULE:-Python/3.11.11}"
 OLLAMA_HOME="${OLLAMA_HOME:-/data/user/ext-nobile_a/ollama}"
 OLLAMA_LOG="${OLLAMA_LOG:-$SCRIPT_DIR/ollama.log}"
+HF_CACHE_ROOT="${HF_CACHE_ROOT:-/data/user/ext-nobile_a/hf_cache}"
 
 module load "$PYTHON_MODULE"
 
 export PATH="$OLLAMA_HOME/bin:$PATH"
 export OLLAMA_MODELS="${OLLAMA_MODELS:-$OLLAMA_HOME/models}"
 
+mkdir -p "$HF_CACHE_ROOT"
+export HF_HOME="$HF_CACHE_ROOT"
+export HUGGINGFACE_HUB_CACHE="$HF_CACHE_ROOT/hub"
+export TRANSFORMERS_CACHE="$HF_CACHE_ROOT/transformers"
+
 cd "$SCRIPT_DIR"
 source .venv/bin/activate
+
+RAW_DATA_PATH="${RAW_DATA_PATH:-$SCRIPT_DIR/data/raw/ippl}"
+if [ ! -d "$RAW_DATA_PATH" ]; then
+    echo "Raw data directory not found at $RAW_DATA_PATH." >&2
+    echo "Clone the IPPL source tree there before submitting the job." >&2
+    exit 1
+fi
+
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
 
 if [ "$FORCE_CLEAN_REBUILD" = "1" ]; then
     echo "Forcing a clean rebuild of generated artifacts..."

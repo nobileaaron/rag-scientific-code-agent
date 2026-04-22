@@ -715,7 +715,11 @@ def main():
     print("Use ':debug on' or ':debug off' to toggle retrieval and prompt debugging.\n")
 
     while True:
-        query = input("Query: ")
+        try:
+            query = input("Query: ")
+        except EOFError:
+            print("\nNo interactive stdin available; exiting after artifact build.")
+            break
 
         if query.lower() in ["exit", "quit"]:
             break
