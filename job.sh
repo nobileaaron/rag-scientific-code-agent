@@ -29,10 +29,10 @@ module load "$PYTHON_MODULE"
 export PATH="$OLLAMA_HOME/bin:$PATH"
 export OLLAMA_MODELS="${OLLAMA_MODELS:-$OLLAMA_HOME/models}"
 
-mkdir -p "$HF_CACHE_ROOT"
+mkdir -p "$HF_CACHE_ROOT/hub"
 export HF_HOME="$HF_CACHE_ROOT"
 export HUGGINGFACE_HUB_CACHE="$HF_CACHE_ROOT/hub"
-export TRANSFORMERS_CACHE="$HF_CACHE_ROOT/transformers"
+unset TRANSFORMERS_CACHE
 
 cd "$SCRIPT_DIR"
 source .venv/bin/activate

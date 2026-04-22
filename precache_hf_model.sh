@@ -16,10 +16,10 @@ module load "$PYTHON_MODULE"
 cd "$SCRIPT_DIR"
 source .venv/bin/activate
 
-mkdir -p "$HF_CACHE_ROOT"
+mkdir -p "$HF_CACHE_ROOT/hub"
 export HF_HOME="$HF_CACHE_ROOT"
 export HUGGINGFACE_HUB_CACHE="$HF_CACHE_ROOT/hub"
-export TRANSFORMERS_CACHE="$HF_CACHE_ROOT/transformers"
+unset TRANSFORMERS_CACHE
 export MODEL_NAME
 
 echo "Pre-caching $MODEL_NAME into $HF_CACHE_ROOT ..."
