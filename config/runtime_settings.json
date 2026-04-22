@@ -16,7 +16,7 @@
     "chunk_explanation_pilot_limit": null
   },
   "embedding": {
-    "backend": "sentence_transformer",
+    "backend": "ollama",
     "ollama_model": "nomic-embed-text",
     "sentence_transformer_model": "BAAI/bge-code-v1"
   },
