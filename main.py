@@ -40,7 +40,7 @@ from src.retrieval.debugger import RetrievalDebugger
 
 # LLM
 from src.agent.llm_agent import LLMAgent
-from src.llm.llm_wrapper import LLMWrapper
+from src.llm.llm_wrapper import LLMWrapper, model_manifest_key
 
 # Prompt
 from src.prompts.prompt_templates import (
@@ -329,7 +329,7 @@ def build_vector_store_manifest(
         "embedding_model": embedder.embedding_model_name,
         "chunk_explanation_prompt_mode": chunk_explanation_prompt_mode,
         "chunk_explanation_prompt_signature": chunk_explanation_prompt_signature,
-        "chunk_explanation_model": chunk_explanation_model,
+        "chunk_explanation_model": model_manifest_key(chunk_explanation_model),
         "chunk_explanation_allowed_types": list(chunk_explanation_allowed_types),
         "chunk_explanation_min_content_length": chunk_explanation_min_content_length,
         "chunk_explanation_pilot_limit": chunk_explanation_pilot_limit,
@@ -337,15 +337,15 @@ def build_vector_store_manifest(
         "file_level_prompt_signature": file_level_prompt_signature,
         "file_level_fallback_prompt_mode": file_level_fallback_prompt_mode,
         "file_level_fallback_prompt_signature": file_level_fallback_prompt_signature,
-        "file_level_model": file_level_model,
+        "file_level_model": model_manifest_key(file_level_model),
         "file_level_entity_strategy": file_level_entity_strategy,
         "module_level_prompt_mode": module_level_prompt_mode,
         "module_level_prompt_signature": module_level_prompt_signature,
-        "module_level_model": module_level_model,
+        "module_level_model": model_manifest_key(module_level_model),
         "module_level_entity_strategy": module_level_entity_strategy,
         "call_chain_prompt_mode": call_chain_prompt_mode,
         "call_chain_prompt_signature": call_chain_prompt_signature,
-        "call_chain_model": call_chain_model,
+        "call_chain_model": model_manifest_key(call_chain_model),
         "call_chain_entity_strategy": call_chain_entity_strategy,
     }
 
@@ -528,7 +528,7 @@ def main():
         print("\nChunk explanation configuration:")
         print(f"Prompt mode: {chunk_explanation_prompt_mode}")
         print(f"Prompt signature: {chunk_explanation_prompt_signature}")
-        print(f"Model: {chunk_explanation_model}")
+        print(f"Model: {model_manifest_key(chunk_explanation_model)}")
         print(f"Allowed chunk types: {', '.join(chunk_explanation_allowed_types)}")
         print(f"Minimum content length: {chunk_explanation_min_content_length}")
         print(f"Pilot limit: {chunk_explanation_pilot_limit}\n")
@@ -589,7 +589,7 @@ def main():
         print(f"File-level prompt signature: {file_level_prompt_signature}")
         print(f"File-level fallback prompt mode: {file_level_fallback_prompt_mode}")
         print(f"File-level fallback prompt signature: {file_level_fallback_prompt_signature}")
-        print(f"File-level model: {file_level_model}")
+        print(f"File-level model: {model_manifest_key(file_level_model)}")
         print(f"File-level entity strategy: {file_level_entity_strategy}")
         file_level_entities = file_level_builder.build(
             project_structure,
@@ -613,7 +613,7 @@ def main():
         print("building module-level entities...")
         print(f"Module-level prompt mode: {module_level_prompt_mode}")
         print(f"Module-level prompt signature: {module_level_prompt_signature}")
-        print(f"Module-level model: {module_level_model}")
+        print(f"Module-level model: {model_manifest_key(module_level_model)}")
         print(f"Module-level entity strategy: {module_level_entity_strategy}")
         module_level_entities = module_level_builder.build(
             project_structure,
@@ -636,7 +636,7 @@ def main():
         print("building call-chain entities...")
         print(f"Call-chain prompt mode: {call_chain_prompt_mode}")
         print(f"Call-chain prompt signature: {call_chain_prompt_signature}")
-        print(f"Call-chain model: {call_chain_model}")
+        print(f"Call-chain model: {model_manifest_key(call_chain_model)}")
         print(f"Call-chain entity strategy: {call_chain_entity_strategy}")
         call_chain_entities = call_chain_builder.build(
             project_structure,

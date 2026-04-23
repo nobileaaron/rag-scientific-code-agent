@@ -5,6 +5,7 @@ faiss-cpu==1.13.0
 # LLM runtime
 langchain-community==0.4.1
 ollama==0.6.1
+anthropic==0.96.0
 
 # Embedding backends
 sentence-transformers==5.1.2

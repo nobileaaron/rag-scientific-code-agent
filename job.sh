@@ -47,6 +47,28 @@ fi
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
+ANTHROPIC_REQUIRED=$(python - "$SETTINGS_PATH" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as f:
+    settings = json.load(f)
+
+for entry in (settings.get("models") or {}).values():
+    if isinstance(entry, dict) and entry.get("provider") == "anthropic":
+        print("1")
+        break
+else:
+    print("0")
+PY
+)
+
+if [ "$ANTHROPIC_REQUIRED" = "1" ] && [ -z "${ANTHROPIC_API_KEY:-}" ]; then
+    echo "runtime_settings.json references an anthropic model, but ANTHROPIC_API_KEY is not set." >&2
+    echo "Export it before running sbatch (e.g. 'export ANTHROPIC_API_KEY=sk-...') so SLURM forwards it to the job." >&2
+    exit 1
+fi
+
 if [ "$FORCE_CLEAN_REBUILD" = "1" ]; then
     echo "Forcing a clean rebuild of generated artifacts..."
     rm -rf "$SCRIPT_DIR/embeddings/vector_store"
@@ -97,6 +119,13 @@ if settings.get("embedding", {}).get("backend") == "ollama":
     if embedding_model:
         models.append(embedding_model)
 
+def resolve_ollama_name(entry):
+    if isinstance(entry, str):
+        return entry
+    if isinstance(entry, dict) and entry.get("provider", "ollama") == "ollama":
+        return entry.get("name")
+    return None
+
 for key in (
     "answer_model",
     "chunk_explanation_model",
@@ -104,7 +133,7 @@ for key in (
     "module_level_model",
     "call_chain_model",
 ):
-    model_name = settings.get("models", {}).get(key)
+    model_name = resolve_ollama_name(settings.get("models", {}).get(key))
     if model_name and model_name not in models:
         models.append(model_name)
 
