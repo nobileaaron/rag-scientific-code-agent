@@ -1,0 +1,216 @@
+FORCE_CLEAN_REBUILD=0, reusing persisted artifacts when the manifest matches.
+Starting Ollama server...
+Waiting for Ollama to become ready...
+Ollama is ready.
+Checking configured Ollama models...
+Model already available: nomic-embed-text
+Model already available: qwen2.5-coder:32b-instruct-q4_K_M
+Model already available: qwen2.5-coder:14b
+Running evaluation over /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/eval_questions_v1.json...
+Loaded 113 evaluation questions from /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/eval_questions_v1.json.
+Loaded runtime settings from config/runtime_settings.json
+loading source files...
+Loaded 172 source files.
+loading documentation files...
+Loaded 66 documentation files.
+Stored manifest:
+{
+  "raw_data_path": "data/raw/ippl",
+  "parser_type": "tree_sitter",
+  "max_chunk_size": 400,
+  "chunker_version": "2.0-leading-comment-prepended",
+  "embedding_backend": "ollama",
+  "embedding_model": "nomic-embed-text",
+  "chunk_explanation_prompt_mode": "general",
+  "chunk_explanation_prompt_signature": "0f74488b34c09ab440b4c4a693bd37f566a56a2bd1cf4053b67c30bc32f566ca",
+  "chunk_explanation_model": "qwen2.5-coder:14b",
+  "chunk_explanation_allowed_types": [
+    "function_definition",
+    "method_definition",
+    "class",
+    "struct",
+    "section",
+    "paragraph",
+    "code_block"
+  ],
+  "chunk_explanation_min_content_length": 120,
+  "chunk_explanation_pilot_limit": null,
+  "file_level_prompt_mode": "file_level",
+  "file_level_prompt_signature": "cd5ccd556d68f11d9d32e6f584925ae266abfb47be3ddcc413f4be068baee954",
+  "file_level_fallback_prompt_mode": "file_level_fallback",
+  "file_level_fallback_prompt_signature": "2c092659a7f3b84b20cd8451185e3781ee44df1bf7d0c55ab0b94c1e69d155c0",
+  "file_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
+  "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",
+  "module_level_prompt_mode": "module_level",
+  "module_level_prompt_signature": "5cefd25eef7f8b09d17f4e74b93f6d392de6577794718629f2b8cf708be50ff7",
+  "module_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
+  "module_level_entity_strategy": "module_entities_from_descendant_files_v1",
+  "call_chain_prompt_mode": "call_chain",
+  "call_chain_prompt_signature": "5208fb296e181c7d05cb62730176efdc642b23e6d1776b60664cfcbeb4a4d400",
+  "call_chain_model": "qwen2.5-coder:32b-instruct-q4_K_M",
+  "call_chain_entity_strategy": "direct_call_neighborhood_v1",
+  "dimension": 768,
+  "metadata_count": 8013,
+  "vector_count": 8013
+}
+Expected manifest:
+{
+  "raw_data_path": "data/raw/ippl",
+  "parser_type": "tree_sitter",
+  "max_chunk_size": 400,
+  "chunker_version": "2.0-leading-comment-prepended",
+  "embedding_backend": "ollama",
+  "embedding_model": "nomic-embed-text",
+  "chunk_explanation_prompt_mode": "general",
+  "chunk_explanation_prompt_signature": "0f74488b34c09ab440b4c4a693bd37f566a56a2bd1cf4053b67c30bc32f566ca",
+  "chunk_explanation_model": "ollama:qwen2.5-coder:14b",
+  "chunk_explanation_allowed_types": [
+    "function_definition",
+    "method_definition",
+    "class",
+    "struct",
+    "section",
+    "paragraph",
+    "code_block"
+  ],
+  "chunk_explanation_min_content_length": 120,
+  "chunk_explanation_pilot_limit": null,
+  "file_level_prompt_mode": "file_level",
+  "file_level_prompt_signature": "cd5ccd556d68f11d9d32e6f584925ae266abfb47be3ddcc413f4be068baee954",
+  "file_level_fallback_prompt_mode": "file_level_fallback",
+  "file_level_fallback_prompt_signature": "2c092659a7f3b84b20cd8451185e3781ee44df1bf7d0c55ab0b94c1e69d155c0",
+  "file_level_model": "ollama:qwen2.5-coder:32b-instruct-q4_K_M",
+  "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",
+  "module_level_prompt_mode": "module_level",
+  "module_level_prompt_signature": "5cefd25eef7f8b09d17f4e74b93f6d392de6577794718629f2b8cf708be50ff7",
+  "module_level_model": "ollama:qwen2.5-coder:32b-instruct-q4_K_M",
+  "module_level_entity_strategy": "module_entities_from_descendant_files_v1",
+  "call_chain_prompt_mode": "call_chain",
+  "call_chain_prompt_signature": "5208fb296e181c7d05cb62730176efdc642b23e6d1776b60664cfcbeb4a4d400",
+  "call_chain_model": "ollama:qwen2.5-coder:32b-instruct-q4_K_M",
+  "call_chain_entity_strategy": "direct_call_neighborhood_v1"
+}
+Persisted vector store manifest does not match current settings, but rebuilding is only enabled when running via `sbatch job.sh`. Reusing the persisted store as-is.
+Loaded persisted vector store from embeddings/vector_store.
+Using persisted vector store with 8013 chunks from embeddings/vector_store.
+Configured models for this run:
+  answer_model: ollama:qwen2.5-coder:32b-instruct-q4_K_M
+  chunk_explanation_model: ollama:qwen2.5-coder:14b
+  file_level_model: ollama:qwen2.5-coder:32b-instruct-q4_K_M
+  module_level_model: ollama:qwen2.5-coder:32b-instruct-q4_K_M
+  call_chain_model: ollama:qwen2.5-coder:32b-instruct-q4_K_M
+[1/113] file_001 (file_purpose)
+[2/113] file_002 (file_purpose)
+[3/113] file_003 (file_purpose)
+[4/113] file_004 (file_purpose)
+[5/113] file_005 (file_purpose)
+[6/113] file_006 (file_purpose)
+[7/113] file_007 (file_purpose)
+[8/113] file_008 (file_purpose)
+[9/113] file_009 (file_purpose)
+[10/113] file_010 (file_purpose)
+[11/113] file_011 (file_purpose)
+[12/113] file_012 (file_purpose)
+[13/113] file_013 (file_purpose)
+[14/113] loc_001 (definition_location)
+[15/113] loc_002 (definition_location)
+[16/113] loc_003 (definition_location)
+[17/113] loc_004 (definition_location)
+[18/113] loc_005 (definition_location)
+[19/113] loc_006 (definition_location)
+[20/113] loc_007 (definition_location)
+[21/113] loc_008 (definition_location)
+[22/113] loc_009 (definition_location)
+[23/113] loc_010 (definition_location)
+[24/113] loc_011 (definition_location)
+[25/113] loc_012 (definition_location)
+[26/113] loc_013 (definition_location)
+[27/113] loc_014 (definition_location)
+[28/113] loc_015 (definition_location)
+[29/113] cls_001 (class_responsibility)
+[30/113] cls_002 (class_responsibility)
+[31/113] cls_003 (class_responsibility)
+[32/113] cls_004 (class_responsibility)
+[33/113] cls_005 (class_responsibility)
+[34/113] cls_006 (class_responsibility)
+[35/113] cls_007 (class_responsibility)
+[36/113] cls_008 (class_responsibility)
+[37/113] cls_009 (class_responsibility)
+[38/113] cls_010 (class_responsibility)
+[39/113] cls_011 (class_responsibility)
+[40/113] cls_012 (class_responsibility)
+[41/113] cls_013 (class_responsibility)
+[42/113] alg_001 (algorithm)
+[43/113] alg_002 (algorithm)
+[44/113] alg_003 (algorithm)
+[45/113] alg_004 (algorithm)
+[46/113] alg_005 (algorithm)
+[47/113] alg_006 (algorithm)
+[48/113] alg_007 (algorithm)
+[49/113] alg_008 (algorithm)
+[50/113] alg_009 (algorithm)
+[51/113] alg_010 (algorithm)
+[52/113] alg_011 (algorithm)
+[53/113] alg_012 (algorithm)
+[54/113] flow_001 (data_flow)
+[55/113] flow_002 (data_flow)
+[56/113] flow_003 (data_flow)
+[57/113] flow_004 (data_flow)
+[58/113] flow_005 (data_flow)
+[59/113] flow_006 (data_flow)
+[60/113] flow_007 (data_flow)
+[61/113] flow_008 (data_flow)
+[62/113] flow_009 (data_flow)
+[63/113] api_001 (api_usage)
+[64/113] api_002 (api_usage)
+[65/113] api_003 (api_usage)
+[66/113] api_004 (api_usage)
+[67/113] api_005 (api_usage)
+[68/113] api_006 (api_usage)
+[69/113] api_007 (api_usage)
+[70/113] api_008 (api_usage)
+[71/113] api_009 (api_usage)
+[72/113] api_010 (api_usage)
+[73/113] api_011 (api_usage)
+[74/113] api_012 (api_usage)
+[75/113] par_001 (parallelism_and_kokkos)
+[76/113] par_002 (parallelism_and_kokkos)
+[77/113] par_003 (parallelism_and_kokkos)
+[78/113] par_004 (parallelism_and_kokkos)
+[79/113] par_005 (parallelism_and_kokkos)
+[80/113] par_006 (parallelism_and_kokkos)
+[81/113] par_007 (parallelism_and_kokkos)
+[82/113] par_008 (parallelism_and_kokkos)
+[83/113] par_009 (parallelism_and_kokkos)
+[84/113] bc_001 (boundary_and_halo)
+[85/113] bc_002 (boundary_and_halo)
+[86/113] bc_003 (boundary_and_halo)
+[87/113] bc_004 (boundary_and_halo)
+[88/113] bc_005 (boundary_and_halo)
+[89/113] num_001 (numerical_meaning)
+[90/113] num_002 (numerical_meaning)
+[91/113] num_003 (numerical_meaning)
+[92/113] num_004 (numerical_meaning)
+[93/113] num_005 (numerical_meaning)
+[94/113] num_006 (numerical_meaning)
+[95/113] num_007 (numerical_meaning)
+[96/113] num_008 (numerical_meaning)
+[97/113] ex_001 (examples_and_miniapps)
+[98/113] ex_002 (examples_and_miniapps)
+[99/113] ex_003 (examples_and_miniapps)
+[100/113] ex_004 (examples_and_miniapps)
+[101/113] ex_005 (examples_and_miniapps)
+[102/113] ex_006 (examples_and_miniapps)
+[103/113] ex_007 (examples_and_miniapps)
+[104/113] build_001 (build_and_install)
+[105/113] build_002 (build_and_install)
+[106/113] build_003 (build_and_install)
+[107/113] build_004 (build_and_install)
+[108/113] build_005 (build_and_install)
+[109/113] test_001 (testing_and_workflow)
+[110/113] test_002 (testing_and_workflow)
+[111/113] test_003 (testing_and_workflow)
+[112/113] test_004 (testing_and_workflow)
+[113/113] test_005 (testing_and_workflow)
+
+Wrote 113 answers (0 failures) to /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/answers/eval_20260423T141904Z.json.
