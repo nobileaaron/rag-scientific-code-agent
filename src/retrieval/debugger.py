@@ -32,9 +32,37 @@ class RetrievalDebugger:
         if api_bearing_terms:
             print(f"API-bearing terms: {', '.join(api_bearing_terms)}")
 
+        data_flow_direction = diagnostics.get("data_flow_direction", "")
+        if data_flow_direction:
+            print(f"Data-flow direction: {data_flow_direction}")
+
+        data_flow_terms = diagnostics.get("data_flow_terms", [])
+        if data_flow_terms:
+            print(f"Data-flow terms: {', '.join(data_flow_terms)}")
+
+        comparison_subjects = diagnostics.get("comparison_subjects", [])
+        if comparison_subjects:
+            print(f"Comparison subjects: {', '.join(comparison_subjects)}")
+
         literal_api_candidate_count = diagnostics.get("literal_api_candidate_count", 0)
         if literal_api_candidate_count:
             print(f"Literal API candidate count: {literal_api_candidate_count}")
+
+        subject_file_candidate_count = diagnostics.get("subject_file_candidate_count", 0)
+        if subject_file_candidate_count:
+            print(f"Subject file candidate count: {subject_file_candidate_count}")
+
+        workflow_subject_candidate_count = diagnostics.get("workflow_subject_candidate_count", 0)
+        if workflow_subject_candidate_count:
+            print(f"Workflow subject candidate count: {workflow_subject_candidate_count}")
+
+        data_flow_candidate_count = diagnostics.get("data_flow_candidate_count", 0)
+        if data_flow_candidate_count:
+            print(f"Data-flow candidate count: {data_flow_candidate_count}")
+
+        comparison_candidate_count = diagnostics.get("comparison_candidate_count", 0)
+        if comparison_candidate_count:
+            print(f"Comparison candidate count: {comparison_candidate_count}")
 
         query_intent = diagnostics.get("query_intent", "")
         if query_intent:

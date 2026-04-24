@@ -4,6 +4,12 @@ class QueryIntentRouter:
         "location_lookup": {
             "structural_mode": "mode_1_minimal",
         },
+        "data_flow": {
+            "structural_mode": "mode_3_broad",
+        },
+        "comparison": {
+            "structural_mode": "mode_2_balanced",
+        },
         "symbol_explanation": {
             "structural_mode": "mode_2_balanced",
         },
@@ -96,6 +102,14 @@ class QueryIntentRouter:
             reasons.append("matched_location_keywords")
             return self._result("location_lookup", reasons, lowered, entity_target)
 
+        if self._looks_like_data_flow_query(lowered):
+            reasons.append("matched_data_flow_keywords")
+            return self._result("data_flow", reasons, lowered, entity_target)
+
+        if self._looks_like_comparison_query(lowered):
+            reasons.append("matched_comparison_keywords")
+            return self._result("comparison", reasons, lowered, entity_target)
+
         if self._contains_any(
             lowered,
             ("how does", "workflow", "pipeline", "process", "compute", "calculation", "call chain"),
@@ -137,6 +151,71 @@ class QueryIntentRouter:
 
     def _contains_any(self, lowered_query, phrases):
         return any(phrase in lowered_query for phrase in phrases)
+
+    def _looks_like_data_flow_query(self, lowered_query):
+        if self._contains_any(
+            lowered_query,
+            (
+                "flow from",
+                "flows from",
+                "back to particles",
+                "back to particle",
+                "grid to particles",
+                "grid to particle",
+                "particles to grid",
+                "particle to grid",
+                "field to particles",
+                "field to particle",
+                "transfer to particles",
+                "transfer from particles",
+                "interpolate to particles",
+                "interpolated to particles",
+                "gathered to particles",
+                "gather to particles",
+            ),
+        ):
+            return True
+
+        mentions_grid = any(
+            phrase in lowered_query
+            for phrase in ("grid", "field", "mesh")
+        )
+        mentions_particles = any(
+            phrase in lowered_query
+            for phrase in ("particle", "particles")
+        )
+        mentions_transfer = any(
+            phrase in lowered_query
+            for phrase in ("flow", "transfer", "interpolate", "gather", "scatter", "back")
+        )
+        mentions_solver = any(
+            phrase in lowered_query
+            for phrase in ("poisson", "solve", "solver")
+        )
+        return mentions_grid and mentions_particles and (mentions_transfer or mentions_solver)
+
+    def _looks_like_comparison_query(self, lowered_query):
+        mentions_compare = any(
+            phrase in lowered_query
+            for phrase in (
+                "tradeoff",
+                "tradeoffs",
+                "compare",
+                "comparison",
+                "different between",
+                "difference between",
+                "versus",
+                " vs ",
+            )
+        )
+        mentions_fft = "fft" in lowered_query
+        mentions_cg = any(
+            phrase in lowered_query
+            for phrase in (" cg ", "cg ", " cg", "conjugate gradient", "conjugate-gradient")
+        )
+        mentions_poisson = "poisson" in lowered_query
+        mentions_solver = "solver" in lowered_query or "solvers" in lowered_query
+        return mentions_compare and mentions_fft and mentions_cg and (mentions_poisson or mentions_solver)
 
     def _detect_entity_target(self, lowered_query):
         # Order matters here. We want the most specific user wording to win.

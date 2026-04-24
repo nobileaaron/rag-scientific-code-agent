@@ -57,6 +57,94 @@ class MetadataReranker:
     )
 
     TEST_MODULE_SCOPES = frozenset({"test", "tests", "unit_test", "unit_tests"})
+    DATA_FLOW_DIRECTION_TERMS = {
+        "grid_to_particles": (
+            "gather",
+            "gatherfromfield",
+            "particleattrib",
+            "cic",
+            "fillhalo",
+            "particles",
+            "particle",
+            "interpolation",
+        ),
+        "particles_to_grid": (
+            "scatter",
+            "scattertofield",
+            "particleattrib",
+            "cic",
+            "accumulatehalo",
+            "grid",
+            "field",
+            "interpolation",
+        ),
+    }
+    DATA_FLOW_QUERY_KEYWORDS = (
+        "flow from",
+        "flows from",
+        "transfer",
+        "interpolate",
+        "gather",
+        "scatter",
+        "back to particles",
+        "grid to particles",
+        "particles to grid",
+        "field to particles",
+    )
+    COMPARISON_QUERY_KEYWORDS = (
+        "tradeoff",
+        "tradeoffs",
+        "compare",
+        "comparison",
+        "difference between",
+        "different between",
+        "versus",
+        " vs ",
+    )
+    DESCRIPTIVE_SOLVER_PATTERNS = (
+        (
+            ("fft",),
+            ("open", "open-boundary", "open boundary"),
+            ("poisson",),
+            ("solver",),
+            "fftopenpoissonsolver",
+        ),
+        (
+            ("fft",),
+            ("truncated",),
+            ("green", "greens", "green's"),
+            ("periodic",),
+            ("poisson",),
+            ("solver",),
+            "ffttruncatedgreenperiodicpoissonsolver",
+        ),
+        (
+            ("fft",),
+            ("periodic",),
+            ("poisson",),
+            ("solver",),
+            "fftperiodicpoissonsolver",
+        ),
+        (
+            ("preconditioned",),
+            ("fem", "finite element", "finite-element"),
+            ("poisson",),
+            ("solver",),
+            "preconditionedfempoissonsolver",
+        ),
+        (
+            ("fem", "finite element", "finite-element"),
+            ("poisson",),
+            ("solver",),
+            "fempoissonsolver",
+        ),
+        (
+            ("cg", "conjugate gradient", "conjugate-gradient"),
+            ("poisson",),
+            ("solver",),
+            "poissoncg",
+        ),
+    )
 
     ENTITY_TARGET_WEIGHTS = {
         # Strong enough to overcome many exact-symbol collisions such as "FFT",
@@ -143,6 +231,9 @@ class MetadataReranker:
         exact_filenames = self.extract_exact_filenames(query)
         exact_symbols = self.extract_exact_symbols(query)
         api_bearing_terms = self.extract_api_bearing_terms(query)
+        data_flow_direction = self.extract_data_flow_direction(query)
+        data_flow_terms = self.extract_data_flow_terms(query, data_flow_direction)
+        comparison_subjects = self.extract_comparison_subjects(query)
         retrieval_preferences = retrieval_preferences or {}
 
         rescored_candidates = []
@@ -156,6 +247,9 @@ class MetadataReranker:
                 exact_filenames,
                 exact_symbols,
                 api_bearing_terms,
+                data_flow_terms,
+                data_flow_direction,
+                comparison_subjects,
                 chunk,
             )
             lexical_metadata_score = metadata_result["score"]
@@ -197,6 +291,9 @@ class MetadataReranker:
                     "exact_filenames": sorted(exact_filenames),
                     "exact_symbols": sorted(exact_symbols),
                     "api_bearing_terms": sorted(api_bearing_terms),
+                    "data_flow_direction": data_flow_direction,
+                    "data_flow_terms": sorted(data_flow_terms),
+                    "comparison_subjects": comparison_subjects,
                     "entity_target": retrieval_preferences.get("entity_target", ""),
                     "preferred_entity_levels": list(
                         retrieval_preferences.get("preferred_entity_levels", ())
@@ -217,6 +314,9 @@ class MetadataReranker:
         exact_filenames,
         exact_symbols,
         api_bearing_terms,
+        data_flow_terms,
+        data_flow_direction,
+        comparison_subjects,
         chunk,
     ):
         score = 0.0
@@ -227,6 +327,8 @@ class MetadataReranker:
         entity_level = str(chunk.get("entity_level", "")).lower()
         matched_api_terms = []
         api_term_score = 0.0
+        data_flow_term_score = 0.0
+        comparison_score = 0.0
 
         if exact_filenames and file_name in exact_filenames:
             score += 20.0
@@ -310,10 +412,53 @@ class MetadataReranker:
             ):
                 api_term_score -= 12.0
 
-        score += api_term_score
+        if data_flow_direction and data_flow_terms:
+            matched_data_flow_terms = self.match_data_flow_terms(chunk, data_flow_terms)
+            if matched_data_flow_terms:
+                data_flow_term_score += 7.0 * len(matched_data_flow_terms)
+                if "/particle/" in path:
+                    data_flow_term_score += 10.0
+                if "/interpolation/" in path:
+                    data_flow_term_score += 10.0
+                if symbol_name in {"gather", "scatter"}:
+                    data_flow_term_score += 10.0
+                if "gatherfromfield" in matched_data_flow_terms:
+                    data_flow_term_score += 10.0
+                if "/poissonsolvers/" in path and symbol_name == "solve":
+                    data_flow_term_score += 6.0
+
+            if "poisson" in normalized_query and "/maxwellsolvers/" in path:
+                data_flow_term_score -= 14.0
+
+        if comparison_subjects:
+            comparison_role = self.classify_comparison_subject(chunk, comparison_subjects)
+            if comparison_role == "fft":
+                comparison_score += 24.0
+                if "/poissonsolvers/" in path:
+                    comparison_score += 6.0
+            elif comparison_role == "cg":
+                comparison_score += 24.0
+                if "/poissonsolvers/" in path:
+                    comparison_score += 6.0
+            elif comparison_role == "baseline":
+                comparison_score += 12.0
+
+            if (
+                "fftperiodicpoissonsolver" in comparison_subjects
+                and (
+                    path.startswith("source:fft")
+                    or path.startswith("test:test/fft")
+                    or path.startswith("unit_tests:unit_tests/fft")
+                    or "/src/fft/" in path
+                )
+                and comparison_role != "fft"
+            ):
+                comparison_score -= 18.0
+
+        score += api_term_score + data_flow_term_score + comparison_score
         return {
             "score": score,
-            "api_term_score": api_term_score,
+            "api_term_score": api_term_score + data_flow_term_score + comparison_score,
             "matched_api_terms": matched_api_terms,
         }
 
@@ -414,8 +559,15 @@ class MetadataReranker:
 
     def extract_exact_symbols(self, query):
         symbols = set()
+        for match in self.namespaced_identifier_pattern.finditer(query):
+            full_symbol = match.group(0).lower()
+            symbols.add(full_symbol)
+            symbols.add(full_symbol.rsplit("::", 1)[-1])
+
         for raw_token in self.token_pattern.findall(query):
             token = raw_token.lower()
+            if not self._looks_like_exact_symbol_token(raw_token):
+                continue
             if token in self.query_stopwords:
                 continue
             if token in self.low_signal_tokens:
@@ -425,6 +577,8 @@ class MetadataReranker:
             if len(token) < 3:
                 continue
             symbols.add(token)
+
+        symbols.update(self._synthesize_descriptive_solver_symbols(query))
         return symbols
 
     def extract_api_bearing_terms(self, query):
@@ -459,6 +613,82 @@ class MetadataReranker:
 
         return api_terms
 
+    def extract_data_flow_direction(self, query):
+        lowered_query = query.lower()
+        if self._contains_particle_transfer_phrase(
+            lowered_query,
+            (
+                "back to particles",
+                "back to particle",
+                "grid to particles",
+                "grid to particle",
+                "field to particles",
+                "field to particle",
+                "mesh to particles",
+                "mesh to particle",
+                "to particles",
+                "to particle",
+            ),
+        ):
+            return "grid_to_particles"
+        if self._contains_particle_transfer_phrase(
+            lowered_query,
+            (
+                "particles to grid",
+                "particle to grid",
+                "particles to field",
+                "particle to field",
+                "to grid",
+                "to field",
+            ),
+        ):
+            return "particles_to_grid"
+        return ""
+
+    def extract_data_flow_terms(self, query, direction=""):
+        if not direction:
+            direction = self.extract_data_flow_direction(query)
+        if not direction:
+            return set()
+
+        terms = set(self.DATA_FLOW_DIRECTION_TERMS.get(direction, ()))
+        lowered_query = query.lower()
+        if "poisson" in lowered_query:
+            terms.update({"solve", "poisson", "electric", "field"})
+        return terms
+
+    def extract_comparison_subjects(self, query):
+        lowered_query = query.lower()
+        if not self._looks_like_comparison_query(lowered_query):
+            return []
+
+        subjects = []
+        mentions_fft = "fft" in lowered_query
+        mentions_cg = any(
+            phrase in lowered_query
+            for phrase in (" cg ", "cg ", " cg", "conjugate gradient", "conjugate-gradient")
+        )
+        mentions_poisson = "poisson" in lowered_query
+
+        if mentions_fft and mentions_poisson:
+            if any(phrase in lowered_query for phrase in ("open", "open-boundary", "open boundary")):
+                subjects.append("fftopenpoissonsolver")
+            elif any(
+                phrase in lowered_query
+                for phrase in ("truncated green", "truncated-green", "green periodic")
+            ):
+                subjects.append("ffttruncatedgreenperiodicpoissonsolver")
+            else:
+                subjects.append("fftperiodicpoissonsolver")
+
+        if mentions_cg and mentions_poisson:
+            subjects.append("poissoncg")
+
+        if mentions_poisson:
+            subjects.append("poisson")
+
+        return subjects
+
     def match_api_bearing_terms(self, chunk, api_terms):
         if not api_terms:
             return []
@@ -469,6 +699,86 @@ class MetadataReranker:
         )
         return matched_terms
 
+    def match_data_flow_terms(self, chunk, data_flow_terms):
+        if not data_flow_terms:
+            return []
+        searchable_text = self._build_chunk_search_text(chunk)
+        normalized_text = searchable_text.replace(" ", "")
+        matched_terms = []
+        for term in sorted(data_flow_terms):
+            normalized_term = str(term).lower()
+            if not normalized_term:
+                continue
+            if normalized_term in searchable_text or normalized_term in normalized_text:
+                matched_terms.append(normalized_term)
+        return matched_terms
+
+    def classify_comparison_subject(self, chunk, comparison_subjects):
+        if not comparison_subjects:
+            return ""
+
+        path = str(chunk.get("path", chunk.get("file", "")) or "").lower()
+        symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
+        file_name = str(chunk.get("file_name", "") or "").lower()
+        file_stem = file_name.rsplit(".", 1)[0] if "." in file_name else file_name
+        searchable_text = self._build_chunk_search_text(chunk)
+
+        if (
+            "fftperiodicpoissonsolver" in comparison_subjects
+            and (
+                "fftperiodicpoissonsolver" in path
+                or "fftperiodicpoissonsolver" in file_stem
+                or "fftperiodicpoissonsolver" in symbol_name
+                or "fftperiodicpoissonsolver" in searchable_text
+            )
+        ):
+            return "fft"
+
+        if (
+            "fftopenpoissonsolver" in comparison_subjects
+            and (
+                "fftopenpoissonsolver" in path
+                or "fftopenpoissonsolver" in file_stem
+                or "fftopenpoissonsolver" in symbol_name
+                or "fftopenpoissonsolver" in searchable_text
+            )
+        ):
+            return "fft"
+
+        if (
+            "ffttruncatedgreenperiodicpoissonsolver" in comparison_subjects
+            and (
+                "ffttruncatedgreenperiodicpoissonsolver" in path
+                or "ffttruncatedgreenperiodicpoissonsolver" in file_stem
+                or "ffttruncatedgreenperiodicpoissonsolver" in symbol_name
+                or "ffttruncatedgreenperiodicpoissonsolver" in searchable_text
+            )
+        ):
+            return "fft"
+
+        if (
+            "poissoncg" in comparison_subjects
+            and (
+                "poissoncg" in path
+                or "poissoncg" in file_stem
+                or "poissoncg" in symbol_name
+                or "poissoncg" in searchable_text
+            )
+        ):
+            return "cg"
+
+        if (
+            "poisson" in comparison_subjects
+            and (
+                path.endswith("/poisson.h")
+                or file_stem == "poisson"
+                or symbol_name == "poisson"
+            )
+        ):
+            return "baseline"
+
+        return ""
+
     def _extract_query_tokens(self, query):
         tokens = set()
         for raw_token in self.token_pattern.findall(query.lower()):
@@ -476,8 +786,50 @@ class MetadataReranker:
             tokens.update(self._split_metadata_tokens(raw_token))
         return {token for token in tokens if token}
 
+    def _looks_like_exact_symbol_token(self, raw_token):
+        token = raw_token.strip()
+        if not token:
+            return False
+        if "::" in token:
+            return True
+        if "-" in token:
+            return False
+        if "_" in token:
+            return True
+        if any(char.isdigit() for char in token):
+            return True
+        if token.isupper() and len(token) >= 2:
+            return True
+        if any(char.isupper() for char in token[1:]):
+            return True
+        return False
+
+    def _synthesize_descriptive_solver_symbols(self, query):
+        lowered_query = query.lower()
+        synthesized = set()
+
+        for pattern in self.DESCRIPTIVE_SOLVER_PATTERNS:
+            *required_groups, symbol_name = pattern
+            if all(any(phrase in lowered_query for phrase in group) for group in required_groups):
+                synthesized.add(symbol_name)
+
+        return synthesized
+
     def _looks_like_location_query(self, lowered_query):
         return any(keyword in lowered_query for keyword in self.LOCATION_QUERY_KEYWORDS)
+
+    def _looks_like_data_flow_query(self, lowered_query):
+        return any(keyword in lowered_query for keyword in self.DATA_FLOW_QUERY_KEYWORDS)
+
+    def _looks_like_comparison_query(self, lowered_query):
+        mentions_compare = any(keyword in lowered_query for keyword in self.COMPARISON_QUERY_KEYWORDS)
+        mentions_fft = "fft" in lowered_query
+        mentions_cg = any(
+            phrase in lowered_query
+            for phrase in (" cg ", "cg ", " cg", "conjugate gradient", "conjugate-gradient")
+        )
+        mentions_poisson = "poisson" in lowered_query or "solver" in lowered_query
+        return mentions_compare and mentions_fft and mentions_cg and mentions_poisson
 
     def _extract_lifecycle_actions(self, lowered_query):
         actions = set()
@@ -522,6 +874,16 @@ class MetadataReranker:
 
     def _query_mentions_tests(self, lowered_query):
         return any(keyword in lowered_query for keyword in self.TEST_QUERY_KEYWORDS)
+
+    def _contains_particle_transfer_phrase(self, lowered_query, phrases):
+        if any(phrase in lowered_query for phrase in phrases):
+            return True
+        mentions_particles = "particle" in lowered_query
+        mentions_grid = any(token in lowered_query for token in ("grid", "field", "mesh"))
+        mentions_transfer = any(
+            token in lowered_query for token in ("flow", "transfer", "interpolate", "gather", "scatter", "back")
+        )
+        return mentions_particles and mentions_grid and mentions_transfer
 
     def _is_test_scope_chunk(self, chunk):
         module_scope = str(chunk.get("module_scope", "") or "").lower()
