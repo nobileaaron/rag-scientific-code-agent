@@ -63,7 +63,9 @@ DOCUMENTATION_SECTION_EXPLANATIONS_PATH = (
 FILE_LEVEL_EXPLANATIONS_PATH = EXPLANATIONS_DIR / "file_level_explanations.json"
 MODULE_LEVEL_EXPLANATIONS_PATH = EXPLANATIONS_DIR / "module_level_explanations.json"
 CALL_CHAIN_LEVEL_EXPLANATIONS_PATH = EXPLANATIONS_DIR / "call_chain_level_explanations.json"
-SETTINGS_PATH = Path("config/runtime_settings.json")
+SETTINGS_PATH = Path(
+    os.environ.get("RUNTIME_SETTINGS_PATH", "config/runtime_settings.json")
+)
 
 
 def load_runtime_settings(settings_path):

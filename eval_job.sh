@@ -32,6 +32,7 @@ ulimit -c unlimited
 
 SCRIPT_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 SETTINGS_PATH="${SETTINGS_PATH:-$SCRIPT_DIR/config/runtime_settings.json}"
+EVAL_ANSWER_MODEL="${EVAL_ANSWER_MODEL:-qwen2.5:72b}"
 # Default to reuse-existing so evaluation pairs cleanly with the most recent
 # ingest run. Override to 1 if you want to regenerate artifacts here.
 FORCE_CLEAN_REBUILD="${FORCE_CLEAN_REBUILD:-0}"
@@ -60,6 +61,38 @@ unset TRANSFORMERS_CACHE
 cd "$SCRIPT_DIR"
 source .venv/bin/activate
 
+TEMP_SETTINGS_PATH="$(mktemp "$SCRIPT_DIR/.eval_runtime_settings.XXXXXX.json")"
+
+cleanup() {
+    if [ -n "${OLLAMA_PID:-}" ]; then
+        kill "$OLLAMA_PID" 2>/dev/null || true
+    fi
+    if [ -n "${TEMP_SETTINGS_PATH:-}" ] && [ -f "$TEMP_SETTINGS_PATH" ]; then
+        rm -f "$TEMP_SETTINGS_PATH"
+    fi
+}
+trap cleanup EXIT
+
+python - "$SETTINGS_PATH" "$TEMP_SETTINGS_PATH" "$EVAL_ANSWER_MODEL" <<'PY'
+import json
+import sys
+
+source_path, target_path, answer_model = sys.argv[1:4]
+
+with open(source_path, "r", encoding="utf-8") as f:
+    settings = json.load(f)
+
+settings.setdefault("models", {})
+settings["models"]["answer_model"] = answer_model
+
+with open(target_path, "w", encoding="utf-8") as f:
+    json.dump(settings, f, indent=2, ensure_ascii=False)
+    f.write("\n")
+PY
+
+export RUNTIME_SETTINGS_PATH="$TEMP_SETTINGS_PATH"
+EFFECTIVE_SETTINGS_PATH="$TEMP_SETTINGS_PATH"
+
 RAW_DATA_PATH="${RAW_DATA_PATH:-$SCRIPT_DIR/data/raw/ippl}"
 if [ ! -d "$RAW_DATA_PATH" ]; then
     echo "Raw data directory not found at $RAW_DATA_PATH." >&2
@@ -75,7 +108,7 @@ fi
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
-ANTHROPIC_REQUIRED=$(python - "$SETTINGS_PATH" <<'PY'
+ANTHROPIC_REQUIRED=$(python - "$EFFECTIVE_SETTINGS_PATH" <<'PY'
 import json
 import sys
 
@@ -110,13 +143,6 @@ echo "Starting Ollama server..."
 ollama serve >> "$OLLAMA_LOG" 2>&1 &
 OLLAMA_PID=$!
 
-cleanup() {
-    if [ -n "${OLLAMA_PID:-}" ]; then
-        kill "$OLLAMA_PID" 2>/dev/null || true
-    fi
-}
-trap cleanup EXIT
-
 echo "Waiting for Ollama to become ready..."
 for attempt in $(seq 1 60); do
     if ollama list >/dev/null 2>&1; then
@@ -133,7 +159,7 @@ fi
 
 echo "Checking configured Ollama models..."
 mapfile -t REQUIRED_OLLAMA_MODELS < <(
-python - "$SETTINGS_PATH" <<'PY'
+python - "$EFFECTIVE_SETTINGS_PATH" <<'PY'
 import json
 import sys
 
@@ -169,6 +195,9 @@ for model_name in models:
     print(model_name)
 PY
 )
+
+echo "Evaluation answer model override: $EVAL_ANSWER_MODEL"
+echo "Effective runtime settings: $EFFECTIVE_SETTINGS_PATH"
 
 for model_name in "${REQUIRED_OLLAMA_MODELS[@]}"; do
     if [ -z "$model_name" ]; then
