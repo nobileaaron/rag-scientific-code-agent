@@ -10,10 +10,10 @@
 #SBATCH --account=gwendolen
 #SBATCH --gpus=1
 
-# Runs the evaluation question set from docs/evaluations/eval_questions_v1.json
+# Runs the evaluation question set from docs/evaluations/eval_questions_v2.json
 # through the same RAG pipeline used for interactive QA, and saves each
 # answer (together with a snapshot of the models + settings that produced it)
-# to docs/evaluations/answers/eval_<timestamp>.json.
+# to docs/evaluations/answers/eval_v2_<timestamp>.json.
 #
 # This mirrors the structure of job.sh: boots an Ollama server, pulls any
 # missing configured models, then invokes the evaluation runner instead of
@@ -35,8 +35,11 @@ SETTINGS_PATH="${SETTINGS_PATH:-$SCRIPT_DIR/config/runtime_settings.json}"
 # Default to reuse-existing so evaluation pairs cleanly with the most recent
 # ingest run. Override to 1 if you want to regenerate artifacts here.
 FORCE_CLEAN_REBUILD="${FORCE_CLEAN_REBUILD:-0}"
-EVAL_QUESTIONS_PATH="${EVAL_QUESTIONS_PATH:-$SCRIPT_DIR/docs/evaluations/eval_questions_v1.json}"
-EVAL_RUN_LABEL="${EVAL_RUN_LABEL:-}"
+EVAL_QUESTIONS_PATH="${EVAL_QUESTIONS_PATH:-$SCRIPT_DIR/docs/evaluations/eval_questions_v2.json}"
+EVAL_RUN_LABEL="${EVAL_RUN_LABEL:-v2}"
+if [ -z "${EVAL_OUTPUT_PATH:-}" ]; then
+    EVAL_OUTPUT_PATH="$SCRIPT_DIR/docs/evaluations/answers/eval_v2_$(date -u +%Y%m%dT%H%M%SZ).json"
+fi
 
 # Adjust these if your cluster environment changes later.
 PYTHON_MODULE="${PYTHON_MODULE:-Python/3.11.11}"
@@ -199,6 +202,7 @@ mkdir -p "$SCRIPT_DIR/docs/evaluations/answers"
 
 echo "Running evaluation over ${EVAL_QUESTIONS_PATH}..."
 export EVAL_QUESTIONS_PATH
+export EVAL_OUTPUT_PATH
 export EVAL_RUN_LABEL
 
 python -u scripts/run_rag_evaluation.py
