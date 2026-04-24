@@ -3,6 +3,61 @@ from pathlib import Path
 
 
 class MetadataReranker:
+    # Exact API-call matches matter disproportionately for location/lifecycle
+    # queries such as "Where is Kokkos initialized and finalized?". In those
+    # cases the user is usually looking for the concrete source location of a
+    # literal call site, not just thematically related infrastructure.
+    LOCATION_QUERY_KEYWORDS = (
+        "where",
+        "find",
+        "located",
+        "implemented",
+        "defined",
+        "initialize",
+        "initialized",
+        "initialise",
+        "initialised",
+        "finalize",
+        "finalized",
+        "finalise",
+        "finalised",
+        "setup",
+        "set up",
+        "teardown",
+        "tear down",
+    )
+
+    # These query phrases often refer to a concrete lifecycle call in code.
+    # We normalize them to the code spelling we expect to see inside chunks.
+    LIFECYCLE_ACTION_ALIASES = {
+        "initialize": "initialize",
+        "initialized": "initialize",
+        "initialise": "initialize",
+        "initialised": "initialize",
+        "finalize": "finalize",
+        "finalized": "finalize",
+        "finalise": "finalize",
+        "finalised": "finalize",
+        "setup": "setup",
+        "set up": "setup",
+        "teardown": "teardown",
+        "tear down": "teardown",
+    }
+
+    TEST_QUERY_KEYWORDS = (
+        "test",
+        "tests",
+        "unit test",
+        "unit_test",
+        "unittest",
+        "cmake",
+        "cmakelists",
+        "build",
+        "integration test",
+    )
+
+    TEST_MODULE_SCOPES = frozenset({"test", "tests", "unit_test", "unit_tests"})
+
     ENTITY_TARGET_WEIGHTS = {
         # Strong enough to overcome many exact-symbol collisions such as "FFT",
         # where dozens of symbol-level chunks share the same lexical signal but
@@ -34,6 +89,16 @@ class MetadataReranker:
             re.IGNORECASE,
         )
         self.token_pattern = re.compile(r"[A-Za-z0-9_./-]+")
+        self.identifier_pattern = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*\b")
+        self.namespaced_identifier_pattern = re.compile(
+            r"\b(?:[A-Za-z_][A-Za-z0-9_]*::)+[A-Za-z_][A-Za-z0-9_]*\b"
+        )
+        self.subject_before_action_pattern = re.compile(
+            r"\b(?P<subject>[A-Za-z_][A-Za-z0-9_:]*)\s+"
+            r"(?:is\s+)?"
+            r"(?P<action>initialized|initialised|finalized|finalised|setup|teardown)\b",
+            re.IGNORECASE,
+        )
         self.low_signal_tokens = {"h", "hpp", "cpp", "md", "rst", "txt"}
         self.query_stopwords = {
             "a",
@@ -77,6 +142,7 @@ class MetadataReranker:
         query_tokens = self._extract_query_tokens(query)
         exact_filenames = self.extract_exact_filenames(query)
         exact_symbols = self.extract_exact_symbols(query)
+        api_bearing_terms = self.extract_api_bearing_terms(query)
         retrieval_preferences = retrieval_preferences or {}
 
         rescored_candidates = []
@@ -84,13 +150,15 @@ class MetadataReranker:
             chunk = candidate["chunk"]
             distance = candidate["distance"]
             semantic_score = 1.0 / (1.0 + max(distance, 0.0))
-            lexical_metadata_score = self._metadata_score(
+            metadata_result = self._metadata_score(
                 normalized_query,
                 query_tokens,
                 exact_filenames,
                 exact_symbols,
+                api_bearing_terms,
                 chunk,
             )
+            lexical_metadata_score = metadata_result["score"]
             entity_target_score = self._entity_target_score(
                 chunk,
                 retrieval_preferences,
@@ -101,10 +169,13 @@ class MetadataReranker:
 
             rescored_candidates.append(
                 {
+                    **candidate,
                     "chunk": chunk,
                     "distance": distance,
                     "semantic_score": semantic_score,
                     "lexical_metadata_score": lexical_metadata_score,
+                    "api_term_score": metadata_result["api_term_score"],
+                    "matched_api_terms": metadata_result["matched_api_terms"],
                     "entity_target_score": entity_target_score,
                     "metadata_score": metadata_score,
                     "combined_score": combined_score,
@@ -125,6 +196,7 @@ class MetadataReranker:
                     "query_tokens": sorted(query_tokens),
                     "exact_filenames": sorted(exact_filenames),
                     "exact_symbols": sorted(exact_symbols),
+                    "api_bearing_terms": sorted(api_bearing_terms),
                     "entity_target": retrieval_preferences.get("entity_target", ""),
                     "preferred_entity_levels": list(
                         retrieval_preferences.get("preferred_entity_levels", ())
@@ -138,12 +210,23 @@ class MetadataReranker:
 
         return [candidate["chunk"] for candidate in top_candidates]
 
-    def _metadata_score(self, normalized_query, query_tokens, exact_filenames, exact_symbols, chunk):
+    def _metadata_score(
+        self,
+        normalized_query,
+        query_tokens,
+        exact_filenames,
+        exact_symbols,
+        api_bearing_terms,
+        chunk,
+    ):
         score = 0.0
         file_name = str(chunk.get("file_name", Path(chunk.get("file", "")).name)).lower()
         path = str(chunk.get("path", chunk.get("file", ""))).lower()
         symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", ""))).lower()
         source_type = str(chunk.get("source_type", "")).lower()
+        entity_level = str(chunk.get("entity_level", "")).lower()
+        matched_api_terms = []
+        api_term_score = 0.0
 
         if exact_filenames and file_name in exact_filenames:
             score += 20.0
@@ -193,7 +276,46 @@ class MetadataReranker:
         if exact_symbols and symbol_name in exact_symbols and source_type in {"cpp", "header"}:
             score += 2.0
 
-        return score
+        if self._looks_like_location_query(normalized_query) and api_bearing_terms:
+            matched_api_terms = self.match_api_bearing_terms(chunk, api_bearing_terms)
+            if matched_api_terms:
+                api_term_score += 14.0 * len(matched_api_terms)
+                # Reward chunks that cover the whole lifecycle requested by the
+                # user, e.g. both `Kokkos::initialize` and `Kokkos::finalize`.
+                if len(matched_api_terms) == len(api_bearing_terms) and len(api_bearing_terms) > 1:
+                    api_term_score += 10.0
+                if source_type == "cpp":
+                    api_term_score += 8.0
+                if "/src/" in path:
+                    api_term_score += 8.0
+                if source_type == "documentation":
+                    api_term_score -= 10.0
+                if entity_level == "function_level":
+                    api_term_score += 3.0
+                lifecycle_actions = {
+                    term.rsplit("::", 1)[-1]
+                    for term in api_bearing_terms
+                    if "::" in term
+                }
+                if symbol_name in lifecycle_actions:
+                    api_term_score += 6.0
+
+            # Test executables often contain the same API calls as the real
+            # source of truth. Penalize them for non-test location queries so
+            # literal test matches do not outrank the library/runtime path.
+            if (
+                matched_api_terms
+                and not self._query_mentions_tests(normalized_query)
+                and self._is_test_scope_chunk(chunk)
+            ):
+                api_term_score -= 12.0
+
+        score += api_term_score
+        return {
+            "score": score,
+            "api_term_score": api_term_score,
+            "matched_api_terms": matched_api_terms,
+        }
 
     def _entity_target_score(self, chunk, retrieval_preferences, exact_symbols):
         """Score how well a chunk matches an explicit entity-level request.
@@ -305,12 +427,117 @@ class MetadataReranker:
             symbols.add(token)
         return symbols
 
+    def extract_api_bearing_terms(self, query):
+        """Infer literal code terms worth rescuing into the candidate pool.
+
+        Examples:
+        - "Where is Kokkos initialized and finalized?" ->
+          {"kokkos::initialize", "kokkos::finalize"}
+        - "Where is Kokkos::initialize called?" ->
+          {"kokkos::initialize"}
+
+        These terms are intentionally narrower than generic query tokens. They
+        are used to recover exact call-site chunks that semantic retrieval can
+        miss when nearby lifecycle/setup files are semantically similar.
+        """
+
+        lowered_query = query.lower()
+        api_terms = {
+            match.group(0).lower()
+            for match in self.namespaced_identifier_pattern.finditer(query)
+        }
+
+        lifecycle_actions = self._extract_lifecycle_actions(lowered_query)
+        if not lifecycle_actions:
+            return api_terms
+
+        subjects = self._extract_lifecycle_subjects(query)
+        for subject in subjects:
+            normalized_subject = subject.lower()
+            for action in lifecycle_actions:
+                api_terms.add(f"{normalized_subject}::{action}")
+
+        return api_terms
+
+    def match_api_bearing_terms(self, chunk, api_terms):
+        if not api_terms:
+            return []
+
+        searchable_text = self._build_chunk_search_text(chunk)
+        matched_terms = sorted(
+            term for term in api_terms if term and term in searchable_text
+        )
+        return matched_terms
+
     def _extract_query_tokens(self, query):
         tokens = set()
         for raw_token in self.token_pattern.findall(query.lower()):
             tokens.add(raw_token)
             tokens.update(self._split_metadata_tokens(raw_token))
         return {token for token in tokens if token}
+
+    def _looks_like_location_query(self, lowered_query):
+        return any(keyword in lowered_query for keyword in self.LOCATION_QUERY_KEYWORDS)
+
+    def _extract_lifecycle_actions(self, lowered_query):
+        actions = set()
+        for phrase, canonical_action in self.LIFECYCLE_ACTION_ALIASES.items():
+            if phrase in lowered_query:
+                actions.add(canonical_action)
+        return actions
+
+    def _extract_lifecycle_subjects(self, query):
+        subjects = []
+        seen = set()
+
+        for match in self.subject_before_action_pattern.finditer(query):
+            subject = match.group("subject")
+            normalized_subject = subject.lower()
+            if normalized_subject in self.query_stopwords:
+                continue
+            if normalized_subject in seen:
+                continue
+            seen.add(normalized_subject)
+            subjects.append(subject)
+
+        if subjects:
+            return subjects
+
+        # Fallback: if the query mentions lifecycle language but not in a neat
+        # "X initialized" form, keep the first code-like capitalized token as
+        # the most likely API/library subject. This is intentionally conservative
+        # to avoid fabricating many namespace guesses from ordinary prose.
+        for token in self.identifier_pattern.findall(query):
+            if not token:
+                continue
+            if not token[0].isupper():
+                continue
+            normalized_token = token.lower()
+            if normalized_token in self.query_stopwords:
+                continue
+            subjects.append(token)
+            break
+
+        return subjects
+
+    def _query_mentions_tests(self, lowered_query):
+        return any(keyword in lowered_query for keyword in self.TEST_QUERY_KEYWORDS)
+
+    def _is_test_scope_chunk(self, chunk):
+        module_scope = str(chunk.get("module_scope", "") or "").lower()
+        return module_scope in self.TEST_MODULE_SCOPES
+
+    def _build_chunk_search_text(self, chunk):
+        search_fields = [
+            chunk.get("code", ""),
+            chunk.get("generated_explanation", ""),
+            chunk.get("path", chunk.get("file", "")),
+            chunk.get("file_name", ""),
+            chunk.get("symbol_name", chunk.get("function_name", "")),
+            chunk.get("function_name", ""),
+            chunk.get("leading_comment", ""),
+        ]
+        return "\n".join(str(field) for field in search_fields if field).lower()
 
     def _split_metadata_tokens(self, text):
         normalized_text = text.lower().replace("\\", "/")

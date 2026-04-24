@@ -28,6 +28,14 @@ class RetrievalDebugger:
         if exact_symbols:
             print(f"Exact symbols detected: {', '.join(exact_symbols)}")
 
+        api_bearing_terms = diagnostics.get("api_bearing_terms", [])
+        if api_bearing_terms:
+            print(f"API-bearing terms: {', '.join(api_bearing_terms)}")
+
+        literal_api_candidate_count = diagnostics.get("literal_api_candidate_count", 0)
+        if literal_api_candidate_count:
+            print(f"Literal API candidate count: {literal_api_candidate_count}")
+
         query_intent = diagnostics.get("query_intent", "")
         if query_intent:
             print(f"Query intent: {query_intent}")
@@ -59,6 +67,10 @@ class RetrievalDebugger:
                 f"gap_threshold={primary_score_gate.get('gap_threshold', 0.0):.3f} "
                 f"stop_reason={primary_score_gate.get('stop_reason', 'unknown')}"
             )
+
+        primary_selection_strategy = diagnostics.get("primary_selection_strategy", "")
+        if primary_selection_strategy:
+            print(f"Primary selection strategy: {primary_selection_strategy}")
 
         structural_mode = diagnostics.get("structural_expansion_mode", "")
         if structural_mode:
@@ -108,7 +120,8 @@ class RetrievalDebugger:
                 f"{rank}. combined={candidate['combined_score']:.3f} "
                 f"semantic={candidate['semantic_score']:.3f} "
                 f"target={candidate.get('entity_target_score', 0.0):.3f} "
-                f"metadata={candidate['metadata_score']:.3f}"
+                f"metadata={candidate['metadata_score']:.3f} "
+                f"api={candidate.get('api_term_score', 0.0):.3f}"
             )
             print(
                 f"   file={chunk.get('file_name', '')} "
@@ -116,6 +129,12 @@ class RetrievalDebugger:
                 f"symbol={chunk.get('symbol_name', chunk.get('function_name', ''))}"
             )
             print(f"   path={chunk.get('path', chunk.get('file', ''))}")
+            matched_api_terms = candidate.get("matched_api_terms", [])
+            if matched_api_terms:
+                print(f"   matched_api_terms={', '.join(matched_api_terms)}")
+            injection_reason = candidate.get("injection_reason", "")
+            if injection_reason:
+                print(f"   injection_reason={injection_reason}")
             print(f"   preview={preview}")
 
         filtered_candidates = diagnostics.get("primary_score_filtered_candidates", [])

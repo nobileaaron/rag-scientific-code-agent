@@ -73,7 +73,25 @@ class QueryIntentRouter:
 
         if self._contains_any(
             lowered,
-            ("where", "find", "located", "implemented", "defined"),
+            (
+                "where",
+                "find",
+                "located",
+                "implemented",
+                "defined",
+                "initialize",
+                "initialized",
+                "initialise",
+                "initialised",
+                "finalize",
+                "finalized",
+                "finalise",
+                "finalised",
+                "setup",
+                "set up",
+                "teardown",
+                "tear down",
+            ),
         ):
             reasons.append("matched_location_keywords")
             return self._result("location_lookup", reasons, lowered, entity_target)

@@ -58,6 +58,7 @@ class Retriever:
     def retrieve_with_diagnostics(self, query, k=5):
         exact_filenames = self.reranker.extract_exact_filenames(query)
         exact_symbols = self.reranker.extract_exact_symbols(query)
+        api_bearing_terms = self.reranker.extract_api_bearing_terms(query)
         intent_result = self.query_intent_router.route(
             query,
             exact_filenames=exact_filenames,
@@ -73,6 +74,11 @@ class Retriever:
         semantic_candidates = self.vector_store.search(query_embedding, candidate_count)
         exact_filename_candidates = self.vector_store.get_chunks_by_filenames(exact_filenames)
         exact_symbol_candidates = self.vector_store.get_chunks_by_symbols(exact_symbols)
+        literal_api_candidates = self._retrieve_literal_api_candidates(
+            api_bearing_terms,
+            query,
+            intent_result,
+        )
         target_aligned_candidates = self._retrieve_target_aligned_candidates(
             exact_symbols,
             retrieval_preferences,
@@ -81,6 +87,7 @@ class Retriever:
             semantic_candidates,
             exact_filename_candidates,
             exact_symbol_candidates,
+            literal_api_candidates,
             target_aligned_candidates,
         )
 
@@ -96,8 +103,15 @@ class Retriever:
             reranked["diagnostics"].get("reranked_candidates", []),
             k,
         )
+        primary_selected_candidates = self._refine_location_primary_candidates(
+            primary_candidate_selection["selected"],
+            reranked["diagnostics"].get("reranked_candidates", []),
+            k,
+            api_bearing_terms,
+            intent_result,
+        )
         primary_chunks = self._ensure_exact_filename_chunks(
-            [candidate["chunk"] for candidate in primary_candidate_selection["selected"]],
+            [candidate["chunk"] for candidate in primary_selected_candidates],
             exact_filenames,
             exact_symbols,
             k,
@@ -130,11 +144,13 @@ class Retriever:
         reranked["diagnostics"]["semantic_candidate_count"] = len(semantic_candidates)
         reranked["diagnostics"]["exact_filename_candidate_count"] = len(exact_filename_candidates)
         reranked["diagnostics"]["exact_symbol_candidate_count"] = len(exact_symbol_candidates)
+        reranked["diagnostics"]["api_bearing_terms"] = sorted(api_bearing_terms)
+        reranked["diagnostics"]["literal_api_candidate_count"] = len(literal_api_candidates)
         reranked["diagnostics"]["target_aligned_candidate_count"] = len(
             target_aligned_candidates
         )
         reranked["diagnostics"]["primary_selected_count"] = len(
-            primary_candidate_selection["selected"]
+            primary_selected_candidates
         )
         reranked["diagnostics"]["primary_score_filtered_count"] = len(
             primary_candidate_selection["filtered_out"]
@@ -144,6 +160,14 @@ class Retriever:
         ]
         reranked["diagnostics"]["primary_score_filtered_candidates"] = (
             primary_candidate_selection["filtered_out"]
+        )
+        reranked["diagnostics"]["primary_selection_strategy"] = (
+            "location_api_coverage"
+            if (
+                intent_result.get("intent") == "location_lookup"
+                and api_bearing_terms
+            )
+            else "score_gate"
         )
         reranked["diagnostics"]["query_intent"] = intent_result["intent"]
         reranked["diagnostics"]["query_intent_reasons"] = intent_result["reasons"]
@@ -161,6 +185,149 @@ class Retriever:
         reranked["diagnostics"]["supplementary_chunk_count"] = len(supplementary_result["chunks"])
         reranked["diagnostics"]["noise_filter"] = filter_diagnostics
         return reranked
+
+    def _refine_location_primary_candidates(
+        self,
+        selected_candidates,
+        reranked_candidates,
+        k,
+        api_bearing_terms,
+        intent_result,
+    ):
+        """Keep location-query primaries tightly centered on exact API evidence.
+
+        Without this refinement, the normal score gate can still keep nearby
+        helper/status functions such as `Environment::initialized` because they
+        lexically match words like "initialized" and "finalized". For a query
+        like "Where is Kokkos initialized and finalized?", that creates prompt
+        dilution even though the reranker already found the real `Ippl.cpp`
+        call sites.
+
+        Strategy:
+        - only activate for `location_lookup` queries with inferred API terms
+        - walk candidates in reranked order
+        - keep only candidates that literally match at least one requested API term
+        - stop as soon as the selected set covers all requested API terms
+
+        This keeps the final prompt focused on source-of-truth call sites
+        instead of padding with semantically nearby lifecycle helpers.
+        """
+
+        if intent_result.get("intent") != "location_lookup":
+            return selected_candidates
+        if not api_bearing_terms:
+            return selected_candidates
+
+        candidate_pool = []
+        seen_candidates = set()
+        for candidate in list(selected_candidates) + list(reranked_candidates):
+            candidate_key = self._chunk_key(candidate["chunk"])
+            if candidate_key in seen_candidates:
+                continue
+            seen_candidates.add(candidate_key)
+            candidate_pool.append(candidate)
+
+        prioritized_candidates = []
+        covered_terms = set()
+        seen_chunks = set()
+
+        for candidate in candidate_pool:
+            matched_api_terms = candidate.get("matched_api_terms", [])
+            if not matched_api_terms:
+                continue
+
+            chunk_key = self._chunk_key(candidate["chunk"])
+            if chunk_key in seen_chunks:
+                continue
+
+            seen_chunks.add(chunk_key)
+            prioritized_candidates.append(candidate)
+            covered_terms.update(matched_api_terms)
+
+            if covered_terms >= set(api_bearing_terms):
+                break
+            if len(prioritized_candidates) >= k:
+                break
+
+        if prioritized_candidates:
+            return prioritized_candidates[:k]
+
+        return selected_candidates
+
+    def _retrieve_literal_api_candidates(self, api_bearing_terms, query, intent_result):
+        """Inject exact call-site candidates for lifecycle/location queries.
+
+        Semantic retrieval is good at finding conceptually related files such
+        as environment/setup code, but it can still miss the one source file
+        that literally contains `Library::initialize` or `Library::finalize`.
+        This helper scans stored chunk text for those concrete API terms and
+        adds matching chunks back into the candidate pool before reranking.
+
+        The injection is intentionally narrow:
+        - only for location-style queries
+        - only when we inferred explicit API-bearing terms
+        - tests/build files stay excluded unless the query asks about them
+        """
+
+        if intent_result.get("intent") != "location_lookup":
+            return []
+        if not api_bearing_terms:
+            return []
+
+        query_mentions_tests = self._query_mentions_tests(query)
+        injected_candidates = []
+        seen_keys = set()
+
+        for chunk in self.vector_store.metadata:
+            if not query_mentions_tests:
+                if self._is_test_scope_chunk(chunk) or self._is_build_file_chunk(chunk):
+                    continue
+
+            matched_api_terms = self.reranker.match_api_bearing_terms(
+                chunk,
+                api_bearing_terms,
+            )
+            if not matched_api_terms:
+                continue
+
+            chunk_key = self._chunk_key(chunk)
+            if chunk_key in seen_keys:
+                continue
+            seen_keys.add(chunk_key)
+
+            # Use a moderate synthetic distance instead of 0.0. We want these
+            # candidates in the pool even when semantic search missed them, but
+            # we still want the reranker to decide among several exact matches
+            # using path/source/entity evidence instead of a perfect semantic
+            # score dominating everything.
+            coverage = len(matched_api_terms) / max(len(api_bearing_terms), 1)
+            distance = max(0.2, 0.85 - (0.35 * coverage))
+            if str(chunk.get("source_type", "")).lower() == "cpp":
+                distance = max(0.15, distance - 0.05)
+
+            injected_candidates.append(
+                {
+                    "chunk": chunk,
+                    "distance": distance,
+                    "injected": True,
+                    "injection_reason": "literal_api_match",
+                    "matched_api_terms": matched_api_terms,
+                }
+            )
+
+        injected_candidates.sort(
+            key=lambda candidate: (
+                candidate["distance"],
+                -len(candidate.get("matched_api_terms", [])),
+                str(
+                    candidate["chunk"].get(
+                        "path",
+                        candidate["chunk"].get("file", ""),
+                    )
+                ),
+            )
+        )
+        return injected_candidates[: max(self.candidate_k, 10)]
 
     def _merge_candidates(self, semantic_candidates, *injected_candidate_groups):
         merged_candidates = []
