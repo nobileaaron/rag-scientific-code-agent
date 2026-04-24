@@ -16,6 +16,16 @@ from src.prompts.prompt_templates import (
 
 
 class LLMAgent:
+    SUPPLEMENTARY_SUMMARY_LABEL_PRIORITY = (
+        "Role",
+        "Purpose",
+        "Main Idea",
+        "Data Flow",
+        "Numerical Meaning",
+    )
+    SUPPLEMENTARY_CODE_PREVIEW_MAX_CHARS = 260
+    SUPPLEMENTARY_CODE_PREVIEW_MAX_LINES = 6
+
     # These weights tune the final-context filter that runs after retrieval.
     # The goal is not to change retrieval itself, but to avoid sending obviously
     # weak chunks to the answering LLM when a better nearby chunk already covers
@@ -123,6 +133,21 @@ class LLMAgent:
                 file_path=file_path,
             )
 
+            if retrieval_role == "supplementary":
+                context_sections.append(
+                    self._build_supplementary_context_section(
+                        rank=rank,
+                        chunk=chunk,
+                        display_entity_level=display_entity_level,
+                        display_chunk_type=display_chunk_type,
+                        display_section_or_parameters=display_section_or_parameters,
+                        display_parent_symbol=display_parent_symbol,
+                        explanation_text=explanation_text,
+                        expansion_text=expansion_text,
+                    )
+                )
+                continue
+
             chunk_lines = [
                 f"### Retrieved Chunk {rank}",
                 f"Retrieval Role: {retrieval_role}",
@@ -177,6 +202,137 @@ class LLMAgent:
             context_sections.append("\n".join(chunk_lines))
 
         return "\n\n".join(context_sections)
+
+    def _build_supplementary_context_section(
+        self,
+        rank,
+        chunk,
+        display_entity_level,
+        display_chunk_type,
+        display_section_or_parameters,
+        display_parent_symbol,
+        explanation_text,
+        expansion_text,
+    ):
+        symbol_name = chunk.get("symbol_name", chunk.get("function_name", ""))
+        file_path = chunk.get("path", chunk.get("file", ""))
+        chunk_lines = [
+            f"### Retrieved Chunk {rank}",
+            "Retrieval Role: supplementary",
+            f"Entity Level: {display_entity_level}",
+            f"Symbol: {symbol_name or 'unknown'}",
+            f"Path: {file_path or 'unknown'}",
+        ]
+
+        if self._should_show_chunk_type(
+            display_chunk_type=display_chunk_type,
+            display_entity_level=display_entity_level,
+        ):
+            chunk_lines.append(f"Chunk Type: {display_chunk_type}")
+        if display_section_or_parameters:
+            chunk_lines.append(
+                f"Parameters / Section Path: {display_section_or_parameters}"
+            )
+        if expansion_text:
+            chunk_lines.append(f"Expansion Reason: {expansion_text}")
+        if display_parent_symbol:
+            chunk_lines.append(f"Parent Symbol: {display_parent_symbol}")
+
+        supplementary_summary = self._build_supplementary_summary(
+            chunk,
+            explanation_text=explanation_text,
+        )
+        if supplementary_summary:
+            chunk_lines.extend(
+                [
+                    "Supplementary Summary:",
+                    supplementary_summary,
+                ]
+            )
+
+        code_preview = self._build_supplementary_code_preview(chunk.get("code", ""))
+        if code_preview:
+            chunk_lines.extend(
+                [
+                    "Key Code Evidence:",
+                    code_preview,
+                ]
+            )
+
+        return "\n".join(chunk_lines)
+
+    def _build_supplementary_summary(self, chunk, explanation_text):
+        summary_parts = []
+        for label in self.SUPPLEMENTARY_SUMMARY_LABEL_PRIORITY:
+            section_text = self._extract_explanation_section(explanation_text, label)
+            sentence = self._first_meaningful_sentence(section_text)
+            if sentence and sentence not in summary_parts:
+                summary_parts.append(sentence)
+            if len(summary_parts) >= 2:
+                break
+
+        if not summary_parts:
+            leading_comment = str(chunk.get("leading_comment", "") or "").strip()
+            fallback_sentence = self._first_meaningful_sentence(leading_comment)
+            if fallback_sentence:
+                summary_parts.append(fallback_sentence)
+
+        if not summary_parts:
+            return ""
+
+        return " ".join(summary_parts)
+
+    def _extract_explanation_section(self, explanation_text, label):
+        if not explanation_text:
+            return ""
+
+        patterns = (
+            re.compile(
+                rf"(?:^|\n)#+\s*{re.escape(label)}:?\s*(.*?)(?=\n#+\s|\n\d+\.\s+\*\*|\Z)",
+                re.IGNORECASE | re.DOTALL,
+            ),
+            re.compile(
+                rf"(?:^|\n)\d+\.\s+\*\*{re.escape(label)}\*\*:\s*(.*?)(?=\n\d+\.\s+\*\*|\Z)",
+                re.IGNORECASE | re.DOTALL,
+            ),
+        )
+        for pattern in patterns:
+            match = pattern.search(explanation_text)
+            if match:
+                return match.group(1).strip()
+        return ""
+
+    def _first_meaningful_sentence(self, text):
+        collapsed = " ".join(str(text or "").split())
+        if not collapsed:
+            return ""
+
+        parts = re.split(r"(?<=[.!?])\s+", collapsed)
+        for part in parts:
+            candidate = part.strip(" -")
+            if len(candidate) < 20:
+                continue
+            return candidate
+        return collapsed
+
+    def _build_supplementary_code_preview(self, code):
+        code_lines = []
+        for raw_line in str(code or "").splitlines():
+            stripped = raw_line.strip()
+            if not stripped:
+                continue
+            if stripped.startswith("//"):
+                continue
+            code_lines.append(raw_line.rstrip())
+            if len(code_lines) >= self.SUPPLEMENTARY_CODE_PREVIEW_MAX_LINES:
+                break
+
+        preview = "\n".join(code_lines).strip()
+        if not preview:
+            return ""
+        if len(preview) > self.SUPPLEMENTARY_CODE_PREVIEW_MAX_CHARS:
+            return preview[: self.SUPPLEMENTARY_CODE_PREVIEW_MAX_CHARS - 3] + "..."
+        return preview
 
     def _filter_final_chunks(self, chunks):
         """Drop weak final-context chunks only when stronger nearby evidence exists.
