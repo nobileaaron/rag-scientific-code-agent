@@ -163,6 +163,40 @@ class MetadataReranker:
         "mismatched_entity_level": -8.0,
     }
 
+    API_USAGE_ENTITY_LEVEL_SCORES = {
+        "documentation_section_level": 10.0,
+        "function_level": 8.0,
+        "file_level": 6.0,
+        "call_chain_level": -14.0,
+        "module_level": -8.0,
+    }
+
+    API_USAGE_CHUNK_TYPE_SCORES = {
+        "code_block": 8.0,
+        "section": 5.0,
+        "paragraph": 3.0,
+        "function_declaration": 8.0,
+        "method_declaration": 8.0,
+        "function_definition": 6.0,
+        "method_definition": 6.0,
+        "file_level": 4.0,
+    }
+
+    LOW_SIGNAL_SYMBOL_NAMES = frozenset(
+        {
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "x",
+            "y",
+            "z",
+            "t",
+        }
+    )
+
     TRACKED_ENTITY_LEVELS = {
         "function_level",
         "file_level",
@@ -187,7 +221,15 @@ class MetadataReranker:
             r"(?P<action>initialized|initialised|finalized|finalised|setup|teardown)\b",
             re.IGNORECASE,
         )
-        self.low_signal_tokens = {"h", "hpp", "cpp", "md", "rst", "txt"}
+        self.low_signal_tokens = {
+            "h",
+            "hpp",
+            "cpp",
+            "md",
+            "rst",
+            "txt",
+            *self.LOW_SIGNAL_SYMBOL_NAMES,
+        }
         self.query_stopwords = {
             "a",
             "an",
@@ -205,6 +247,7 @@ class MetadataReranker:
             "function",
             "header",
             "how",
+            "i",
             "in",
             "is",
             "me",
@@ -251,6 +294,7 @@ class MetadataReranker:
                 data_flow_direction,
                 comparison_subjects,
                 chunk,
+                retrieval_preferences,
             )
             lexical_metadata_score = metadata_result["score"]
             entity_target_score = self._entity_target_score(
@@ -318,6 +362,7 @@ class MetadataReranker:
         data_flow_direction,
         comparison_subjects,
         chunk,
+        retrieval_preferences,
     ):
         score = 0.0
         file_name = str(chunk.get("file_name", Path(chunk.get("file", "")).name)).lower()
@@ -338,6 +383,9 @@ class MetadataReranker:
         file_name_tokens = self._split_metadata_tokens(file_name)
         path_tokens = self._split_metadata_tokens(path)
         symbol_tokens = self._split_metadata_tokens(symbol_name)
+        low_signal_symbol_name = self._is_low_signal_symbol_name(symbol_name)
+        if low_signal_symbol_name:
+            symbol_tokens = set()
 
         meaningful_query_tokens = query_tokens - self.low_signal_tokens
         meaningful_file_name_tokens = file_name_tokens - self.low_signal_tokens
@@ -350,7 +398,12 @@ class MetadataReranker:
 
         if exact_filenames and file_name in exact_filenames and file_name_overlap > 0:
             score += 4.0
-        if exact_symbols and symbol_name in exact_symbols and symbol_overlap > 0:
+        if (
+            exact_symbols
+            and symbol_name in exact_symbols
+            and symbol_overlap > 0
+            and not low_signal_symbol_name
+        ):
             score += 4.0
 
         score += 4.0 * file_name_overlap
@@ -373,12 +426,30 @@ class MetadataReranker:
 
         if file_name and file_name in normalized_query:
             score += 8.0
-        if symbol_name and symbol_name in normalized_query:
+        if (
+            symbol_name
+            and not low_signal_symbol_name
+            and self._query_mentions_symbol_name(normalized_query, symbol_name)
+        ):
             score += 8.0
-        if exact_symbols and symbol_name in exact_symbols and source_type in {"cpp", "header"}:
+        if (
+            exact_symbols
+            and symbol_name in exact_symbols
+            and source_type in {"cpp", "header"}
+            and not low_signal_symbol_name
+        ):
             score += 2.0
 
-        if self._looks_like_location_query(normalized_query) and api_bearing_terms:
+        if low_signal_symbol_name and symbol_name in query_tokens:
+            score -= 10.0
+
+        if (
+            (
+                self._looks_like_location_query(normalized_query)
+                or retrieval_preferences.get("intent") == "api_usage"
+            )
+            and api_bearing_terms
+        ):
             matched_api_terms = self.match_api_bearing_terms(chunk, api_bearing_terms)
             if matched_api_terms:
                 api_term_score += 14.0 * len(matched_api_terms)
@@ -386,7 +457,10 @@ class MetadataReranker:
                 # user, e.g. both `Kokkos::initialize` and `Kokkos::finalize`.
                 if len(matched_api_terms) == len(api_bearing_terms) and len(api_bearing_terms) > 1:
                     api_term_score += 10.0
-                if source_type == "cpp":
+                if (
+                    source_type == "cpp"
+                    and retrieval_preferences.get("intent") != "api_usage"
+                ):
                     api_term_score += 8.0
                 if "/src/" in path:
                     api_term_score += 8.0
@@ -394,6 +468,15 @@ class MetadataReranker:
                     api_term_score -= 10.0
                 if entity_level == "function_level":
                     api_term_score += 3.0
+                if retrieval_preferences.get("intent") == "api_usage":
+                    if source_type == "header":
+                        api_term_score += 10.0
+                    if entity_level == "file_level":
+                        api_term_score += 4.0
+                    if entity_level == "documentation_section_level":
+                        api_term_score += 6.0
+                    if entity_level == "call_chain_level":
+                        api_term_score -= 10.0
                 lifecycle_actions = {
                     term.rsplit("::", 1)[-1]
                     for term in api_bearing_terms
@@ -487,8 +570,14 @@ class MetadataReranker:
             for chunk_type in retrieval_preferences.get("preferred_chunk_types", ())
             if chunk_type
         }
+        intent = str(retrieval_preferences.get("intent", "") or "")
 
-        if not explicit_target and not preferred_entity_levels and not preferred_chunk_types:
+        if (
+            not explicit_target
+            and not preferred_entity_levels
+            and not preferred_chunk_types
+            and intent != "api_usage"
+        ):
             return 0.0
 
         entity_level = str(chunk.get("entity_level", "") or "")
@@ -505,6 +594,10 @@ class MetadataReranker:
 
         if preferred_chunk_types and chunk_type in preferred_chunk_types:
             score += self.ENTITY_TARGET_WEIGHTS["preferred_chunk_type"]
+
+        if intent == "api_usage":
+            score += self.API_USAGE_ENTITY_LEVEL_SCORES.get(entity_level, 0.0)
+            score += self.API_USAGE_CHUNK_TYPE_SCORES.get(chunk_type, 0.0)
 
         return score
 
@@ -694,8 +787,16 @@ class MetadataReranker:
             return []
 
         searchable_text = self._build_chunk_search_text(chunk)
+        identifier_text = self._build_chunk_identifier_text(chunk)
         matched_terms = sorted(
-            term for term in api_terms if term and term in searchable_text
+            term
+            for term in api_terms
+            if term
+            and self._api_term_matches_searchable_text(
+                term,
+                searchable_text,
+                identifier_text,
+            )
         )
         return matched_terms
 
@@ -804,6 +905,30 @@ class MetadataReranker:
             return True
         return False
 
+    def _query_mentions_symbol_name(self, normalized_query, symbol_name):
+        if self._is_low_signal_symbol_name(symbol_name):
+            return False
+        return re.search(rf"\b{re.escape(symbol_name)}\b", normalized_query) is not None
+
+    def _is_low_signal_symbol_name(self, symbol_name):
+        normalized = str(symbol_name or "").lower()
+        return normalized in self.LOW_SIGNAL_SYMBOL_NAMES
+
+    def _api_term_matches_searchable_text(self, term, searchable_text, identifier_text):
+        if term in searchable_text:
+            return True
+
+        if "::" not in term:
+            return False
+
+        subject, action = term.rsplit("::", 1)
+        if not subject or not action:
+            return False
+        if subject not in identifier_text:
+            return False
+
+        return re.search(rf"\b{re.escape(action)}\s*\(", searchable_text) is not None
+
     def _synthesize_descriptive_solver_symbols(self, query):
         lowered_query = query.lower()
         synthesized = set()
@@ -900,6 +1025,18 @@ class MetadataReranker:
             chunk.get("leading_comment", ""),
         ]
         return "\n".join(str(field) for field in search_fields if field).lower()
+
+    def _build_chunk_identifier_text(self, chunk):
+        identifier_fields = [
+            chunk.get("file_name", ""),
+            chunk.get("base_name", ""),
+            chunk.get("symbol_name", chunk.get("function_name", "")),
+            chunk.get("function_name", ""),
+            chunk.get("parent_symbol", ""),
+            chunk.get("module_key", ""),
+            chunk.get("module_path", ""),
+        ]
+        return "\n".join(str(field) for field in identifier_fields if field).lower()
 
     def _split_metadata_tokens(self, text):
         normalized_text = text.lower().replace("\\", "/")

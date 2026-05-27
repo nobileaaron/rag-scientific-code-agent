@@ -1,0 +1,160 @@
+Evaluation Questions v2
+=======================
+
+Source: docs/evaluations/eval_questions_v2.json
+Total questions: 100
+
+--------------------------------------------------------------------------------
+Category: algorithm (12 questions)
+--------------------------------------------------------------------------------
+
+alg_001: How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?
+alg_002: How does the FFT-based periodic Poisson solver work in IPPL?
+alg_003: How does the truncated Green periodic Poisson solver differ from the standard periodic one?
+alg_004: How does IPPL's CG solver iterate in the PCG.h implementation?
+alg_005: How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?
+alg_006: How does the standard FDTD solver advance the electromagnetic field in time?
+alg_007: How does the LagrangeSpace class evaluate degrees of freedom per element?
+alg_008: How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?
+alg_009: How does the orthogonal recursive bisection decide where to cut the domain?
+alg_010: How does inverse transform sampling generate particles from a given distribution in IPPL?
+alg_011: How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?
+alg_012: How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?
+
+--------------------------------------------------------------------------------
+Category: api_usage (12 questions)
+--------------------------------------------------------------------------------
+
+api_001: How do I create a 3D Field of doubles in IPPL?
+api_002: How do I construct a UniformCartesian mesh with custom spacing and origin?
+api_003: How do I attach a boundary condition (e.g. periodic) to a Field?
+api_004: How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?
+api_005: How do I call ippl::initialize and ippl::finalize in a main program?
+api_006: How do I set up and run a forward FFT on an IPPL Field?
+api_007: How do I construct an FFTPeriodicPoissonSolver and solve for the potential?
+api_008: How do I invoke the conjugate gradient Poisson solver on a Field?
+api_009: How do I sample particles from a normal distribution using IPPL Random utilities?
+api_010: How do I register particle attributes with ParticleBase so that they are communicated on migration?
+api_011: How do I access the MPI rank and size through the IPPL Communicator?
+api_012: How do I use IpplTimings to measure a region of code?
+
+--------------------------------------------------------------------------------
+Category: boundary_and_halo (5 questions)
+--------------------------------------------------------------------------------
+
+bc_001: What boundary condition types are provided in BcTypes.h?
+bc_002: How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?
+bc_003: How are ghost cells populated during a halo exchange?
+bc_004: How are physical-cell values copied into ghost cells for periodic boundary conditions?
+bc_005: How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?
+
+--------------------------------------------------------------------------------
+Category: build_and_install (5 questions)
+--------------------------------------------------------------------------------
+
+build_001: Which third-party libraries does IPPL depend on, and what are they used for?
+build_002: What C++ standard does IPPL require, and why?
+build_003: How is IPPL configured with CMake to enable a GPU build?
+build_004: What options does INSTALLATION.md describe for configuring Kokkos for IPPL?
+build_005: How do I install IPPL on the EULER cluster according to the documentation?
+
+--------------------------------------------------------------------------------
+Category: class_responsibility (13 questions)
+--------------------------------------------------------------------------------
+
+cls_001: What is the main responsibility of the BareField class?
+cls_002: What is the main responsibility of the Field class compared to BareField?
+cls_003: What does the FieldLayout class do and what are its main template parameters?
+cls_004: What is the purpose of the ParticleBase class and how is it meant to be used?
+cls_005: What does the ParticleSpatialLayout class do?
+cls_006: What is the responsibility of UniformCartesian?
+cls_007: What does the Mesh base class define?
+cls_008: What is the responsibility of the Communicator class in ippl::mpi?
+cls_009: What is the role of the Environment class in ippl::mpi?
+cls_010: What does the Archive class do in the Communicate module?
+cls_011: What is the role of the BConds class?
+cls_012: What is the role of the BaseManager class?
+cls_013: What does the Index class represent and what operations does it support?
+
+--------------------------------------------------------------------------------
+Category: data_flow (9 questions)
+--------------------------------------------------------------------------------
+
+flow_001: How does charge density flow from particles to the grid in a typical PIC step in IPPL?
+flow_002: How does the electric field flow from the grid back to particles after a Poisson solve?
+flow_003: How are halo cells exchanged between neighboring MPI ranks for a BareField?
+flow_004: How are particles migrated between MPI ranks by ParticleSpatialLayout?
+flow_005: How does FieldLayout decide which index ranges live on which rank?
+flow_006: How is a ParameterList used to configure the FFT and solver classes?
+flow_007: How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?
+flow_008: How does the FEM solver move data between fields and FEMVector representations?
+flow_009: How does OrthogonalRecursiveBisection redistribute particles after rebalancing?
+
+--------------------------------------------------------------------------------
+Category: definition_location (15 questions)
+--------------------------------------------------------------------------------
+
+loc_001: Where is FFT initialization implemented in IPPL?
+loc_002: Where does IPPL set up the MPI environment?
+loc_003: Where is Kokkos initialized and finalized inside IPPL?
+loc_004: Where is the orthogonal recursive bisection load balancer implemented?
+loc_005: Where are boundary conditions applied to a Field?
+loc_006: Where is the CIC (cloud-in-cell) scatter implemented?
+loc_007: Where is the CIC gather implemented?
+loc_008: Where is halo exchange for BareField implemented?
+loc_009: Where are the FFT-based open-boundary Poisson solver routines defined?
+loc_010: Where is the conjugate gradient solver algorithm implemented?
+loc_011: Where is the FEM Poisson solver implemented?
+loc_012: Where is the FDTD Maxwell solver base class defined?
+loc_013: Where is the LagrangeSpace class defined?
+loc_014: Where is the particle update routine (that moves particles across ranks) implemented?
+loc_015: Where are IPPL timers defined?
+
+--------------------------------------------------------------------------------
+Category: file_purpose (13 questions)
+--------------------------------------------------------------------------------
+
+file_001: What does Ippl.h do?
+file_002: What is the purpose of Ippl.cpp?
+file_003: What does FFT.hpp implement?
+file_004: What is BareField.h responsible for?
+file_005: What does Field.h add on top of BareField?
+file_006: What role does HaloCells.h play in IPPL?
+file_007: What is the purpose of FieldLayout.h?
+file_008: What does ParticleBase.h define?
+file_009: What is the purpose of ParticleSpatialLayout.h?
+file_010: What does ParticleAttrib.h implement?
+file_011: What is UniformCartesian.h for?
+file_012: What does OrthogonalRecursiveBisection.h do?
+file_013: What is the purpose of CIC.h in the Interpolation subsystem?
+
+--------------------------------------------------------------------------------
+Category: numerical_meaning (3 questions)
+--------------------------------------------------------------------------------
+
+num_001: What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?
+num_002: What is the physical meaning of the fields advanced by the FDTD solver?
+num_007: What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?
+
+--------------------------------------------------------------------------------
+Category: parallelism_and_kokkos (9 questions)
+--------------------------------------------------------------------------------
+
+par_001: How does IPPL achieve performance portability across CPUs and GPUs?
+par_002: Why does IPPL use Kokkos::View for field storage?
+par_003: How does IPPL parallelize loops over field indices using Kokkos RangePolicy?
+par_004: How does IPPL support mixed precision (float vs double) for fields?
+par_005: How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?
+par_006: What is the purpose of ParallelDispatch.h and what helpers does it expose?
+par_007: How does the Archive class serialize/deserialize Kokkos views for MPI transfer?
+par_008: How are MPI tags managed in IPPL to avoid collisions across subsystems?
+par_009: What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?
+
+--------------------------------------------------------------------------------
+Category: testing_and_workflow (4 questions)
+--------------------------------------------------------------------------------
+
+test_002: What naming conventions does WORKFLOW.md require for variables, constants, and member variables?
+test_003: When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?
+test_004: How does IPPL profile MPI calls using mpiP?
+test_005: What does the SLURM job template for Gwendolen in the README look like?

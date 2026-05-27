@@ -32,7 +32,7 @@ ulimit -c unlimited
 
 SCRIPT_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 SETTINGS_PATH="${SETTINGS_PATH:-$SCRIPT_DIR/config/runtime_settings.json}"
-EVAL_ANSWER_MODEL="${EVAL_ANSWER_MODEL:-qwen2.5:72b}"
+EVAL_ANSWER_MODEL="${EVAL_ANSWER_MODEL:-qwen2.5-coder:7b}"
 # Default to reuse-existing so evaluation pairs cleanly with the most recent
 # ingest run. Override to 1 if you want to regenerate artifacts here.
 FORCE_CLEAN_REBUILD="${FORCE_CLEAN_REBUILD:-0}"

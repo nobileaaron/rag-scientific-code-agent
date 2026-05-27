@@ -1,6 +1,9 @@
 class QueryIntentRouter:
     # adjust intent-to-expansion mapping here later if retrieval feels too narrow or too broad.
     INTENT_PROFILES = {
+        "api_usage": {
+            "structural_mode": "mode_api_usage",
+        },
         "location_lookup": {
             "structural_mode": "mode_1_minimal",
         },
@@ -76,6 +79,10 @@ class QueryIntentRouter:
         entity_target = self._detect_entity_target(lowered)
         if entity_target:
             reasons.append(f"matched_{entity_target}_keywords")
+
+        if self._looks_like_api_usage_query(lowered):
+            reasons.append("matched_api_usage_keywords")
+            return self._result("api_usage", reasons, lowered, entity_target)
 
         if self._contains_any(
             lowered,
@@ -217,6 +224,38 @@ class QueryIntentRouter:
         mentions_solver = "solver" in lowered_query or "solvers" in lowered_query
         return mentions_compare and mentions_fft and mentions_cg and (mentions_poisson or mentions_solver)
 
+    def _looks_like_api_usage_query(self, lowered_query):
+        if lowered_query.startswith(("how do i ", "how can i ", "how to ")):
+            return self._contains_any(
+                lowered_query,
+                (
+                    " call ",
+                    " use ",
+                    " construct ",
+                    " create ",
+                    " define ",
+                    " attach ",
+                    " set up ",
+                    " setup ",
+                    " run ",
+                    " pass ",
+                    " instantiate ",
+                    " initialize ",
+                    " finalize ",
+                ),
+            )
+
+        return self._contains_any(
+            lowered_query,
+            (
+                "example of using",
+                "example usage",
+                "usage example",
+                "what arguments do i pass",
+                "what arguments should i pass",
+            ),
+        )
+
     def _detect_entity_target(self, lowered_query):
         # Order matters here. We want the most specific user wording to win.
         # "call chain" should not be collapsed into generic symbol-level logic,
@@ -255,8 +294,30 @@ class QueryIntentRouter:
         return ""
 
     def _build_retrieval_preferences(self, lowered_query, entity_target):
+        if self._looks_like_api_usage_query(lowered_query):
+            return {
+                "intent": "api_usage",
+                "entity_target": entity_target,
+                "preferred_entity_levels": (
+                    "documentation_section_level",
+                    "function_level",
+                    "file_level",
+                ),
+                "preferred_chunk_types": (
+                    "code_block",
+                    "section",
+                    "paragraph",
+                    "function_definition",
+                    "method_definition",
+                    "function_declaration",
+                    "method_declaration",
+                    "file_level",
+                ),
+            }
+
         if not entity_target:
             return {
+                "intent": "",
                 "entity_target": "",
                 "preferred_entity_levels": (),
                 "preferred_chunk_types": (),
@@ -274,6 +335,7 @@ class QueryIntentRouter:
                     preferred_chunk_types.extend(chunk_types)
 
         return {
+            "intent": "",
             "entity_target": entity_target,
             "preferred_entity_levels": tuple(profile["preferred_entity_levels"]),
             "preferred_chunk_types": tuple(dict.fromkeys(preferred_chunk_types)),

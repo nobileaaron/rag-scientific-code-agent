@@ -191,10 +191,13 @@ class Retriever:
             primary_chunks,
             mode=intent_result["structural_mode"],
         )
-        supplementary_result = self._retrieve_supplementary_chunks(
-            query,
-            primary_chunks,
-        )
+        if intent_result.get("intent") == "api_usage":
+            supplementary_result = {"files": [], "chunks": []}
+        else:
+            supplementary_result = self._retrieve_supplementary_chunks(
+                query,
+                primary_chunks,
+            )
         combined_chunks = (
             self._tag_chunks(primary_chunks, "primary")
             + self._tag_chunks(structural_result["chunks"], "structural_expansion")
@@ -240,18 +243,22 @@ class Retriever:
             primary_candidate_selection["filtered_out"]
         )
         reranked["diagnostics"]["primary_selection_strategy"] = (
-            "location_api_coverage_plus_diversity"
-            if (
-                intent_result.get("intent") == "location_lookup"
-                and api_bearing_terms
-            )
+            "api_usage_signature_example_plus_diversity"
+            if intent_result.get("intent") == "api_usage"
             else (
-                "data_flow_role_coverage_plus_diversity"
-                if intent_result.get("intent") == "data_flow"
+                "location_api_coverage_plus_diversity"
+                if (
+                    intent_result.get("intent") == "location_lookup"
+                    and api_bearing_terms
+                )
                 else (
-                    "comparison_side_coverage_plus_diversity"
-                    if intent_result.get("intent") == "comparison"
-                    else "score_gate_plus_diversity"
+                    "data_flow_role_coverage_plus_diversity"
+                    if intent_result.get("intent") == "data_flow"
+                    else (
+                        "comparison_side_coverage_plus_diversity"
+                        if intent_result.get("intent") == "comparison"
+                        else "score_gate_plus_diversity"
+                    )
                 )
             )
         )
@@ -288,6 +295,7 @@ class Retriever:
             selected_candidates,
             reranked_candidates,
             k,
+            exact_symbols,
             api_bearing_terms,
             intent_result,
         )
@@ -306,6 +314,12 @@ class Retriever:
             comparison_subjects,
             intent_result,
         )
+        if (
+            intent_result.get("intent") == "api_usage"
+            and api_bearing_terms
+            and any(candidate.get("matched_api_terms") for candidate in refined_candidates)
+        ):
+            return refined_candidates[:k]
         if intent_result.get("intent") == "comparison":
             return refined_candidates[:k]
         return self._diversify_primary_candidates(
@@ -321,6 +335,7 @@ class Retriever:
         selected_candidates,
         reranked_candidates,
         k,
+        exact_symbols,
         api_bearing_terms,
         intent_result,
     ):
@@ -334,7 +349,7 @@ class Retriever:
         call sites.
 
         Strategy:
-        - only activate for `location_lookup` queries with inferred API terms
+        - activate for location/API-usage queries with inferred API terms
         - walk candidates in reranked order
         - keep only candidates that literally match at least one requested API term
         - stop as soon as the selected set covers all requested API terms
@@ -343,7 +358,7 @@ class Retriever:
         instead of padding with semantically nearby lifecycle helpers.
         """
 
-        if intent_result.get("intent") != "location_lookup":
+        if intent_result.get("intent") not in {"location_lookup", "api_usage"}:
             return selected_candidates
         if not api_bearing_terms:
             return selected_candidates
@@ -366,13 +381,27 @@ class Retriever:
         prioritized_candidates = []
         covered_terms = set()
         seen_chunks = set()
+        seen_api_symbol_groups = set()
 
         for candidate in candidate_pool:
+            chunk = candidate["chunk"]
             matched_api_terms = candidate.get("matched_api_terms", [])
             if not matched_api_terms:
                 continue
 
-            chunk_key = self._chunk_key(candidate["chunk"])
+            if intent_result.get("intent") == "api_usage":
+                symbol_group = (
+                    chunk.get("path", chunk.get("file", "")),
+                    str(
+                        chunk.get("symbol_name", chunk.get("function_name", ""))
+                        or ""
+                    ).lower(),
+                )
+                if symbol_group in seen_api_symbol_groups:
+                    continue
+                seen_api_symbol_groups.add(symbol_group)
+
+            chunk_key = self._chunk_key(chunk)
             if chunk_key in seen_chunks:
                 continue
 
@@ -380,7 +409,10 @@ class Retriever:
             prioritized_candidates.append(candidate)
             covered_terms.update(matched_api_terms)
 
-            if covered_terms >= set(api_bearing_terms):
+            if (
+                intent_result.get("intent") != "api_usage"
+                and covered_terms >= set(api_bearing_terms)
+            ):
                 break
             if len(prioritized_candidates) >= k:
                 break
@@ -759,7 +791,7 @@ class Retriever:
         - tests/build files stay excluded unless the query asks about them
         """
 
-        if intent_result.get("intent") != "location_lookup":
+        if intent_result.get("intent") not in {"location_lookup", "api_usage"}:
             return []
         if not api_bearing_terms:
             return []
@@ -1662,6 +1694,12 @@ class Retriever:
                 and chunk.get("entity_level") == "call_chain_level"
             ):
                 drop_reasons.append("call_chain_supplementary_for_module_overview")
+
+            if (
+                intent == "api_usage"
+                and chunk.get("entity_level") == "call_chain_level"
+            ):
+                drop_reasons.append("call_chain_for_api_usage")
 
             if drop_reasons:
                 dropped.append(

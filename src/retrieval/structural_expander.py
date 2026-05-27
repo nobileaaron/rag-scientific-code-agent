@@ -6,38 +6,57 @@ class StructuralExpander:
     DEFAULT_MODE = "mode_2_balanced"
 
     EXPANSION_PROFILES = {
-        "mode_1_minimal": {
-            "max_total_expansions": 4,
+        #api_usage:
+        "mode_api_usage": {
+            "max_total_expansions": 3,
             "function_to_file_level": True,
-            "function_to_call_chain": True,
+            "function_to_call_chain": False,
             "function_to_module_level": False,
-            "file_to_module_level": True,
-            "file_to_symbol_chunks": 1,
-            "module_to_file_level": 1,
+            "file_to_module_level": False,
+            "file_to_symbol_chunks": 0,
+            "module_to_file_level": 0,
             "call_chain_to_function": True,
             "call_chain_to_file_level": True,
             "call_chain_to_module_level": False,
         },
-        "mode_2_balanced": {
-            "max_total_expansions": 8,
+        #location_lookup
+        # Use this mode to get a broader understanding of where something lives:
+        # only alow function -> file -> module expansions
+
+        "mode_1_minimal": {
+            "max_total_expansions": 2,
             "function_to_file_level": True,
-            "function_to_call_chain": True,
+            "function_to_call_chain": False,
+            "function_to_module_level": False,
+            "file_to_module_level": True,
+            "file_to_symbol_chunks": 1,
+            "module_to_file_level": 1,
+            "call_chain_to_function": False,
+            "call_chain_to_file_level": False,
+            "call_chain_to_module_level": False,
+        },
+        #default, comparison, symbol_explanation, file_purpose, module overview
+        "mode_2_balanced": {
+            "max_total_expansions": 3,
+            "function_to_file_level": True,
+            "function_to_call_chain": False,
             "function_to_module_level": True,
             "file_to_module_level": True,
+            "file_to_symbol_chunks": 1,
+            "module_to_file_level": 2,
+            "call_chain_to_function": False,
+            "call_chain_to_file_level": False,
+            "call_chain_to_module_level": False,
+        },
+        #data_flow; workflow_explanation
+        "mode_3_broad": {
+            "max_total_expansions": 4,
+            "function_to_file_level": False,
+            "function_to_call_chain": False,
+            "function_to_module_level": False,
+            "file_to_module_level": False,
             "file_to_symbol_chunks": 2,
             "module_to_file_level": 2,
-            "call_chain_to_function": True,
-            "call_chain_to_file_level": True,
-            "call_chain_to_module_level": True,
-        },
-        "mode_3_broad": {
-            "max_total_expansions": 12,
-            "function_to_file_level": True,
-            "function_to_call_chain": True,
-            "function_to_module_level": True,
-            "file_to_module_level": True,
-            "file_to_symbol_chunks": 3,
-            "module_to_file_level": 3,
             "call_chain_to_function": True,
             "call_chain_to_file_level": True,
             "call_chain_to_module_level": True,

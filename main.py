@@ -286,14 +286,14 @@ def resolve_parser_type(preferred_parser_type):
     try:
         create_cpp_parser(preferred_parser_type)
         create_header_parser(preferred_parser_type)
-        return preferred_parser_type
     except ImportError as exc:
-        fallback_parser = "regex"
-        print(
+        raise RuntimeError(
             f"{preferred_parser_type} parser unavailable ({exc}). "
-            f"Falling back to {fallback_parser} parser."
-        )
-        return fallback_parser
+            "Install the tree-sitter dependencies from requirements.txt before "
+            "building the vector store."
+        ) from exc
+
+    return preferred_parser_type
 
 
 def build_vector_store_manifest(

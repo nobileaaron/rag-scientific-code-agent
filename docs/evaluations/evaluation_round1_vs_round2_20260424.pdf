@@ -1,0 +1,402 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+2 0 obj
+<< /Length 3370 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Evaluation 1 vs Evaluation 2  |  page 1/3) Tj
+T*
+T*
+(EVALUATION 1 VS EVALUATION 2) Tj
+T*
+() Tj
+T*
+(Generated: 2026-04-24 16:35:51 UTC) Tj
+T*
+() Tj
+T*
+(GOAL) Tj
+T*
+() Tj
+T*
+(This report compares the first and second evaluation rounds of the IPPL RAG system. The aim is to ) Tj
+T*
+(explain not only the score change, but also what changed in the question set and what ) Tj
+T*
+(retrieval/prompting work we did between the two runs.) Tj
+T*
+() Tj
+T*
+(RUNS COMPARED) Tj
+T*
+() Tj
+T*
+(Run | Answer file | Question set | Host | Job id | Questions | Correct | Partial | Incorrect | Avg ) Tj
+T*
+(score) Tj
+T*
+(--- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---:) Tj
+T*
+(Evaluation 1 | docs/evaluations/answers/eval_20260423T141904Z.json | ) Tj
+T*
+(docs/evaluations/eval_questions_v1.json | merlin-g-100.psi.ch | 352636 | 113 | 45 | 24 | 44 | 0.504) Tj
+T*
+(Evaluation 2 | docs/evaluations/answers/eval_v2_20260424T140027Z.json | ) Tj
+T*
+(docs/evaluations/eval_questions_v2.json | merlin-g-100.psi.ch | 352660 | 100 | 44 | 24 | 32 | 0.560) Tj
+T*
+() Tj
+T*
+(HIGH-LEVEL COMPARISON) Tj
+T*
+() Tj
+T*
+(- The average score increased from 0.504 to 0.560 \(+0.056\).) Tj
+T*
+(- The raw question count dropped from 113 to 100 because Evaluation 2 intentionally removed ) Tj
+T*
+(questions that depended on tests, mini-apps, and example source files.) Tj
+T*
+(- Correct answers moved from 45 to 44. That looks almost flat in absolute count, but the error count) Tj
+T*
+( dropped substantially because the question set became more on-scope for the current retrieval ) Tj
+T*
+(setup.) Tj
+T*
+(- This is not a pure apples-to-apples benchmark because Evaluation 2 changed the question set. It is) Tj
+T*
+( better read as: after focusing the benchmark on src/ plus documentation, how well does the system ) Tj
+T*
+(now perform?) Tj
+T*
+() Tj
+T*
+(WHAT CHANGED IN THE QUESTION SET) Tj
+T*
+() Tj
+T*
+(Evaluation 2 removed 13 questions from the original 113-question set.) Tj
+T*
+() Tj
+T*
+(Removed Category | Count) Tj
+T*
+(--- | ---:) Tj
+T*
+(examples_and_miniapps | 7) Tj
+T*
+(numerical_meaning | 5) Tj
+T*
+(testing_and_workflow | 1) Tj
+T*
+() Tj
+T*
+(The removed questions were concentrated in the areas that were least aligned with the stated V2 ) Tj
+T*
+(scope:) Tj
+T*
+() Tj
+T*
+(REMOVED: EXAMPLES_AND_MINIAPPS) Tj
+T*
+() Tj
+T*
+(- ex_001 ? Which files make up the LandauDamping mini-app and what is the role of each?) Tj
+T*
+(- ex_002 ? What does AlpineManager.h provide to the alpine examples?) Tj
+T*
+(- ex_003 ? What is the difference between LandauDamping.cpp and LandauDampingMixedPrecision.cpp?) Tj
+T*
+(- ex_004 ? How does LandauDampingCorrectness.cpp validate results against ) Tj
+T*
+(FieldLandau_valid_result.csv?) Tj
+T*
+(- ex_005 ? How does the PenningTrap example configure the particle container and field solver?) Tj
+T*
+(- ex_006 ? What command-line arguments does the BumponTailInstability example accept?) Tj
+T*
+(- ex_007 ? Where are the HelloWorld, BasicsFields, BasicsParticles, and BasicsFFT example files ) Tj
+T*
+(located?) Tj
+T*
+() Tj
+T*
+(REMOVED: NUMERICAL_MEANING) Tj
+T*
+() Tj
+T*
+(- num_003 ? What does the Landau damping example simulate physically?) Tj
+T*
+(- num_004 ? What plasma phenomenon does the bump-on-tail instability example demonstrate?) Tj
+T*
+(- num_005 ? What does the PenningTrap example simulate, and what forces act on the particles?) Tj
+T*
+ET
+endstream
+endobj
+3 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >>
+endobj
+4 0 obj
+<< /Length 3605 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Evaluation 1 vs Evaluation 2  |  page 2/3) Tj
+T*
+T*
+(- num_006 ? What does the cosmology StructureFormation mini-app model?) Tj
+T*
+(- num_008 ? What is the meaning of the load balancing threshold \(lbthres\) in the alpine mini-apps?) Tj
+T*
+() Tj
+T*
+(REMOVED: TESTING_AND_WORKFLOW) Tj
+T*
+() Tj
+T*
+(- test_001 ? How are IPPL unit tests organized and what do they parameterize over?) Tj
+T*
+() Tj
+T*
+(The core idea of V2 was to keep only questions that should be answerable from IPPL src/ code or ) Tj
+T*
+(repository documentation, and to drop questions whose best evidence lived in tests, mini-apps, or ) Tj
+T*
+(example files outside that scope.) Tj
+T*
+() Tj
+T*
+(WHAT WE WORKED ON BETWEEN THE TWO EVALUATIONS) Tj
+T*
+() Tj
+T*
+(LOCATION AND LIFECYCLE QUESTIONS) Tj
+T*
+() Tj
+T*
+(We worked on failures like ?Where is Kokkos initialized and finalized inside IPPL?? and related ) Tj
+T*
+(exact-location questions. The main change was to stop relying purely on semantic similarity and ) Tj
+T*
+(instead rescue exact API call sites directly.) Tj
+T*
+() Tj
+T*
+(ALGORITHM-SPECIFIC SOLVER QUESTIONS) Tj
+T*
+() Tj
+T*
+(We focused on questions like the FFT-based periodic/open-boundary Poisson solver prompts, where ) Tj
+T*
+(retrieval was drifting into generic FFT infrastructure instead of solver implementations.) Tj
+T*
+() Tj
+T*
+(DATA-FLOW QUESTIONS) Tj
+T*
+() Tj
+T*
+(We spent time on grid-to-particle and particle-to-grid handoff questions. The main theme was that ) Tj
+T*
+(these require cross-module evidence rather than more chunks from a single solver file.) Tj
+T*
+() Tj
+T*
+(COMPARISON QUESTIONS) Tj
+T*
+() Tj
+T*
+(We worked specifically on the FFT-vs-CG Poisson comparison case to make retrieval cover both solver ) Tj
+T*
+(families instead of flooding the prompt with FFT-only material.) Tj
+T*
+() Tj
+T*
+(PROMPT HYGIENE FOR SUPPLEMENTARY CONTEXT) Tj
+T*
+() Tj
+T*
+(We tightened how supplementary symbol-level chunks are rendered so they contribute only the most ) Tj
+T*
+(relevant support facts and a small code snippet, rather than a full second explanation block.) Tj
+T*
+() Tj
+T*
+(IMPLEMENTATION CHANGES) Tj
+T*
+() Tj
+T*
+(The most relevant changes between the two evaluations were:) Tj
+T*
+() Tj
+T*
+(- 0db9dba ? Created eval_job.sh so the evaluation can run non-interactively on gwendolen and write ) Tj
+T*
+(answer files under docs/evaluations/answers.) Tj
+T*
+(- 31a61e5 ? Improved lifecycle/location retrieval by detecting location intent, synthesizing exact ) Tj
+T*
+(API-bearing terms such as Kokkos::initialize, injecting literal matches, and boosting those exact ) Tj
+T*
+(call sites in reranking.) Tj
+T*
+(- cb0b888 ? Added comparison-aware retrieval for Poisson-solver tradeoff questions so the system ) Tj
+T*
+(retrieves both sides of the comparison instead of collapsing onto generic FFT infrastructure.) Tj
+T*
+(- 5511d34 ? Created the V2 evaluation question set and updated eval_job.sh so SSH runs use the ) Tj
+T*
+(filtered V2 questions and write V2-labelled answer files.) Tj
+T*
+(- 2e51a05 ? Shortened the content of supplementary symbol-entity chunks sent to the answering LLM so) Tj
+T*
+( secondary context acts like support evidence rather than noisy full chunks.) Tj
+T*
+(- c07cd94 ? Added an eval-job-specific answer-model override mechanism so the cluster evaluation can) Tj
+T*
+( use a different answer model without changing the normal local runtime settings.) Tj
+T*
+() Tj
+T*
+(CATEGORY-BY-CATEGORY COMPARISON) Tj
+T*
+() Tj
+T*
+(Category | Eval 1 Avg | Eval 2 Avg | Notes) Tj
+T*
+(--- | ---: | ---: | ---) Tj
+T*
+(File Purpose | 0.923 | 0.923 | Stable strength across both rounds.) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 2908 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Evaluation 1 vs Evaluation 2  |  page 3/3) Tj
+T*
+T*
+(Definition Location | 0.367 | 0.367 | Still weak; this is exactly where we focused the ) Tj
+T*
+(location/lifecycle retrieval work.) Tj
+T*
+(Class Responsibility | 0.885 | 0.885 | Stable strength across both rounds.) Tj
+T*
+(Algorithm | 0.417 | 0.417 | Still mixed; algorithm questions remain sensitive to whether solver ) Tj
+T*
+(implementation files are surfaced.) Tj
+T*
+(Data Flow | 0.333 | 0.333 | Still one of the weakest areas; cross-module handoff retrieval remains a) Tj
+T*
+( hard problem.) Tj
+T*
+(Api Usage | 0.583 | 0.583 | Broadly similar between the two rounds.) Tj
+T*
+(Parallelism And Kokkos | 0.556 | 0.556 | Broadly similar between the two rounds.) Tj
+T*
+(Boundary And Halo | 0.500 | 0.500 | Broadly similar between the two rounds.) Tj
+T*
+(Numerical Meaning | 0.125 | 0.333 | Improved partly because V2 removed several mini-app-heavy ) Tj
+T*
+(numerical questions.) Tj
+T*
+(Examples And Miniapps | 0.000 | removed | Entire category removed in V2 because it depends on mini-) Tj
+T*
+(app/example files outside the new scope.) Tj
+T*
+(Build And Install | 0.300 | 0.300 | Still weak even in V2; docs retrieval remains brittle here.) Tj
+T*
+(Testing And Workflow | 0.600 | 0.500 | Broadly similar between the two rounds.) Tj
+T*
+() Tj
+T*
+(INTERPRETATION) Tj
+T*
+() Tj
+T*
+(Evaluation 2 is better than Evaluation 1 in one important sense: it measures the system on a ) Tj
+T*
+(question set that is more aligned with the intended retrieval scope. That makes the result easier to) Tj
+T*
+( trust as a signal about the current code-and-doc RAG pipeline rather than as a mixture of code ) Tj
+T*
+(retrieval quality and off-scope example coverage.) Tj
+T*
+() Tj
+T*
+(At the same time, the comparison also shows that simply filtering the question set was not enough. ) Tj
+T*
+(The remaining weak areas are exactly the ones we investigated during development: precise ) Tj
+T*
+(implementation-location questions, algorithm questions that need the right solver file instead of a ) Tj
+T*
+(nearby helper, and data-flow questions that need evidence from more than one subsystem.) Tj
+T*
+() Tj
+T*
+(The strongest improvement in process quality is not a single score jump; it is that the work between) Tj
+T*
+( the two runs made the benchmark more focused and made retrieval behavior more explicit and ) Tj
+T*
+(controllable. That gives a much better foundation for the next round of iteration.) Tj
+T*
+() Tj
+T*
+(CONCLUSION) Tj
+T*
+() Tj
+T*
+(In short: Evaluation 2 is a cleaner benchmark, a slightly stronger result numerically, and a much ) Tj
+T*
+(better reflection of the retrieval work we actually did. The main development themes between the ) Tj
+T*
+(runs were narrowing the benchmark to src/ plus docs, improving exact location retrieval, improving ) Tj
+T*
+(solver comparison retrieval, and reducing prompt noise from supplementary chunks.) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Type /Pages /Kids [ 3 0 R 5 0 R 7 0 R ] /Count 3 >>
+endobj
+9 0 obj
+<< /Type /Catalog /Pages 8 0 R >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000083 00000 n 
+0000003505 00000 n 
+0000003631 00000 n 
+0000007288 00000 n 
+0000007414 00000 n 
+0000010374 00000 n 
+0000010500 00000 n 
+0000010571 00000 n 
+trailer
+<< /Size 10 /Root 9 0 R >>
+startxref
+10620
+%%EOF

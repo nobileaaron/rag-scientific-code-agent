@@ -2,7 +2,7 @@
   "raw_data_path": "data/raw/ippl",
   "ingestion": {
     "preferred_parser_type": "tree_sitter",
-    "max_chunk_size": 400,
+    "max_chunk_size": 3000,
     "chunk_explanation_allowed_types": [
       "function_definition",
       "method_definition",
@@ -29,11 +29,11 @@
     "call_chain_prompt_mode": "call_chain"
   },
   "models": {
-    "answer_model": "qwen2.5-coder:32b-instruct-q4_K_M",
-    "chunk_explanation_model": "qwen2.5-coder:14b",
-    "file_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
-    "module_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
-    "call_chain_model": "qwen2.5-coder:32b-instruct-q4_K_M"
+    "answer_model": "qwen2.5-coder:7b",
+    "chunk_explanation_model": "qwen2.5-coder:7b",
+    "file_level_model": "qwen2.5-coder:7b",
+    "module_level_model": "qwen2.5-coder:7b",
+    "call_chain_model": "qwen2.5-coder:7b"
   },
   "strategies": {
     "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",

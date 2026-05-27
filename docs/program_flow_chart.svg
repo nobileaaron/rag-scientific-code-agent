@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="950" viewBox="0 0 1600 950">
+  <defs>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#1f5f99"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#257a4f"/>
+    </marker>
+    <style>
+      .bg { fill: #f6f8fb; }
+      .panel { fill: #ffffff; stroke: #d5dee9; stroke-width: 2; }
+      .title { font-family: Arial, Helvetica, sans-serif; font-size: 34px; font-weight: 700; fill: #182536; }
+      .subtitle { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #5d6b7a; }
+      .boxTitle { font-family: Arial, Helvetica, sans-serif; font-size: 20px; font-weight: 700; fill: #142033; }
+      .boxText { font-family: Arial, Helvetica, sans-serif; font-size: 15px; fill: #405166; }
+      .small { font-family: Arial, Helvetica, sans-serif; font-size: 13px; fill: #58687a; }
+      .offline { fill: #eaf4ff; stroke: #8dbce8; stroke-width: 2; }
+      .offline2 { fill: #f0f8ee; stroke: #9fcb9a; stroke-width: 2; }
+      .online { fill: #fff5df; stroke: #e6be62; stroke-width: 2; }
+      .online2 { fill: #f5ecff; stroke: #b997df; stroke-width: 2; }
+      .store { fill: #183b5b; stroke: #183b5b; stroke-width: 2; }
+      .storeTitle { font-family: Arial, Helvetica, sans-serif; font-size: 20px; font-weight: 700; fill: #ffffff; }
+      .storeText { font-family: Arial, Helvetica, sans-serif; font-size: 15px; fill: #dbe9f5; }
+      .lineBlue { fill: none; stroke: #1f5f99; stroke-width: 3; marker-end: url(#arrowBlue); }
+      .lineGreen { fill: none; stroke: #257a4f; stroke-width: 3; marker-end: url(#arrowGreen); }
+      .dash { stroke-dasharray: 7 7; }
+      .legendText { font-family: Arial, Helvetica, sans-serif; font-size: 15px; fill: #405166; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="950"/>
+
+  <text class="title" x="800" y="55" text-anchor="middle">RAG Scientific Code Agent Program Flow</text>
+  <text class="subtitle" x="800" y="86" text-anchor="middle">Offline indexing builds the vector store. Online inference retrieves context and generates an answer.</text>
+
+  <rect class="panel" x="55" y="125" width="700" height="760" rx="18"/>
+  <rect class="panel" x="845" y="125" width="700" height="760" rx="18"/>
+
+  <text class="title" x="405" y="175" text-anchor="middle">Retrieval Preparation</text>
+  <text class="subtitle" x="405" y="202" text-anchor="middle">offline indexing / build side</text>
+
+  <text class="title" x="1195" y="175" text-anchor="middle">Inference</text>
+  <text class="subtitle" x="1195" y="202" text-anchor="middle">online query / answer side</text>
+
+  <!-- Offline boxes -->
+  <rect class="offline" x="115" y="240" width="235" height="82" rx="8"/>
+  <text class="boxTitle" x="232.5" y="272" text-anchor="middle">Raw IPPL Files</text>
+  <text class="boxText" x="232.5" y="298" text-anchor="middle">source code + docs</text>
+
+  <rect class="offline" x="465" y="240" width="235" height="82" rx="8"/>
+  <text class="boxTitle" x="582.5" y="272" text-anchor="middle">Parse</text>
+  <text class="boxText" x="582.5" y="298" text-anchor="middle">functions, classes, docs</text>
+
+  <rect class="offline2" x="115" y="380" width="235" height="92" rx="8"/>
+  <text class="boxTitle" x="232.5" y="412" text-anchor="middle">Base LLM</text>
+  <text class="boxText" x="232.5" y="438" text-anchor="middle">entity explanations</text>
+
+  <rect class="offline2" x="465" y="380" width="235" height="92" rx="8"/>
+  <text class="boxTitle" x="582.5" y="412" text-anchor="middle">Structure Graph</text>
+  <text class="boxText" x="582.5" y="438" text-anchor="middle">files, modules, symbols</text>
+
+  <rect class="offline" x="115" y="535" width="235" height="104" rx="8"/>
+  <text class="boxTitle" x="232.5" y="568" text-anchor="middle">Base Chunks</text>
+  <text class="boxText" x="232.5" y="594" text-anchor="middle">parsed entity content</text>
+  <text class="small" x="232.5" y="618" text-anchor="middle">+ local metadata + explanation</text>
+
+  <rect class="offline2" x="465" y="535" width="235" height="104" rx="8"/>
+  <text class="boxTitle" x="582.5" y="568" text-anchor="middle">Higher-Level Entities</text>
+  <text class="boxText" x="582.5" y="594" text-anchor="middle">file, module, call-chain</text>
+  <text class="small" x="582.5" y="618" text-anchor="middle">built from graph + summaries</text>
+
+  <rect class="offline" x="115" y="705" width="235" height="82" rx="8"/>
+  <text class="boxTitle" x="232.5" y="737" text-anchor="middle">Embed All Records</text>
+  <text class="boxText" x="232.5" y="763" text-anchor="middle">nomic-embed-text</text>
+
+  <rect class="store" x="465" y="705" width="235" height="82" rx="8"/>
+  <text class="storeTitle" x="582.5" y="737" text-anchor="middle">FAISS Vector Store</text>
+  <text class="storeText" x="582.5" y="763" text-anchor="middle">8013 retrievable records</text>
+
+  <!-- Offline arrows -->
+  <path class="lineBlue" d="M350 281 L455 281"/>
+  <path class="lineBlue" d="M582 322 L582 370"/>
+  <path class="lineBlue" d="M465 426 L360 426"/>
+  <path class="lineGreen" d="M582 472 L582 525"/>
+  <path class="lineBlue" d="M232 472 L232 525"/>
+  <path class="lineBlue" d="M232 639 L232 695"/>
+  <path class="lineGreen" d="M582 639 L582 695"/>
+  <path class="lineBlue" d="M350 746 L455 746"/>
+  <path class="lineGreen dash" d="M350 587 L455 587"/>
+  <text class="small" x="405" y="572" text-anchor="middle">summaries feed</text>
+
+  <!-- Online boxes -->
+  <rect class="online" x="905" y="240" width="235" height="82" rx="8"/>
+  <text class="boxTitle" x="1022.5" y="272" text-anchor="middle">User Query</text>
+  <text class="boxText" x="1022.5" y="298" text-anchor="middle">natural-language question</text>
+
+  <rect class="online" x="1255" y="240" width="235" height="82" rx="8"/>
+  <text class="boxTitle" x="1372.5" y="272" text-anchor="middle">Intent Router</text>
+  <text class="boxText" x="1372.5" y="298" text-anchor="middle">location, workflow, data flow</text>
+
+  <rect class="online" x="905" y="380" width="235" height="92" rx="8"/>
+  <text class="boxTitle" x="1022.5" y="412" text-anchor="middle">Vector Search</text>
+  <text class="boxText" x="1022.5" y="438" text-anchor="middle">semantic FAISS candidates</text>
+
+  <rect class="online2" x="1255" y="380" width="235" height="92" rx="8"/>
+  <text class="boxTitle" x="1372.5" y="412" text-anchor="middle">Candidate Injection</text>
+  <text class="boxText" x="1372.5" y="438" text-anchor="middle">exact files, symbols, APIs</text>
+
+  <rect class="online2" x="905" y="535" width="235" height="104" rx="8"/>
+  <text class="boxTitle" x="1022.5" y="568" text-anchor="middle">Rerank + Select</text>
+  <text class="boxText" x="1022.5" y="594" text-anchor="middle">semantic + metadata score</text>
+  <text class="small" x="1022.5" y="618" text-anchor="middle">score gate + diversity</text>
+
+  <rect class="online2" x="1255" y="535" width="235" height="104" rx="8"/>
+  <text class="boxTitle" x="1372.5" y="568" text-anchor="middle">Expand Context</text>
+  <text class="boxText" x="1372.5" y="594" text-anchor="middle">primary + structural</text>
+  <text class="small" x="1372.5" y="618" text-anchor="middle">+ supplementary chunks</text>
+
+  <rect class="online" x="905" y="705" width="235" height="82" rx="8"/>
+  <text class="boxTitle" x="1022.5" y="737" text-anchor="middle">Build Prompt</text>
+  <text class="boxText" x="1022.5" y="763" text-anchor="middle">retrieval_answer_v2</text>
+
+  <rect class="store" x="1255" y="705" width="235" height="82" rx="8"/>
+  <text class="storeTitle" x="1372.5" y="737" text-anchor="middle">Answer LLM</text>
+  <text class="storeText" x="1372.5" y="763" text-anchor="middle">answer + evidence</text>
+
+  <!-- Online arrows -->
+  <path class="lineBlue" d="M1140 281 L1245 281"/>
+  <path class="lineBlue" d="M1022 322 L1022 370"/>
+  <path class="lineGreen" d="M1372 322 L1372 370"/>
+  <path class="lineBlue" d="M1140 426 L1245 426"/>
+  <path class="lineBlue" d="M1255 426 C1190 470 1120 500 1040 525"/>
+  <path class="lineGreen" d="M1022 472 L1022 525"/>
+  <path class="lineGreen" d="M1140 587 L1245 587"/>
+  <path class="lineBlue" d="M1372 639 C1300 685 1210 716 1150 736"/>
+  <path class="lineBlue" d="M1140 746 L1245 746"/>
+
+  <!-- Cross-panel store relation -->
+  <path class="lineBlue dash" d="M700 746 C780 746 815 426 895 426"/>
+  <text class="legendText" x="800" y="710" text-anchor="middle">stored vectors queried at inference time</text>
+
+  <!-- Legend -->
+  <rect class="offline" x="575" y="900" width="22" height="16" rx="3"/>
+  <text class="legendText" x="607" y="914">base data / base chunks</text>
+  <rect class="offline2" x="800" y="900" width="22" height="16" rx="3"/>
+  <text class="legendText" x="832" y="914">structure-derived summaries</text>
+  <rect class="online2" x="1090" y="900" width="22" height="16" rx="3"/>
+  <text class="legendText" x="1122" y="914">retrieval logic</text>
+</svg>

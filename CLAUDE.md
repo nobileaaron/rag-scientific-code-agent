@@ -30,7 +30,7 @@ Anthropic entries require `ANTHROPIC_API_KEY` in the environment. Export it befo
 
 The pipeline is staged and each stage's output feeds the next. Understanding the flow in `main.py` (lines ~391–721) is the fastest way to orient:
 
-1. **Ingestion** (`src/ingestion/`) — `FileReader` loads `.cpp`/`.h`/`.hpp` and documentation; parsers (`cpp_parser`, `header_parser`, `doc_parser`) turn them into entity dicts. Parser type is `tree_sitter` with a silent fallback to `regex` if tree-sitter is unavailable (`resolve_parser_type`).
+1. **Ingestion** (`src/ingestion/`) — `FileReader` loads `.cpp`/`.h`/`.hpp` and documentation; parsers (`cpp_parser`, `header_parser`, `doc_parser`) turn them into entity dicts. Code parsing requires `tree_sitter`; startup fails fast if the tree-sitter dependencies are unavailable.
 2. **Explanation generation** (`src/ingestion/explanation_generator.py`) — an LLM enriches each parsed entity with a natural-language explanation before chunking. Runs at multiple levels: function, documentation section, file, module, call-chain.
 3. **Structure building** (`src/structure/`) — `ProjectStructureBuilder` produces a graph of files, modules, symbols, and relationships (include/call/ownership/inheritance edges). Saved to `embeddings/project_structure/project_structure.json`.
 4. **Multi-granular entity builders** — `FileLevelEntityBuilder`, `ModuleLevelEntityBuilder`, `CallChainEntityBuilder` produce higher-level retrievable entities alongside the raw function/header/doc chunks. All five levels go into the same vector store.

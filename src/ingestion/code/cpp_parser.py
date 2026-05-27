@@ -1,4 +1,3 @@
-import re
 from pathlib import Path
 
 from src.ingestion.code.comment_extractor import CommentExtractor
@@ -28,83 +27,6 @@ def attach_top_of_file_comment_to_first_function(file_functions, file_leading_co
         primary["leading_comment"] = file_leading_comment + "\n\n" + existing
     else:
         primary["leading_comment"] = file_leading_comment
-
-
-class RegexParser:
-    def __init__(self):
-        self.comment_extractor = CommentExtractor()
-        self.function_pattern = re.compile(
-            r"([a-zA-Z_][\w:<>\s*&]+)\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)\s*\{",
-            re.MULTILINE,
-        )
-
-    def _extract_full_function(self, content, start_index):
-        brace_count = 0
-        i = start_index
-        function_started = False
-
-        while i < len(content):
-            char = content[i]
-
-            if char == "{":
-                brace_count += 1
-                function_started = True
-            elif char == "}":
-                brace_count -= 1
-
-                if function_started and brace_count == 0:
-                    return content[start_index : i + 1]
-
-            i += 1
-
-        return content[start_index:i]
-
-    def extract_functions(self, files):
-        functions = []
-
-        for file in files:
-            content = file["content"]
-            path = file["path"]
-            file_functions = []
-
-            for match in self.function_pattern.finditer(content):
-                start_index = match.start()
-                function_code = self._extract_full_function(content, start_index)
-                file_functions.append(
-                    {
-                        "path": path,
-                        "file": path,
-                        "file_name": Path(path).name,
-                        "base_name": Path(path).stem,
-                        "language": "cpp",
-                        "source_type": "cpp",
-                        "entity_type": "function_definition",
-                        "chunk_type": "function_definition",
-                        "symbol_name": match.group(2),
-                        "function_name": match.group(2),
-                        "parent_symbol": "",
-                        "class_name": "",
-                        "return_type": match.group(1),
-                        "parameters": match.group(3),
-                        "section_path": "",
-                        "namespace_path": "",
-                        "chunk_index": 1,
-                        "total_chunks": 1,
-                        "leading_comment": self.comment_extractor.extract_leading_comment(
-                            content,
-                            start_index,
-                        ),
-                        "code": function_code,
-                    }
-                )
-
-            file_leading_comment = self.comment_extractor.extract_top_of_file_comment(content)
-            if file_leading_comment:
-                attach_top_of_file_comment_to_first_function(file_functions, file_leading_comment)
-
-            functions.extend(file_functions)
-
-        return functions
 
 
 class TreeSitterParser:
@@ -272,9 +194,9 @@ class TreeSitterParser:
 
 #Function to initialize the choosen Parser Type.
 def create_cpp_parser(parser_type):
-    if parser_type == "regex":
-        return RegexParser()
     if parser_type == "tree_sitter":
         return TreeSitterParser()
 
-    raise ValueError(f"Unsupported parser type: {parser_type}")
+    raise ValueError(
+        f"Unsupported parser type: {parser_type}. Only 'tree_sitter' is supported."
+    )

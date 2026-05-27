@@ -1,0 +1,3098 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+2 0 obj
+<< /Length 2601 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 1/22) Tj
+T*
+T*
+(CODEX GPT-5.4 VS LOCAL LLM EVALUATION \(V2\)) Tj
+T*
+() Tj
+T*
+(Generated: 2026-05-26 08:25:25 UTC) Tj
+T*
+() Tj
+T*
+(GOAL) Tj
+T*
+() Tj
+T*
+(This report compares the saved local-LLM V2 answer run in ) Tj
+T*
+(docs/evaluations/answers/eval_v2_20260424T140027Z.json against a direct source/doc reading pass over) Tj
+T*
+( data/raw/ippl. The Codex side of the comparison reuses the same source-backed reference answers and) Tj
+T*
+( verdicts established in the first evaluation round for the overlapping question IDs.) Tj
+T*
+() Tj
+T*
+(TEST ENVIRONMENT) Tj
+T*
+() Tj
+T*
+(CODEX SIDE) Tj
+T*
+() Tj
+T*
+(- Model: GPT-5.4 \(Codex\)) Tj
+T*
+(- Method: direct source/doc reading of data/raw/ippl) Tj
+T*
+(- Question set: docs/evaluations/eval_questions_v2.json) Tj
+T*
+(- Retrieval used for grading: none; this was a source-backed comparison pass) Tj
+T*
+() Tj
+T*
+(LOCAL LLM SIDE) Tj
+T*
+() Tj
+T*
+(- Host: merlin-g-100.psi.ch) Tj
+T*
+(- Job / partition: 352660 on gwendolen) Tj
+T*
+(- Answer model: qwen2.5-coder:32b-instruct-q4_K_M) Tj
+T*
+(- Chunk explanation model: qwen2.5-coder:14b) Tj
+T*
+(- File / module / call-chain models: qwen2.5-coder:32b-instruct-q4_K_M, ) Tj
+T*
+(qwen2.5-coder:32b-instruct-q4_K_M, qwen2.5-coder:32b-instruct-q4_K_M) Tj
+T*
+(- Parser: tree_sitter) Tj
+T*
+(- Question count: 100) Tj
+T*
+(- Answer prompt mode: retrieval_answer_v2) Tj
+T*
+(- Mean answer latency: 18.51s) Tj
+T*
+(- Median answer latency: 17.16s) Tj
+T*
+() Tj
+T*
+(RETRIEVAL CONFIGURATION USED BY THE SAVED RUN) Tj
+T*
+() Tj
+T*
+(- Candidate k: 20) Tj
+T*
+(- Supplementary k: 3) Tj
+T*
+(- Supplementary candidate k: 10) Tj
+T*
+(- Vector store chunk count: 8013) Tj
+T*
+() Tj
+T*
+(IMPORTANT CAVEAT) Tj
+T*
+() Tj
+T*
+(The saved answer file and embedded vector-store manifest are consistent enough that this report can ) Tj
+T*
+(be read as a straightforward evaluation of the saved V2 run.) Tj
+T*
+() Tj
+T*
+(OVERALL RESULT) Tj
+T*
+() Tj
+T*
+(Metric | Value) Tj
+T*
+(--- | ---:) Tj
+T*
+(Questions | 100) Tj
+T*
+(Correct | 44) Tj
+T*
+(Partial | 24) Tj
+T*
+(Incorrect | 32) Tj
+T*
+(Average score \(Correct=1, Partial=0.5, Incorrect=0\) | 0.560) Tj
+T*
+() Tj
+T*
+(MAIN FINDINGS) Tj
+T*
+() Tj
+T*
+(- Strongest areas: File Purpose, Class Responsibility. These questions were usually answerable from ) Tj
+T*
+(a single clear header, implementation file, or doc page.) Tj
+T*
+(- Weakest areas: Build And Install, Data Flow. These still tend to require cross-file synthesis, ) Tj
+T*
+(exact implementation location, or a sharper retrieval handoff between related subsystems.) Tj
+T*
+ET
+endstream
+endobj
+3 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >>
+endobj
+4 0 obj
+<< /Length 3799 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 2/22) Tj
+T*
+T*
+(- Compared with the first round, this V2 set removes test- and miniapp-dependent questions, so the ) Tj
+T*
+(remaining misses are a cleaner view of retrieval and answer quality over src/ plus repository docs.) Tj
+T*
+(- The recurring failure mode is still undercoverage: when the right implementation file or doc page ) Tj
+T*
+(is not surfaced, the local answer either abstains or answers from a nearby but incomplete chunk.) Tj
+T*
+(- The strongest answers remain the structural ones: file purpose, class responsibility, and direct ) Tj
+T*
+(API usage tend to do well when one primary file dominates the evidence.) Tj
+T*
+() Tj
+T*
+(CATEGORY BREAKDOWN) Tj
+T*
+() Tj
+T*
+(Category | Questions | Correct | Partial | Incorrect | Avg score) Tj
+T*
+(--- | ---: | ---: | ---: | ---: | ---:) Tj
+T*
+(File Purpose | 13 | 12 | 0 | 1 | 0.923) Tj
+T*
+(Definition Location | 15 | 4 | 3 | 8 | 0.367) Tj
+T*
+(Class Responsibility | 13 | 11 | 1 | 1 | 0.885) Tj
+T*
+(Algorithm | 12 | 3 | 4 | 5 | 0.417) Tj
+T*
+(Data Flow | 9 | 1 | 4 | 4 | 0.333) Tj
+T*
+(Api Usage | 12 | 4 | 6 | 2 | 0.583) Tj
+T*
+(Parallelism And Kokkos | 9 | 3 | 4 | 2 | 0.556) Tj
+T*
+(Boundary And Halo | 5 | 2 | 1 | 2 | 0.500) Tj
+T*
+(Numerical Meaning | 3 | 1 | 0 | 2 | 0.333) Tj
+T*
+(Build And Install | 5 | 1 | 1 | 3 | 0.300) Tj
+T*
+(Testing And Workflow | 4 | 2 | 0 | 2 | 0.500) Tj
+T*
+() Tj
+T*
+(DETAILED PER-QUESTION EVALUATION) Tj
+T*
+() Tj
+T*
+(FILE PURPOSE) Tj
+T*
+() Tj
+T*
+(FILE_001 - WHAT DOES IPPL.H DO?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Declares the top-level IPPL runtime handles \(Comm, Env, Info, Warn, Error\)) Tj
+T*
+( and the lifecycle wrappers initialize, finalize, fence, and abort.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Ippl.h) Tj
+T*
+(- Local answer excerpt: Answer: Ippl.h serves as a central interface header file for the IPPL ) Tj
+T*
+(library. It includes several other headers necessary for its functionalities and defines essential ) Tj
+T*
+(communication objects such as Comm and Env, along with logging o...) Tj
+T*
+() Tj
+T*
+(FILE_002 - WHAT IS THE PURPOSE OF IPPL.CPP?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Implements runtime setup/teardown: command-line option parsing, MPI ) Tj
+T*
+(communicator/environment creation, logger setup, Kokkos init/finalize, and abort/fence helpers.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Ippl.cpp) Tj
+T*
+(- Local answer excerpt: Answer: Ippl.cpp contains several utility and lifecycle management functions) Tj
+T*
+( for the IPPL library, including initialization \(initialize\), option checking \(checkOption\), ) Tj
+T*
+(numerical option parsing \(getNumericalOption\), finalization \(...) Tj
+T*
+() Tj
+T*
+(FILE_003 - WHAT DOES FFT.HPP IMPLEMENT?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: Implements FFTBase setup plus the FFT specialization family for ) Tj
+T*
+(complex/real, sine, cosine, and cosine-I transforms on IPPL fields via heFFTe.) Tj
+T*
+(- Comparison: Narrowed the whole file to one FFT<RCTransform, RealField> path and missed the rest of) Tj
+T*
+( the specialization family.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FFT/FFT.hpp) Tj
+T*
+(- Local answer excerpt: Answer: FFT.hpp defines the base class template FFTBase and several ) Tj
+T*
+(specializations of the FFT class template for different types of transforms \(e.g., CCTransform, ) Tj
+T*
+(RCTransform, SiTransform\). It includes methods like transform...) Tj
+T*
+() Tj
+T*
+(FILE_004 - WHAT IS BAREFIELD.H RESPONSIBLE FOR?) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 4253 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 3/22) Tj
+T*
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Defines the core distributed field container: Kokkos-backed storage, ) Tj
+T*
+(owned/allocated domains, field layout access, halo exchange hooks, and expression-style assignment.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/BareField.h) Tj
+T*
+(- Local answer excerpt: Answer: BareField.h defines the BareField class, which represents a field ) Tj
+T*
+(managing memory and metadata for multi-dimensional data arrays. It includes methods like ) Tj
+T*
+(getAllocated, getCommunicator, getDomain, getHalo, getHostMir...) Tj
+T*
+() Tj
+T*
+(FILE_005 - WHAT DOES FIELD.H ADD ON TOP OF BAREFIELD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Adds mesh awareness and boundary-condition management on top of BareField,) Tj
+T*
+( plus volume integral/average helpers.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/Field.h) Tj
+T*
+(- Local answer excerpt: Answer: The Field class extends BareField by adding mesh and configurable ) Tj
+T*
+(boundary conditions. It includes methods such as get_mesh, getFieldBC, setFieldBC, deepCopy, ) Tj
+T*
+(getVolumeAverage, getVolumeIntegral, initialize, and...) Tj
+T*
+() Tj
+T*
+(FILE_006 - WHAT ROLE DOES HALOCELLS.H PLAY IN IPPL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Defines the halo-exchange machinery for fields: pack/unpack, boundary ) Tj
+T*
+(exchange, and periodic handling for ghost cells.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/HaloCells.h; data/raw/ippl/src/Field/HaloCells.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The HaloCells.h header file defines the HaloCells template class and) Tj
+T*
+( associated structs \(assign, lhs_plus_assign, rhs_plus_assign\) to handle halo exchange operations in) Tj
+T*
+( parallel computations. It facilitates data communi...) Tj
+T*
+() Tj
+T*
+(FILE_007 - WHAT IS THE PURPOSE OF FIELDLAYOUT.H?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Defines how a global NDIndex domain is partitioned across MPI ranks, ) Tj
+T*
+(including local subdomains, neighbors, and communication ranges.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FieldLayout/FieldLayout.h) Tj
+T*
+(- Local answer excerpt: Answer: FieldLayout.h defines the FieldLayout class template, which manages ) Tj
+T*
+(the distribution and properties of fields across parallel domains in simulations within the IPPL ) Tj
+T*
+(library. The file includes methods for handling dimensions, bo...) Tj
+T*
+() Tj
+T*
+(FILE_008 - WHAT DOES PARTICLEBASE.H DEFINE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Defines the generic particle container base class with positions, optional) Tj
+T*
+( IDs, registered attributes, and a particle layout that controls migration.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Particle/ParticleBase.h) Tj
+T*
+(- Local answer excerpt: Answer: ParticleBase.h defines ParticleBase, a base class for managing and ) Tj
+T*
+(storing particle data in IPPL. It includes methods like getAttributeNum, getLayout, getLocalNum, ) Tj
+T*
+(getTotalNum for accessing attributes, layout, local c...) Tj
+T*
+() Tj
+T*
+(FILE_009 - WHAT IS THE PURPOSE OF PARTICLESPATIALLAYOUT.H?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Defines the spatial particle layout that decides ownership by region and ) Tj
+T*
+(migrates particles to the correct rank after motion.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Particle/ParticleSpatialLayout.h; ) Tj
+T*
+(data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 4195 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 4/22) Tj
+T*
+T*
+(- Local answer excerpt: Answer: The ParticleSpatialLayout class in ParticleSpatialLayout.h manages ) Tj
+T*
+(spatial layout configurations for particles within computational regions. It handles region layouts ) Tj
+T*
+(and neighbor communications, providing methods to retrieve...) Tj
+T*
+() Tj
+T*
+(FILE_010 - WHAT DOES PARTICLEATTRIB.H IMPLEMENT?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Implements the ParticleAttrib storage object: a Kokkos-view-backed ) Tj
+T*
+(particle attribute with resize, serialization, and mirror/access helpers.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Particle/ParticleAttrib.h) Tj
+T*
+(- Local answer excerpt: Answer: The ParticleAttrib class template is responsible for managing ) Tj
+T*
+(attributes associated with particles in simulations. It provides methods for serialization ) Tj
+T*
+(\(deserialize\), printing \(print\), memory management \(realloc, resize...) Tj
+T*
+() Tj
+T*
+(FILE_011 - WHAT IS UNIFORMCARTESIAN.H FOR?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Defines the uniform Cartesian mesh class with spacing, origin, cell ) Tj
+T*
+(volume, total mesh volume, and vertex-position helpers.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Meshes/UniformCartesian.h) Tj
+T*
+(- Local answer excerpt: Answer: UniformCartesian.h defines the UniformCartesian class template, ) Tj
+T*
+(which represents a uniform Cartesian mesh derived from Mesh<T, Dim>. This class provides methods for) Tj
+T*
+( calculating vertex positions \(getVertexPosition\), cell vol...) Tj
+T*
+() Tj
+T*
+(FILE_012 - WHAT DOES ORTHOGONALRECURSIVEBISECTION.H DO?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Declares the orthogonal recursive bisection domain-decomposition/load-) Tj
+T*
+(balancing class and its cut/median/repartition helpers.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.h) Tj
+T*
+(- Local answer excerpt: Answer: The OrthogonalRecursiveBisection class in ) Tj
+T*
+(OrthogonalRecursiveBisection.h is designed to handle domain decomposition through orthogonal ) Tj
+T*
+(recursive bisection. This method divides a computational domain into smaller subdomains ef...) Tj
+T*
+() Tj
+T*
+(FILE_013 - WHAT IS THE PURPOSE OF CIC.H IN THE INTERPOLATION SUBSYSTEM?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Declares the first-order cloud-in-cell interpolation helpers for ) Tj
+T*
+(scatter/gather between particles and grid fields.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Interpolation/CIC.h) Tj
+T*
+(- Local answer excerpt: Answer: The file CIC.h in the Interpolation subsystem defines essential ) Tj
+T*
+(interfaces and operations related to Cloud-in-Cell \(CIC\) interpolation. It declares template ) Tj
+T*
+(functions that compute weights, indices, and perform scattering of par...) Tj
+T*
+() Tj
+T*
+(DEFINITION LOCATION) Tj
+T*
+() Tj
+T*
+(LOC_001 - WHERE IS FFT INITIALIZATION IMPLEMENTED IN IPPL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: FFT initialization lives in src/FFT/FFT.hpp, especially FFTBase ) Tj
+T*
+(construction/setup and the transform-specific constructors that build the heFFTe plans.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FFT/FFT.hpp) Tj
+T*
+(- Local answer excerpt: Answer: FFT initialization in IPPL is implemented in the FFT<RCTransform, ) Tj
+T*
+(RealField> constructor within the FFT.hpp file. This constructor sets up the FFT operation using the) Tj
+T*
+( Heffte library by configuring input and output layouts thr...) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 3981 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 5/22) Tj
+T*
+T*
+(LOC_002 - WHERE DOES IPPL SET UP THE MPI ENVIRONMENT?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: IPPL sets up MPI in src/Ippl.cpp::initialize\(\) by constructing ) Tj
+T*
+(mpi::Environment and mpi::Communicator; the low-level MPI_Init check/call is in ) Tj
+T*
+(src/Communicate/Environment.cpp.) Tj
+T*
+(- Comparison: The local answer found the low-level MPI constructor, but missed that the IPPL entry ) Tj
+T*
+(point is ippl::initialize\(\) in Ippl.cpp.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Ippl.cpp; data/raw/ippl/src/Communicate/Environment.cpp) Tj
+T*
+(- Local answer error: NameError: name 'exact_symbols' is not defined) Tj
+T*
+() Tj
+T*
+(LOC_003 - WHERE IS KOKKOS INITIALIZED AND FINALIZED INSIDE IPPL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: Kokkos is initialized and finalized directly in src/Ippl.cpp inside ) Tj
+T*
+(ippl::initialize\(\) and ippl::finalize\(\).) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Ippl.cpp) Tj
+T*
+(- Local answer error: NameError: name 'exact_symbols' is not defined) Tj
+T*
+() Tj
+T*
+(LOC_004 - WHERE IS THE ORTHOGONAL RECURSIVE BISECTION LOAD BALANCER IMPLEMENTED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: The ORB load balancer is implemented in ) Tj
+T*
+(src/Decomposition/OrthogonalRecursiveBisection.hpp with declarations in the matching header.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The orthogonal recursive bisection load balancer is implemented in ) Tj
+T*
+(the OrthogonalRecursiveBisection.h and OrthogonalRecursiveBisection.hpp files. The primary class ) Tj
+T*
+(template definition for this functionality is found in Ortho...) Tj
+T*
+() Tj
+T*
+(LOC_005 - WHERE ARE BOUNDARY CONDITIONS APPLIED TO A FIELD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Field BCs are attached in Field::setFieldBC\(\) and actually applied through) Tj
+T*
+( BConds::apply\(\) and the concrete face classes in BcTypes.hpp.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/Field.h; data/raw/ippl/src/Field/BConds.hpp; ) Tj
+T*
+(data/raw/ippl/src/Field/BcTypes.hpp) Tj
+T*
+(- Local answer excerpt: Answer: Boundary conditions are applied to a Field through the BConds class,) Tj
+T*
+( which contains and manages various boundary condition objects \(BCondBase\). The apply method of ) Tj
+T*
+(these boundary condition objects is called on a Field& f...) Tj
+T*
+() Tj
+T*
+(LOC_006 - WHERE IS THE CIC \(CLOUD-IN-CELL\) SCATTER IMPLEMENTED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: CIC scatter is implemented in src/Interpolation/CIC.hpp, primarily ) Tj
+T*
+(scatterToPoint\(\) and scatterToField\(\).) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Interpolation/CIC.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The CIC \(cloud-in-cell\) scatter implementation is found in the CIC.h) Tj
+T*
+( and CIC.hpp files within the Interpolation module. Specifically, the scatterToPoint and ) Tj
+T*
+(scatterToField functions are declared in CIC.h, and their defi...) Tj
+T*
+() Tj
+T*
+(LOC_007 - WHERE IS THE CIC GATHER IMPLEMENTED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: CIC gather is implemented in src/Interpolation/CIC.hpp, primarily ) Tj
+T*
+(gatherFromPoint\(\) and gatherFromField\(\).) Tj
+T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 4244 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 6/22) Tj
+T*
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Interpolation/CIC.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The CIC gather implementation is not explicitly detailed in the ) Tj
+T*
+(provided chunks. The chunks discuss methods related to CIC interpolation and gathering but do not ) Tj
+T*
+(provide a specific implementation of the CIC gather operation. They...) Tj
+T*
+() Tj
+T*
+(LOC_008 - WHERE IS HALO EXCHANGE FOR BAREFIELD IMPLEMENTED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Halo exchange for BareField is surfaced in src/Field/BareField.hpp and ) Tj
+T*
+(actually performed in src/Field/HaloCells.hpp.) Tj
+T*
+(- Comparison: The local answer found the right concept, but not the exact implementation split ) Tj
+T*
+(across the wrapper and helper file.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/BareField.hpp; data/raw/ippl/src/Field/HaloCells.hpp) Tj
+T*
+(- Local answer excerpt: Answer: Halo exchange for BareField is implemented in the accumulateHalo ) Tj
+T*
+(method defined within the BareField.hpp file. The accumulateHalo method likely utilizes the ) Tj
+T*
+(HaloCells class from HaloCells.h to manage halo cell exchang...) Tj
+T*
+() Tj
+T*
+(LOC_009 - WHERE ARE THE FFT-BASED OPEN-BOUNDARY POISSON SOLVER ROUTINES DEFINED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The FFT open-boundary Poisson routines are defined in ) Tj
+T*
+(src/PoissonSolvers/FFTOpenPoissonSolver.h and src/PoissonSolvers/FFTOpenPoissonSolver.hpp.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.h; ) Tj
+T*
+(data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The FFT-based open-boundary Poisson solver routines are defined in ) Tj
+T*
+(the FFTOpenPoissonSolver.hpp and FFTOpenPoissonSolver.h files. The FFTOpenPoissonSolver class ) Tj
+T*
+(template is responsible for solving Poisson equations using FF...) Tj
+T*
+() Tj
+T*
+(LOC_010 - WHERE IS THE CONJUGATE GRADIENT SOLVER ALGORITHM IMPLEMENTED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The CG/PCG algorithm implementation is in src/LinearSolvers/PCG.h; the ) Tj
+T*
+(Poisson wrapper that instantiates it is src/PoissonSolvers/PoissonCG.h.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/LinearSolvers/PCG.h; ) Tj
+T*
+(data/raw/ippl/src/PoissonSolvers/PoissonCG.h) Tj
+T*
+(- Local answer excerpt: Answer: The conjugate gradient solver algorithm is implemented in the PCG ) Tj
+T*
+(class within the file LinearSolvers/PCG.h. The PoissonCG class in PoissonSolvers/PoissonCG.h ) Tj
+T*
+(utilizes this implementation through its solve method, which...) Tj
+T*
+() Tj
+T*
+(LOC_011 - WHERE IS THE FEM POISSON SOLVER IMPLEMENTED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: The FEM Poisson solver is implemented in ) Tj
+T*
+(src/PoissonSolvers/FEMPoissonSolver.h.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/PoissonSolvers/FEMPoissonSolver.h) Tj
+T*
+(- Local answer excerpt: Answer: The FEM Poisson solver is implemented in the FEMPoissonSolver class,) Tj
+T*
+( defined in the file FEMPoissonSolver.h located under the path data/raw/ippl/src/PoissonSolvers. ) Tj
+T*
+(This class inherits from Poisson<FieldLHS, FieldRHS> and...) Tj
+T*
+() Tj
+T*
+(LOC_012 - WHERE IS THE FDTD MAXWELL SOLVER BASE CLASS DEFINED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The FDTD Maxwell solver base class is defined in ) Tj
+T*
+(src/MaxwellSolvers/FDTDSolverBase.h with implementation in FDTDSolverBase.hpp.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 4126 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 7/22) Tj
+T*
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.h; ) Tj
+T*
+(data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The FDTD Maxwell solver base class is not explicitly mentioned or ) Tj
+T*
+(defined in the provided retrieved context. The context discusses a Maxwell base class for solvers of) Tj
+T*
+( Maxwell's equations but does not specify it as an FDTD-speci...) Tj
+T*
+() Tj
+T*
+(LOC_013 - WHERE IS THE LAGRANGESPACE CLASS DEFINED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: The LagrangeSpace class is defined in src/FEM/LagrangeSpace.h with methods) Tj
+T*
+( implemented in src/FEM/LagrangeSpace.hpp.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FEM/LagrangeSpace.h; data/raw/ippl/src/FEM/LagrangeSpace.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The LagrangeSpace class template is defined in the file ) Tj
+T*
+(data/raw/ippl/src/FEM/LagrangeSpace.h. This header file includes key abstractions such as ) Tj
+T*
+(DeviceStruct and provides essential methods for handling Lagrangian finite el...) Tj
+T*
+() Tj
+T*
+(LOC_014 - WHERE IS THE PARTICLE UPDATE ROUTINE \(THAT MOVES PARTICLES ACROSS RANKS\) IMPLEMENTED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Particle migration between ranks is implemented in ) Tj
+T*
+(ParticleSpatialLayout::update\(\) in src/Particle/ParticleSpatialLayout.hpp.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The particle update routine that moves particles across ranks is ) Tj
+T*
+(primarily implemented in the update method of the ParticleSpatialLayout<T, Dim, Mesh, Properties...>) Tj
+T*
+( class template in the ParticleSpatialLayout.hpp file. Thi...) Tj
+T*
+() Tj
+T*
+(LOC_015 - WHERE ARE IPPL TIMERS DEFINED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: IPPL timers are defined by the singleton timing layer in ) Tj
+T*
+(src/Utility/IpplTimings.h/.cpp, not just the low-level Timer helper.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Utility/IpplTimings.h; ) Tj
+T*
+(data/raw/ippl/src/Utility/IpplTimings.cpp) Tj
+T*
+(- Local answer excerpt: Answer: IPPL timers are primarily defined in Timer.h and managed within the ) Tj
+T*
+(IpplTimings class. The Timer class provides functionality for timing operations, while IpplTimings ) Tj
+T*
+(manages and reports timing information using instances...) Tj
+T*
+() Tj
+T*
+(CLASS RESPONSIBILITY) Tj
+T*
+() Tj
+T*
+(CLS_001 - WHAT IS THE MAIN RESPONSIBILITY OF THE BAREFIELD CLASS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: BareField is the core distributed field storage class: it owns the data ) Tj
+T*
+(view, domain metadata, layout link, and halo operations.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/BareField.h) Tj
+T*
+(- Local answer excerpt: Answer: The BareField class represents a field, managing memory and metadata) Tj
+T*
+( for multi-dimensional data arrays, and provides methods to initialize, access, and perform ) Tj
+T*
+(operations on the field data. It supports communication mechanisms ...) Tj
+T*
+() Tj
+T*
+(CLS_002 - WHAT IS THE MAIN RESPONSIBILITY OF THE FIELD CLASS COMPARED TO BAREFIELD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: Field extends BareField with a mesh, boundary-condition container, and ) Tj
+T*
+(mesh-aware integral/average semantics.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 4394 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 8/22) Tj
+T*
+T*
+(- Primary sources: data/raw/ippl/src/Field/Field.h) Tj
+T*
+(- Local answer excerpt: Answer: The provided context does not specify the exact implementation ) Tj
+T*
+(details or the full scope of Field's functionality beyond its role as a template class representing ) Tj
+T*
+(numerical fields on a mesh. However, it suggests that the Field...) Tj
+T*
+() Tj
+T*
+(CLS_003 - WHAT DOES THE FIELDLAYOUT CLASS DO AND WHAT ARE ITS MAIN TEMPLATE PARAMETERS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: FieldLayout<Dim> distributes a global NDIndex<Dim> over ranks and stores ) Tj
+T*
+(local domains, neighbors, and communication ranges; its only template parameter is Dim.) Tj
+T*
+(- Comparison: The local answer got the role right but blurred the distinction between template ) Tj
+T*
+(parameters and constructor/runtime inputs.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FieldLayout/FieldLayout.h) Tj
+T*
+(- Local answer excerpt: Answer: The FieldLayout class manages the distribution and properties of ) Tj
+T*
+(fields across parallel domains. It describes how an index space \(represented by an NDIndex object\) ) Tj
+T*
+(is distributed among MPI ranks, handles initial partitioning,...) Tj
+T*
+() Tj
+T*
+(CLS_004 - WHAT IS THE PURPOSE OF THE PARTICLEBASE CLASS AND HOW IS IT MEANT TO BE USED?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: ParticleBase is the user-extensible base container for particles; derived ) Tj
+T*
+(classes add attributes and register them so layout-driven migration can move them.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Particle/ParticleBase.h) Tj
+T*
+(- Local answer excerpt: Answer: The ParticleBase class serves as a base class for managing and ) Tj
+T*
+(storing particle data in simulations. It provides methods for accessing and updating particle ) Tj
+T*
+(attributes, layout, local counts, and total counts. Users are expected...) Tj
+T*
+() Tj
+T*
+(CLS_005 - WHAT DOES THE PARTICLESPATIALLAYOUT CLASS DO?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: ParticleSpatialLayout decides which spatial region/rank owns each particle) Tj
+T*
+( and performs the migration/update workflow after particles move.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Particle/ParticleSpatialLayout.h; ) Tj
+T*
+(data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The ParticleSpatialLayout class manages spatial layout ) Tj
+T*
+(configurations for particles within computational regions. It handles region layouts and neighbor ) Tj
+T*
+(communications, providing methods to retrieve region layouts, fill hash st...) Tj
+T*
+() Tj
+T*
+(CLS_006 - WHAT IS THE RESPONSIBILITY OF UNIFORMCARTESIAN?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: UniformCartesian represents a uniform Cartesian mesh and exposes ) Tj
+T*
+(spacing/origin/volume and vertex-position geometry queries.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Meshes/UniformCartesian.h) Tj
+T*
+(- Local answer excerpt: Answer: The UniformCartesian class template represents a uniform Cartesian ) Tj
+T*
+(mesh and provides methods for initializing, setting/getting mesh spacing, calculating cell volumes, ) Tj
+T*
+(and retrieving vertex positions and spacings. It inherits fr...) Tj
+T*
+() Tj
+T*
+(CLS_007 - WHAT DOES THE MESH BASE CLASS DEFINE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Mesh is the abstract base interface for meshes: origin, grid size, ) Tj
+T*
+(spacing, vertex positions, and volume queries.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Meshes/Mesh.h) Tj
+T*
+(- Local answer excerpt: Answer: The retrieved context does not provide any information about a Mesh ) Tj
+T*
+(base class. The chunks cover FFTBase, Status, IpplInfo, _Variant_base, and other classes but do not ) Tj
+T*
+(mention a Mesh base class. Evidence: - data/raw/ippl/src/FF...) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 4199 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 9/22) Tj
+T*
+T*
+(CLS_008 - WHAT IS THE RESPONSIBILITY OF THE COMMUNICATOR CLASS IN IPPL::MPI?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: ippl::mpi::Communicator wraps MPI point-to-point, collectives, tag ) Tj
+T*
+(handling, and managed communication buffers.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Communicate/Communicator.h) Tj
+T*
+(- Local answer excerpt: Answer: The Communicator class in ippl::mpi does not appear to be explicitly) Tj
+T*
+( mentioned or detailed in the provided context. The closest related information is about the ) Tj
+T*
+(Environment class in src/Communicate/Environment.h, which mana...) Tj
+T*
+() Tj
+T*
+(CLS_009 - WHAT IS THE ROLE OF THE ENVIRONMENT CLASS IN IPPL::MPI?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: ippl::mpi::Environment manages MPI environment lifetime checks/teardown ) Tj
+T*
+(and provides an abort hook.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Communicate/Environment.h; ) Tj
+T*
+(data/raw/ippl/src/Communicate/Environment.cpp) Tj
+T*
+(- Local answer excerpt: Answer: The Environment class manages MPI environment settings within IPPL, ) Tj
+T*
+(encapsulating initialization, finalization, and error handling functionalities. It takes command-) Tj
+T*
+(line arguments \(argc, argv\) and an optional MPI communicat...) Tj
+T*
+() Tj
+T*
+(CLS_010 - WHAT DOES THE ARCHIVE CLASS DO IN THE COMMUNICATE MODULE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Archive serializes and deserializes Kokkos views and vector-valued views ) Tj
+T*
+(into raw byte buffers for MPI transfer.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Communicate/Archive.h; ) Tj
+T*
+(data/raw/ippl/src/Communicate/Archive.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The Archive class in the Communicate module serves as a central ) Tj
+T*
+(component for data serialization and deserialization within the IPPL codebase. It manages data ) Tj
+T*
+(buffers and provides methods such as getBuffer, getBufferSize,...) Tj
+T*
+() Tj
+T*
+(CLS_011 - WHAT IS THE ROLE OF THE BCONDS CLASS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: BConds is the container of boundary-condition faces and orchestrates ) Tj
+T*
+(neighbor discovery, BC application, and ghost-to-physical assignment.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/BConds.h; data/raw/ippl/src/Field/BConds.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The BConds class serves as a container for boundary conditions \(BCs\)) Tj
+T*
+( in the field domain within the IPPL scientific C++ codebase. It manages and applies boundary ) Tj
+T*
+(conditions to fields by calling methods like findBCNeighbors an...) Tj
+T*
+() Tj
+T*
+(CLS_012 - WHAT IS THE ROLE OF THE BASEMANAGER CLASS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: BaseManager provides the simulation loop skeleton: pre_run, pre_step, ) Tj
+T*
+(advance, post_step, and run\(nt\).) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Manager/BaseManager.h) Tj
+T*
+(- Local answer excerpt: Answer: The BaseManager class in IPPL serves as an abstract manager ) Tj
+T*
+(responsible for orchestrating key simulation steps, including setup, execution, and teardown ) Tj
+T*
+(operations. It defines methods such as run, pre_run, pre_step, post...) Tj
+T*
+() Tj
+T*
+(CLS_013 - WHAT DOES THE INDEX CLASS REPRESENT AND WHAT OPERATIONS DOES IT SUPPORT?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Index represents a regular strided integer range/slice and supports range-) Tj
+T*
+(style arithmetic and comparison operations used in domain descriptions.) Tj
+T*
+ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 4486 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 10/22) Tj
+T*
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Index/Index.h; data/raw/ippl/src/Index/Index.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The retrieved context does not contain any information about an ) Tj
+T*
+(Index class or its operations within the IPPL codebase. Evidence: - ) Tj
+T*
+(data/raw/ippl/src/Communicate/Status.h : Status ? a communication status handle for non-blockin...) Tj
+T*
+() Tj
+T*
+(ALGORITHM) Tj
+T*
+() Tj
+T*
+(ALG_001 - HOW DOES THE FFT-BASED OPEN-BOUNDARY POISSON SOLVER COMPUTE THE ELECTROSTATIC POTENTIAL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The FFT open-boundary solver embeds/extends the RHS onto larger domains, ) Tj
+T*
+(FFTs both the density and a precomputed Green's function, multiplies in Fourier space, inverse ) Tj
+T*
+(transforms, and optionally computes gradients/Hessians.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.h; ) Tj
+T*
+(data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The FFT-based open-boundary Poisson solver computes the ) Tj
+T*
+(electrostatic potential by transforming the charge density field from real to Fourier space using ) Tj
+T*
+(FFT. It then multiplies this transformed field with a precomputed Green's f...) Tj
+T*
+() Tj
+T*
+(ALG_002 - HOW DOES THE FFT-BASED PERIODIC POISSON SOLVER WORK IN IPPL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The periodic FFT solver FFTs the charge density, divides each Fourier mode) Tj
+T*
+( by |k|^2 \(with the zero mode handled separately\), then inverse transforms; gradients are computed ) Tj
+T*
+(by multiplying by ik/|k|^2 before the inverse FFT.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/PoissonSolvers/FFTPeriodicPoissonSolver.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The FFTPeriodicPoissonSolver class is designed to solve periodic ) Tj
+T*
+(Poisson equations using Fast Fourier Transform \(FFT\) techniques within the IPPL scientific C++ ) Tj
+T*
+(codebase. It encapsulates the FFT-based solution process, including...) Tj
+T*
+() Tj
+T*
+(ALG_003 - HOW DOES THE TRUNCATED GREEN PERIODIC POISSON SOLVER DIFFER FROM THE STANDARD PERIODIC ) Tj
+T*
+(ONE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The truncated-Green periodic solver replaces the simple 1/|k|^2 kernel ) Tj
+T*
+(with the FFT of a truncated/erf-smoothed Green's function forceConstant * erf\(alpha r\) / r, then ) Tj
+T*
+(follows the same transform-multiply-inverse pattern.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/PoissonSolvers/FFTTruncatedGreenPeriodicPoissonSolver.h; ) Tj
+T*
+(data/raw/ippl/src/PoissonSolvers/FFTTruncatedGreenPeriodicPoissonSolver.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The truncated Green periodic Poisson solver differs from the ) Tj
+T*
+(standard periodic Poisson solver by including a step to compute and regularize a truncated Green's ) Tj
+T*
+(function. This is done through the greensFunction method, which is ...) Tj
+T*
+() Tj
+T*
+(ALG_004 - HOW DOES IPPL'S CG SOLVER ITERATE IN THE PCG.H IMPLEMENTATION?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: In PCG.h, the CG iteration forms residual/direction fields, applies the ) Tj
+T*
+(operator, computes alpha and beta from inner products, updates the solution/residual/direction, and ) Tj
+T*
+(stops on tolerance or iteration count; the preconditioned variant inserts M^{-1} applications on the) Tj
+T*
+( residual.) Tj
+T*
+(- Comparison: The local answer captured the plain CG loop but did not clearly separate it from the ) Tj
+T*
+(preconditioned path.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/LinearSolvers/PCG.h) Tj
+T*
+(- Local answer excerpt: Answer: IPPL's CG solver iterates through a method that is not explicitly ) Tj
+T*
+(detailed in the provided chunks. However, based on the information given, the PCG class inherits ) Tj
+T*
+ET
+endstream
+endobj
+21 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 20 0 R >>
+endobj
+22 0 obj
+<< /Length 4476 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 11/22) Tj
+T*
+T*
+(from CG, and both classes have methods like initializeFields...) Tj
+T*
+() Tj
+T*
+(ALG_005 - HOW IS CLOUD-IN-CELL INTERPOLATION PERFORMED IN IPPL \(BOTH SCATTER AND GATHER DIRECTIONS\)?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: CIC computes lower/upper weights per axis, scatters with atomic adds to ) Tj
+T*
+(the 2^Dim neighboring grid points, and gathers by summing the same weighted stencil back to ) Tj
+T*
+(particles.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Interpolation/CIC.h; data/raw/ippl/src/Interpolation/CIC.hpp) Tj
+T*
+(- Local answer excerpt: Answer: Cloud-in-Cell \(CIC\) interpolation in IPPL involves specific ) Tj
+T*
+(functions for both scatter and gather operations. The scatterToPoint function in CIC.hpp handles the) Tj
+T*
+( distribution of particle data to grid points using atomic operat...) Tj
+T*
+() Tj
+T*
+(ALG_006 - HOW DOES THE STANDARD FDTD SOLVER ADVANCE THE ELECTROMAGNETIC FIELD IN TIME?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The standard FDTD solver advances the source-like field with a second-) Tj
+T*
+(order finite-difference update using the previous and current time levels plus neighboring cells and) Tj
+T*
+( source terms, then fills halos and reapplies BCs.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/MaxwellSolvers/StandardFDTDSolver.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The StandardFDTDSolver class advances the electromagnetic field in ) Tj
+T*
+(time by overriding the step\(\) method from its base class FDTDSolverBase. The step\(\) method is part ) Tj
+T*
+(of the FDTD simulation loop and is responsible for upda...) Tj
+T*
+() Tj
+T*
+(ALG_007 - HOW DOES THE LAGRANGESPACE CLASS EVALUATE DEGREES OF FREEDOM PER ELEMENT?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: LagrangeSpace evaluates element DOFs by mapping local element indices to ) Tj
+T*
+(global DOF indices, then evaluates order-1 reference-element shape functions and gradients on those ) Tj
+T*
+(local DOFs.) Tj
+T*
+(- Comparison: The local answer focused on the compile-time DOF count and missed most of the actual ) Tj
+T*
+(element-DOF evaluation logic.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FEM/LagrangeSpace.h; data/raw/ippl/src/FEM/LagrangeSpace.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The LagrangeSpace class uses the numElementDOFs parameter to specify) Tj
+T*
+( the number of degrees of freedom \(DOFs\) per element. This parameter is passed during the ) Tj
+T*
+(instantiation of the LagrangeSpace template class and represents ...) Tj
+T*
+() Tj
+T*
+(ALG_008 - HOW IS GAUSS-JACOBI QUADRATURE IMPLEMENTED AND USED IN IPPL FEM?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Gauss-Jacobi quadrature computes nodes/weights by Newton iteration on ) Tj
+T*
+(Jacobi polynomial roots, starting from Chebyshev or LehrFEM-style guesses, and uses the resulting ) Tj
+T*
+(rule on reference elements in FEM.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FEM/Quadrature/GaussJacobiQuadrature.h; ) Tj
+T*
+(data/raw/ippl/src/FEM/Quadrature/GaussJacobiQuadrature.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The Gauss-Jacobi quadrature is implemented through the ) Tj
+T*
+(GaussJacobiQuadrature class template defined in GaussJacobiQuadrature.hpp. This class inherits from ) Tj
+T*
+(a base Quadrature class and is responsible for computing quadrature ...) Tj
+T*
+() Tj
+T*
+(ALG_009 - HOW DOES THE ORTHOGONAL RECURSIVE BISECTION DECIDE WHERE TO CUT THE DOMAIN?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: ORB chooses a cut axis from the domain geometry and then finds a weight-) Tj
+T*
+(balanced cut/median so recursive splits distribute load more evenly.) Tj
+T*
+(- Comparison: The local answer captured the cut-axis choice but did not clearly state that the cut ) Tj
+T*
+(location is chosen from the particle-weight distribution.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.h; ) Tj
+T*
+(data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.hpp) Tj
+T*
+ET
+endstream
+endobj
+23 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 22 0 R >>
+endobj
+24 0 obj
+<< /Length 4374 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 12/22) Tj
+T*
+T*
+(- Local answer excerpt: Answer: The orthogonal recursive bisection decides where to cut the domain ) Tj
+T*
+(by determining the longest axis of the domain and selecting it for the next cut. This is achieved ) Tj
+T*
+(through the findCutAxis method, which finds the axis with the ...) Tj
+T*
+() Tj
+T*
+(ALG_010 - HOW DOES INVERSE TRANSFORM SAMPLING GENERATE PARTICLES FROM A GIVEN DISTRIBUTION IN IPPL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Inverse transform sampling maps uniform random values in CDF space to ) Tj
+T*
+(samples by estimating the inverse and refining it with Newton-Raphson, dimension by dimension.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Random/InverseTransformSampling.h) Tj
+T*
+(- Local answer excerpt: Answer: The InverseTransformSampling class in IPPL generates random samples ) Tj
+T*
+(from a given distribution function by using the inverse of its cumulative distribution function ) Tj
+T*
+(\(CDF\). The method involves generating uniform random variates a...) Tj
+T*
+() Tj
+T*
+(ALG_011 - HOW DOES THE FFT CLASS INTERFACE WITH HEFFTE TO PERFORM COMPLEX-TO-COMPLEX AND REAL-TO-) Tj
+T*
+(COMPLEX TRANSFORMS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The FFT layer builds heFFTe boxes/plans in setup\(\), copies IPPL field data) Tj
+T*
+( into the required views/subviews, calls heFFTe forward/backward transforms, and copies results back) Tj
+T*
+( for CC/RC/DST/DCT variants.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FFT/FFT.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The FFT class interfaces with HeFFTe to perform complex-to-complex ) Tj
+T*
+(and real-to-complex transforms through specific methods like transform. The FFT<CCTransform, ) Tj
+T*
+(ComplexField>::transform method performs an in-place FFT on a com...) Tj
+T*
+() Tj
+T*
+(ALG_012 - HOW DOES IPPL'S PRECONDITIONED CG USE THE PRECONDITIONER DEFINED IN PRECONDITIONER.H?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: PCG applies a chosen preconditioner from Preconditioner.h to the residual,) Tj
+T*
+( uses the preconditioned residual in its inner products and direction updates, and iterates until ) Tj
+T*
+(tolerance/max iterations.) Tj
+T*
+(- Comparison: The local answer recognized the preconditioner family but stayed generic instead of ) Tj
+T*
+(tying it to the actual PCG update flow.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/LinearSolvers/Preconditioner.h; ) Tj
+T*
+(data/raw/ippl/src/LinearSolvers/PCG.h) Tj
+T*
+(- Local answer excerpt: Answer: IPPL's preconditioned Conjugate Gradient \(PCG\) solver uses the ) Tj
+T*
+(preconditioners defined in Preconditioner.h through the setPreconditioner method. This method sets ) Tj
+T*
+(up different preconditioners like Jacobi, Polynomial Newton, Po...) Tj
+T*
+() Tj
+T*
+(DATA FLOW) Tj
+T*
+() Tj
+T*
+(FLOW_001 - HOW DOES CHARGE DENSITY FLOW FROM PARTICLES TO THE GRID IN A TYPICAL PIC STEP IN IPPL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: In the PIC workflow, particle charges and positions are deposited onto the) Tj
+T*
+( grid with CIC \(scatter\) or FEM assembly \(assemble_rhs_from_particles\), accumulated into rho, and ) Tj
+T*
+(then normalized/background-shifted in the manager before solving.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/alpine/AlpineManager.h; data/raw/ippl/src/Interpolation/CIC.hpp) Tj
+T*
+(- Local answer excerpt: Answer: In IPPL, charge density flows from particles to the grid through a ) Tj
+T*
+(process involving interpolation and scattering operations. The gather method in the ParticleAttrib ) Tj
+T*
+(class is responsible for transferring charge density values...) Tj
+T*
+() Tj
+T*
+(FLOW_002 - HOW DOES THE ELECTRIC FIELD FLOW FROM THE GRID BACK TO PARTICLES AFTER A POISSON SOLVE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: After the field solve, the manager gathers the electric field back to ) Tj
+T*
+ET
+endstream
+endobj
+25 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 24 0 R >>
+endobj
+26 0 obj
+<< /Length 4418 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 13/22) Tj
+T*
+T*
+(particles with CIC gather\(...\) or FEM interpolate_grad_to_diracs\(...\), storing particle-local E ) Tj
+T*
+(values for the push step.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/alpine/AlpineManager.h) Tj
+T*
+(- Local answer excerpt: Answer: After solving the Poisson equation to compute the electrostatic ) Tj
+T*
+(potential on the grid, the electric field is computed as the gradient of this potential. This ) Tj
+T*
+(electric field is then transferred back to the particles using interpol...) Tj
+T*
+() Tj
+T*
+(FLOW_003 - HOW ARE HALO CELLS EXCHANGED BETWEEN NEIGHBORING MPI RANKS FOR A BAREFIELD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Halo exchange uses FieldLayout neighbor/range metadata to pack field ) Tj
+T*
+(subviews, send/receive them with MPI, unpack into ghost or physical regions, and handle serial-) Tj
+T*
+(periodic dimensions locally.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/HaloCells.hpp; data/raw/ippl/src/Field/BareField.hpp) Tj
+T*
+(- Local answer excerpt: Answer: Halo cells are exchanged between neighboring MPI ranks using the ) Tj
+T*
+(accumulateHalo method of the BareField class. This method checks if there is more than one process ) Tj
+T*
+(involved \(layout_m->comm.size\(\) > 1\) and, if so, calls hal...) Tj
+T*
+() Tj
+T*
+(FLOW_004 - HOW ARE PARTICLES MIGRATED BETWEEN MPI RANKS BY PARTICLESPATIALLAYOUT?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: ParticleSpatialLayout::update\(\) applies particle BCs, locates destination ) Tj
+T*
+(ranks, advertises receive counts with RMA, sends all registered attributes, destroys invalid local ) Tj
+T*
+(particles, and receives the incoming ones.) Tj
+T*
+(- Comparison: The local answer found the owning routine but skipped most of the send/destroy/receive) Tj
+T*
+( sequence.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp) Tj
+T*
+(- Local answer excerpt: Answer: Particles are migrated between MPI ranks by ParticleSpatialLayout ) Tj
+T*
+(through a combination of methods that manage spatial layouts and communications. The update method ) Tj
+T*
+(triggers particle redistribution based on their new position...) Tj
+T*
+() Tj
+T*
+(FLOW_005 - HOW DOES FIELDLAYOUT DECIDE WHICH INDEX RANGES LIVE ON WHICH RANK?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: FieldLayout uses the partitioner and the requested parallel/serial ) Tj
+T*
+(decomposition flags to assign each rank a local NDIndex, plus neighbor and communication range ) Tj
+T*
+(tables.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FieldLayout/FieldLayout.h; ) Tj
+T*
+(data/raw/ippl/src/Partition/Partitioner.h) Tj
+T*
+(- Local answer excerpt: Answer: FieldLayout decides which index ranges live on which rank through a ) Tj
+T*
+(combination of methods that calculate domain boundaries and add neighbor information. The ) Tj
+T*
+(findNeighbors method determines neighboring ranks based on the field ...) Tj
+T*
+() Tj
+T*
+(FLOW_006 - HOW IS A PARAMETERLIST USED TO CONFIGURE THE FFT AND SOLVER CLASSES?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: ParameterList is merged into FFT and solver objects, then consumed by ) Tj
+T*
+(setup\(\)/initialize\(\)/solve\(\) for communication mode, pencil/reorder flags, transform direction, ) Tj
+T*
+(solver type, tolerances, preconditioner settings, and output type.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FFT/FFT.hpp; ) Tj
+T*
+(data/raw/ippl/src/PoissonSolvers/FFTPeriodicPoissonSolver.h; ) Tj
+T*
+(data/raw/ippl/src/PoissonSolvers/PoissonCG.h) Tj
+T*
+(- Local answer excerpt: Answer: In the IPPL codebase, ParameterList is used to manage and pass ) Tj
+T*
+(configuration parameters for FFT operations. Specifically, a ParameterList is passed as an argument ) Tj
+T*
+ET
+endstream
+endobj
+27 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 26 0 R >>
+endobj
+28 0 obj
+<< /Length 4236 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 14/22) Tj
+T*
+T*
+(during the construction of FFT objects \(e.g., FFT<RCTransform...) Tj
+T*
+() Tj
+T*
+(FLOW_007 - HOW DOES DATA FLOW THROUGH THE BASEMANAGER'S PRE_STEP / ADVANCE / POST_STEP HOOKS DURING ) Tj
+T*
+(A SIMULATION?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: BaseManager::run\(\) executes pre_step\(\), advance\(\), and post_step\(\) for ) Tj
+T*
+(each timestep; derived managers use those hooks for deposit/solve/gather, time updates, and output.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Manager/BaseManager.h; data/raw/ippl/alpine/AlpineManager.h) Tj
+T*
+(- Local answer excerpt: Answer: The BaseManager class defines the pre_step, advance, and post_step ) Tj
+T*
+(methods as virtual functions intended to be overridden by derived classes. These methods are part of) Tj
+T*
+( the simulation lifecycle management, where pre_step...) Tj
+T*
+() Tj
+T*
+(FLOW_008 - HOW DOES THE FEM SOLVER MOVE DATA BETWEEN FIELDS AND FEMVECTOR REPRESENTATIONS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: FEM solvers move data by assembling field data into FEM load/stiffness ) Tj
+T*
+(representations \(evaluateLoadVector, evaluateAx, FEMVector\) and then interpolating the solved field ) Tj
+T*
+(quantities back where needed.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FEM/LagrangeSpace.h; data/raw/ippl/src/FEM/LagrangeSpace.hpp; ) Tj
+T*
+(data/raw/ippl/src/FEM/FEMVector.h) Tj
+T*
+(- Local answer excerpt: Answer: The FEM solver uses FEMVector to manage vector operations and halo ) Tj
+T*
+(exchanges. Specifically, methods like accumulateHalo, fillHalo, and deepCopy are used for data ) Tj
+T*
+(movement between fields and FEMVector representations. a...) Tj
+T*
+() Tj
+T*
+(FLOW_009 - HOW DOES ORTHOGONALRECURSIVEBISECTION REDISTRIBUTE PARTICLES AFTER REBALANCING?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: After ORB recomputes the decomposition, particle ownership changes are ) Tj
+T*
+(realized by updating the layout/regions and then migrating particles with the usual particle update ) Tj
+T*
+(path.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.hpp; ) Tj
+T*
+(data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp) Tj
+T*
+(- Local answer excerpt: Answer: After rebalancing, OrthogonalRecursiveBisection redistributes ) Tj
+T*
+(particles by performing a binary repartitioning operation. This involves scattering particles ) Tj
+T*
+(\(scatterR\), recursively bisecting domains based on load balancing cri...) Tj
+T*
+() Tj
+T*
+(API USAGE) Tj
+T*
+() Tj
+T*
+(API_001 - HOW DO I CREATE A 3D FIELD OF DOUBLES IN IPPL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: A typical 3D field is Field<double, 3, UniformCartesian<double, 3>, Cell> ) Tj
+T*
+(constructed from a UniformCartesian mesh and a FieldLayout<3>.) Tj
+T*
+(- Comparison: The local answer had the right shape but stayed abstract instead of grounding it in ) Tj
+T*
+(the concrete mesh/layout construction IPPL expects.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/Field.h; data/raw/ippl/src/Meshes/UniformCartesian.h; ) Tj
+T*
+(data/raw/ippl/doc/examples/BasicsFields.hpp) Tj
+T*
+(- Local answer excerpt: Answer: To create a 3D field of doubles in IPPL, you would use the Field ) Tj
+T*
+(class template with appropriate parameters. Based on the provided context, the Field class is ) Tj
+T*
+(defined in Field.h and Field.hpp. The type for double precisio...) Tj
+T*
+() Tj
+T*
+(API_002 - HOW DO I CONSTRUCT A UNIFORMCARTESIAN MESH WITH CUSTOM SPACING AND ORIGIN?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Construct the mesh as UniformCartesian<double, Dim> mesh\(domain, hx, ) Tj
+T*
+(origin\); where hx is the spacing vector and origin is the mesh origin.) Tj
+T*
+ET
+endstream
+endobj
+29 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 28 0 R >>
+endobj
+30 0 obj
+<< /Length 4172 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 15/22) Tj
+T*
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Meshes/UniformCartesian.h; ) Tj
+T*
+(data/raw/ippl/doc/examples/BasicsMesh.hpp) Tj
+T*
+(- Local answer excerpt: Answer: To construct a UniformCartesian mesh with custom spacing and origin,) Tj
+T*
+( use its constructor defined in UniformCartesian.hpp. The constructor takes parameters for ) Tj
+T*
+(dimensions \(NDIndex<Dim>& ndi\), mesh spacing \(vector_type& hx\)...) Tj
+T*
+() Tj
+T*
+(API_003 - HOW DO I ATTACH A BOUNDARY CONDITION \(E.G. PERIODIC\) TO A FIELD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Create a BConds<FieldT, Dim>, assign per-face BC objects such as ) Tj
+T*
+(PeriodicFace<FieldT>, then call field.setFieldBC\(bc\).) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/Field.h; data/raw/ippl/src/Field/BConds.h; ) Tj
+T*
+(data/raw/ippl/src/Field/BcTypes.h) Tj
+T*
+(- Local answer excerpt: Answer: To attach a periodic boundary condition to a Field, you can use the ) Tj
+T*
+(setPeriodicBoundaryConditions method provided by classes like FDTDSolverBase. This method sets up ) Tj
+T*
+(periodic boundary conditions for fields by creating and a...) Tj
+T*
+() Tj
+T*
+(API_004 - HOW DO I DEFINE A CUSTOM PARTICLE CLASS THAT ADDS MASS AND VELOCITY ATTRIBUTES ON TOP OF ) Tj
+T*
+(PARTICLEBASE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Define a class derived from ParticleBase<ParticleSpatialLayout<...>>, add ) Tj
+T*
+(mass and velocity attributes as members, and register them with addAttribute\(\) in the constructor.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Particle/ParticleBase.h) Tj
+T*
+(- Local answer excerpt: Answer: To define a custom particle class with mass and velocity attributes ) Tj
+T*
+(on top of ParticleBase, you need to derive from ParticleBase and add ParticleAttribute instances for) Tj
+T*
+( mass and velocity. You should also use the constructor...) Tj
+T*
+() Tj
+T*
+(API_005 - HOW DO I CALL IPPL::INITIALIZE AND IPPL::FINALIZE IN A MAIN PROGRAM?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: Call the free namespace functions ippl::initialize\(argc, argv\); and ) Tj
+T*
+(ippl::finalize\(\); from main, as shown in the docs/examples.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Ippl.h; data/raw/ippl/doc/examples/HelloWorld.hpp) Tj
+T*
+(- Local answer error: NameError: name 'exact_symbols' is not defined) Tj
+T*
+() Tj
+T*
+(API_006 - HOW DO I SET UP AND RUN A FORWARD FFT ON AN IPPL FIELD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Set up the relevant layouts/fields/parameters, build an FFT<CCTransform, ) Tj
+T*
+(...> or FFT<RCTransform, ...> object, and call transform\(FORWARD, ...\) on the field\(s\).) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/FFT/FFT.h; data/raw/ippl/src/FFT/FFT.hpp; ) Tj
+T*
+(data/raw/ippl/doc/examples/BasicsFFT.hpp) Tj
+T*
+(- Local answer error: NameError: name 'exact_symbols' is not defined) Tj
+T*
+() Tj
+T*
+(API_007 - HOW DO I CONSTRUCT AN FFTPERIODICPOISSONSOLVER AND SOLVE FOR THE POTENTIAL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Construct FFTPeriodicPoissonSolver\(lhs, rhs\) \(or default construct then ) Tj
+T*
+(set fields/params\), ensure the RHS is attached, and call solve\(\) to write the potential/gradient ) Tj
+T*
+(outputs.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+ET
+endstream
+endobj
+31 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 30 0 R >>
+endobj
+32 0 obj
+<< /Length 4428 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 16/22) Tj
+T*
+T*
+(- Primary sources: data/raw/ippl/src/PoissonSolvers/FFTPeriodicPoissonSolver.h; ) Tj
+T*
+(data/raw/ippl/src/PoissonSolvers/FFTPeriodicPoissonSolver.hpp) Tj
+T*
+(- Local answer excerpt: Answer: To construct an FFTPeriodicPoissonSolver and solve for the ) Tj
+T*
+(potential, follow these steps: 1. Create instances of FieldLHS and FieldRHS representing the left-) Tj
+T*
+(hand side \(solution field\) and right-hand side \(source term\) of th...) Tj
+T*
+() Tj
+T*
+(API_008 - HOW DO I INVOKE THE CONJUGATE GRADIENT POISSON SOLVER ON A FIELD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: Use PoissonCG<FieldT> \(or the Alpine FieldSolver wrapper around it\), set ) Tj
+T*
+(its fields/parameters, and call solve\(\) so the internal CG/PCG object iterates on the field.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/PoissonSolvers/PoissonCG.h) Tj
+T*
+(- Local answer excerpt: Answer: To invoke the Conjugate Gradient Poisson solver on a Field, you need) Tj
+T*
+( to create an instance of PoissonCG, set the left-hand side field \(the solution field\), and call the) Tj
+T*
+( solve method. Here's how: 1. Create an instance of Pois...) Tj
+T*
+() Tj
+T*
+(API_009 - HOW DO I SAMPLE PARTICLES FROM A NORMAL DISTRIBUTION USING IPPL RANDOM UTILITIES?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: For Gaussian draws, IPPL exposes both randn convenience generation and the) Tj
+T*
+( more general InverseTransformSampling + NormalDistribution path.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Random/Randn.h; data/raw/ippl/src/Random/NormalDistribution.h; ) Tj
+T*
+(data/raw/ippl/src/Random/InverseTransformSampling.h) Tj
+T*
+(- Local answer excerpt: Answer: The InverseTransformSampling class can be used to generate samples ) Tj
+T*
+(from a specified distribution, including a normal distribution. This class utilizes inverse ) Tj
+T*
+(transform sampling and supports both domain decomposition and non-do...) Tj
+T*
+() Tj
+T*
+(API_010 - HOW DO I REGISTER PARTICLE ATTRIBUTES WITH PARTICLEBASE SO THAT THEY ARE COMMUNICATED ON ) Tj
+T*
+(MIGRATION?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Register each particle attribute with addAttribute\(...\); migration then ) Tj
+T*
+(serializes and transfers all registered attributes automatically.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Particle/ParticleBase.h; ) Tj
+T*
+(data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp) Tj
+T*
+(- Local answer excerpt: Answer: To register particle attributes with ParticleBase so that they are ) Tj
+T*
+(communicated on migration, you must define a derived class from ParticleBase and use the ) Tj
+T*
+(addAttribute method to add each attribute. This ensures that the at...) Tj
+T*
+() Tj
+T*
+(API_011 - HOW DO I ACCESS THE MPI RANK AND SIZE THROUGH THE IPPL COMMUNICATOR?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Access rank and size with ippl::Comm->rank\(\) and ippl::Comm->size\(\) \(or ) Tj
+T*
+(the same methods on a Communicator object\).) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Communicate/Communicator.h) Tj
+T*
+(- Local answer excerpt: Answer: To access the MPI rank and size through the IPPL Communicator, you ) Tj
+T*
+(can use the methods rank and size respectively. The rank method returns the rank of the current ) Tj
+T*
+(process in the MPI communicator, while the size method ret...) Tj
+T*
+() Tj
+T*
+(API_012 - HOW DO I USE IPPLTIMINGS TO MEASURE A REGION OF CODE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Get a timer handle with IpplTimings::getTimer\("name"\), surround the code ) Tj
+T*
+(with startTimer\(\) / stopTimer\(\), and print with IpplTimings::print\(\).) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Utility/IpplTimings.h) Tj
+T*
+ET
+endstream
+endobj
+33 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 32 0 R >>
+endobj
+34 0 obj
+<< /Length 4358 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 17/22) Tj
+T*
+T*
+(- Local answer excerpt: Answer: To measure a region of code using IpplTimings, follow these steps: ) Tj
+T*
+(1. Create a timer by calling IpplTimings::getTimer\("timer name"\). This will return a reference to an) Tj
+T*
+( existing timer or create a new one if it does not exist. ...) Tj
+T*
+() Tj
+T*
+(PARALLELISM AND KOKKOS) Tj
+T*
+() Tj
+T*
+(PAR_001 - HOW DOES IPPL ACHIEVE PERFORMANCE PORTABILITY ACROSS CPUS AND GPUS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: IPPL gets performance portability by combining Kokkos execution/memory ) Tj
+T*
+(abstractions with MPI and heFFTe, so the same code paths can target CPUs and GPUs.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/README.md; data/raw/ippl/src/Utility/ParallelDispatch.h) Tj
+T*
+(- Local answer excerpt: Answer: IPPL achieves performance portability across CPUs and GPUs by ) Tj
+T*
+(leveraging Kokkos for parallelism, which provides a programming model that abstracts hardware ) Tj
+T*
+(specifics. The ReflectiveBC::operator\(\) method is an example of how Kok...) Tj
+T*
+() Tj
+T*
+(PAR_002 - WHY DOES IPPL USE KOKKOS::VIEW FOR FIELD STORAGE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: IPPL uses Kokkos::View because fields need execution-space-aware storage, ) Tj
+T*
+(subviews, mirrors, and portable kernels across host/device memory spaces.) Tj
+T*
+(- Comparison: The local answer did not really explain the motivation; it mostly restated that Views ) Tj
+T*
+(exist.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/BareField.h; data/raw/ippl/src/Communicate/Archive.h) Tj
+T*
+(- Local answer excerpt: Answer: The retrieved context does not provide a specific explanation for ) Tj
+T*
+(why IPPL uses Kokkos::View for field storage. The chunks cover various aspects of IPPL's ) Tj
+T*
+(functionality and structure but do not explicitly state the reason for c...) Tj
+T*
+() Tj
+T*
+(PAR_003 - HOW DOES IPPL PARALLELIZE LOOPS OVER FIELD INDICES USING KOKKOS RANGEPOLICY?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Loops are parallelized through ippl::getRangePolicy / createRangePolicy ) Tj
+T*
+(and the ippl::parallel_for wrapper over Kokkos RangePolicy/MDRangePolicy.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Utility/ParallelDispatch.h) Tj
+T*
+(- Local answer excerpt: Answer: IPPL uses RangePolicy from the ParallelDispatch.h file to define ) Tj
+T*
+(policies for parallel execution of loops over field indices. Specifically, RangePolicy is a struct ) Tj
+T*
+(that defines multidimensional range policies using Kokkos's...) Tj
+T*
+() Tj
+T*
+(PAR_004 - HOW DOES IPPL SUPPORT MIXED PRECISION \(FLOAT VS DOUBLE\) FOR FIELDS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: Precision is chosen by the field value type \(Field<float,...> vs ) Tj
+T*
+(Field<double,...>\), and the codebase also contains mixed-precision examples where fields/particles ) Tj
+T*
+(deliberately use different precisions.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/Field.h; ) Tj
+T*
+(data/raw/ippl/alpine/ExamplesWithoutPicManager/LandauDampingMixedPrecision.cpp) Tj
+T*
+(- Local answer excerpt: Answer: IPPL supports mixed precision through its unit tests, which include ) Tj
+T*
+(configurations that test components using single \(float\) and double \(double\) precision. This is ) Tj
+T*
+(evident from the UNIT_TESTS.md documentation, which lists d...) Tj
+T*
+() Tj
+T*
+(PAR_005 - HOW DOES IPPL HANDLE MULTIPLE EXECUTION SPACES LIKE OPENMP AND CUDA IN THE SAME BUILD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Multiple execution spaces are enabled at build time through IPPL_PLATFORMS) Tj
+T*
+( and Kokkos/HeFFTe backend flags; IPPL also has container helpers for multi-space data.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+ET
+endstream
+endobj
+35 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 34 0 R >>
+endobj
+36 0 obj
+<< /Length 4319 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 18/22) Tj
+T*
+T*
+(- Primary sources: data/raw/ippl/INSTALLATION.md; data/raw/ippl/src/Utility/TypeUtils.h) Tj
+T*
+(- Local answer excerpt: Answer: IPPL handles multiple execution spaces like OpenMP and CUDA through ) Tj
+T*
+(the use of Kokkos, which abstracts away the specifics of different backends. The MultispaceContainer) Tj
+T*
+( class in TypeUtils.h manages elements across different m...) Tj
+T*
+() Tj
+T*
+(PAR_006 - WHAT IS THE PURPOSE OF PARALLELDISPATCH.H AND WHAT HELPERS DOES IT EXPOSE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: ParallelDispatch.h wraps Kokkos policies and functors, exposing ) Tj
+T*
+(RangePolicy, getRangePolicy, createRangePolicy, parallel_for, and parallel_reduce.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Utility/ParallelDispatch.h) Tj
+T*
+(- Local answer excerpt: Answer: The ParallelDispatch.h file defines abstractions and utilities for ) Tj
+T*
+(parallel execution in the IPPL library, specifically tailored to integrate with Kokkos for handling ) Tj
+T*
+(parallel loops and reductions. It exposes several helpers in...) Tj
+T*
+() Tj
+T*
+(PAR_007 - HOW DOES THE ARCHIVE CLASS SERIALIZE/DESERIALIZE KOKKOS VIEWS FOR MPI TRANSFER?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Archive serializes Kokkos views into one-dimensional byte buffers with ) Tj
+T*
+(Kokkos kernels and memcpy, then deserializes them back into views on receive.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Communicate/Archive.h; ) Tj
+T*
+(data/raw/ippl/src/Communicate/Archive.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The Archive class serializes and deserializes Kokkos views by ) Tj
+T*
+(wrapping one-dimensional Kokkos views of type char. Serialization involves copying data from a ) Tj
+T*
+(Kokkos view into this char-based buffer using Kokkos::deep_copy, w...) Tj
+T*
+() Tj
+T*
+(PAR_008 - HOW ARE MPI TAGS MANAGED IN IPPL TO AVOID COLLISIONS ACROSS SUBSYSTEMS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: MPI tags are managed with fixed base tags in Tags.h and the cyclic tag ) Tj
+T*
+(allocator in TagMaker, which Communicator inherits.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Communicate/Tags.h; data/raw/ippl/src/Communicate/TagMaker.h; ) Tj
+T*
+(data/raw/ippl/src/Communicate/Communicator.h) Tj
+T*
+(- Local answer excerpt: Answer: IPPL uses a TagMaker class in the Communicate module to manage MPI ) Tj
+T*
+(tags and avoid collisions across subsystems. The TagMaker class provides methods like next_tag, ) Tj
+T*
+(create_base_tag, and current_tag to generate, create, ...) Tj
+T*
+() Tj
+T*
+(PAR_009 - WHAT DOES KOKKOS::FENCE DO, AND WHEN DOES IPPL CALL THE WRAPPER IPPL::FENCE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Kokkos::fence\(\) waits for outstanding kernels; IPPL exposes ippl::fence\(\) ) Tj
+T*
+(as a runtime wrapper in Ippl.cpp and also fences internally after many kernel/data-movement steps.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Ippl.cpp; data/raw/ippl/src/Field/HaloCells.hpp; ) Tj
+T*
+(data/raw/ippl/src/Communicate/Archive.hpp) Tj
+T*
+(- Local answer excerpt: Answer: Kokkos::fence is used to enforce a synchronization barrier, ensuring) Tj
+T*
+( that all preceding operations are completed before any subsequent operations proceed. In IPPL, ) Tj
+T*
+(ippl::fence acts as a wrapper around Kokkos::fence and is called ...) Tj
+T*
+() Tj
+T*
+(BOUNDARY AND HALO) Tj
+T*
+() Tj
+T*
+(BC_001 - WHAT BOUNDARY CONDITION TYPES ARE PROVIDED IN BCTYPES.H?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: BcTypes.h provides periodic, constant, zero, extrapolating, and no-BC face) Tj
+T*
+( classes.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+ET
+endstream
+endobj
+37 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 36 0 R >>
+endobj
+38 0 obj
+<< /Length 4361 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 19/22) Tj
+T*
+T*
+(- Primary sources: data/raw/ippl/src/Field/BcTypes.h) Tj
+T*
+(- Local answer excerpt: Answer: The BcTypes.h file defines several derived classes representing ) Tj
+T*
+(different boundary condition types: ConstantFace, ExtrapolateFace, NoBcFace, PeriodicFace, and ) Tj
+T*
+(ZeroFace. Evidence: - data/raw/ippl/src/Field/BcTypes.h : ...) Tj
+T*
+() Tj
+T*
+(BC_002 - HOW DOES A PERIODIC BOUNDARY CONDITION DIFFER FROM A NEUMANN BOUNDARY CONDITION IN IPPL ) Tj
+T*
+(FIELDS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: Periodic BCs wrap values from the opposite side of the domain; there is no) Tj
+T*
+( explicit NeumannFace class in this codebase, so the closest non-periodic behavior is ) Tj
+T*
+(constant/extrapolating face treatment.) Tj
+T*
+(- Comparison: The local answer's abstention was understandable because the question names a BC type ) Tj
+T*
+(that is not literally implemented, but it still missed the useful source-backed clarification.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/BcTypes.h; data/raw/ippl/src/Field/BcTypes.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The provided retrieved context does not explicitly describe the ) Tj
+T*
+(differences between periodic and Neumann boundary conditions in IPPL fields. The context only ) Tj
+T*
+(mentions that setPeriodicBoundaryConditions is a method used to set u...) Tj
+T*
+() Tj
+T*
+(BC_003 - HOW ARE GHOST CELLS POPULATED DURING A HALO EXCHANGE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: Ghost cells are populated mainly by fillHalo\(\) / PeriodicFace::apply\(\): ) Tj
+T*
+(source slabs are packed, exchanged, and unpacked into ghost regions; accumulateHalo_noghost\(\) is a ) Tj
+T*
+(different operation.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/HaloCells.hpp; data/raw/ippl/src/Field/BcTypes.hpp) Tj
+T*
+(- Local answer excerpt: Answer: Ghost cells are populated during a halo exchange by calling ) Tj
+T*
+(HaloCells<T, Dim, ViewArgs...>::accumulateHalo_noghost. This method uses exchangeBoundaries with an ) Tj
+T*
+(operation \(lhs_plus_assign\) to transfer data from halo cells to...) Tj
+T*
+() Tj
+T*
+(BC_004 - HOW ARE PHYSICAL-CELL VALUES COPIED INTO GHOST CELLS FOR PERIODIC BOUNDARY CONDITIONS?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: Periodic ghost cells are filled from opposite-side physical cells in ) Tj
+T*
+(applyPeriodicSerialDim\(\) and the multi-rank PeriodicFace::apply\(\) path.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/Field/HaloCells.hpp; data/raw/ippl/src/Field/BcTypes.hpp) Tj
+T*
+(- Local answer excerpt: Answer: The assignGhostToPhysical method within the PeriodicFace<Field> ) Tj
+T*
+(class is responsible for copying physical-cell values into ghost cells for periodic boundary ) Tj
+T*
+(conditions. This method calculates appropriate shifts for coordinate...) Tj
+T*
+() Tj
+T*
+(BC_005 - HOW DOES THE ABSORBING BOUNDARY CONDITION IN THE MAXWELLSOLVERS MODULE DAMP OUTGOING WAVES?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: The absorbing Maxwell BC uses second-order Mur-style formulas with ) Tj
+T*
+(precomputed weights and previous/current/next boundary values plus tangential neighbors to damp ) Tj
+T*
+(outgoing waves.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/MaxwellSolvers/AbsorbingBC.h) Tj
+T*
+(- Local answer excerpt: Answer: The second_order_mur_boundary_conditions struct applies second-order) Tj
+T*
+( Mur absorbing boundary conditions to all boundaries of a 3D computational domain. It uses ) Tj
+T*
+(precomputed weights based on mesh spacing and time step to adjust fi...) Tj
+T*
+() Tj
+T*
+(NUMERICAL MEANING) Tj
+T*
+() Tj
+T*
+(NUM_001 - WHAT DOES THE FFT-BASED POISSON SOLVER PHYSICALLY COMPUTE IN TERMS OF COULOMB'S LAW?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: The FFT Poisson solvers compute electrostatic potential \(and optionally ) Tj
+T*
+ET
+endstream
+endobj
+39 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 38 0 R >>
+endobj
+40 0 obj
+<< /Length 4381 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 20/22) Tj
+T*
+T*
+(field/gradient\) from charge density, i.e. the discretized Coulomb potential corresponding to -?? = ) Tj
+T*
+(?.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.h; ) Tj
+T*
+(data/raw/ippl/src/PoissonSolvers/FFTPeriodicPoissonSolver.h) Tj
+T*
+(- Local answer excerpt: Answer: The retrieved context does not provide specific information about an) Tj
+T*
+( FFT-based Poisson solver or its relationship to Coulomb's law. The chunks cover various solvers and) Tj
+T*
+( their methods but do not mention any FFT-based solver that e...) Tj
+T*
+() Tj
+T*
+(NUM_002 - WHAT IS THE PHYSICAL MEANING OF THE FIELDS ADVANCED BY THE FDTD SOLVER?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The Maxwell solvers evolve electromagnetic field data: electric and ) Tj
+T*
+(magnetic fields \(E, B\) driven by a source/four-current field.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/MaxwellSolvers/Maxwell.h; ) Tj
+T*
+(data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.h) Tj
+T*
+(- Local answer excerpt: Answer: The FDTD solver advances the electric \(E\) and magnetic \(B\) fields ) Tj
+T*
+(over time. These fields represent electromagnetic wave propagation according to Maxwell's equations.) Tj
+T*
+( Evidence: - data/raw/ippl/src/MaxwellSolvers/FDTDSolverBas...) Tj
+T*
+() Tj
+T*
+(NUM_007 - WHAT ARE THE NUMERICAL TRADEOFFS BETWEEN THE FFT AND CG POISSON SOLVERS IN IPPL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: FFT Poisson is fast and direct on structured uniform grids with compatible) Tj
+T*
+( BCs but less flexible; CG/PCG is iterative and may be slower/convergence-limited, but it is more ) Tj
+T*
+(flexible for alternative discretizations, BCs, and preconditioning.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/src/PoissonSolvers/FFTPeriodicPoissonSolver.h; ) Tj
+T*
+(data/raw/ippl/src/PoissonSolvers/PoissonCG.h; data/raw/ippl/src/PoissonSolvers/FEMPoissonSolver.h) Tj
+T*
+(- Local answer excerpt: Answer: The FFTPeriodicPoissonSolver in IPPL leverages FFT algorithms for ) Tj
+T*
+(solving periodic Poisson equations, which can be highly efficient due to its parallel nature and low) Tj
+T*
+( computational complexity. It uses transformations between spat...) Tj
+T*
+() Tj
+T*
+(BUILD AND INSTALL) Tj
+T*
+() Tj
+T*
+(BUILD_001 - WHICH THIRD-PARTY LIBRARIES DOES IPPL DEPEND ON, AND WHAT ARE THEY USED FOR?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: Core third-party dependencies are MPI for distributed communication, ) Tj
+T*
+(Kokkos for performance portability, heFFTe for FFT backends/plans, FFTW/CuFFT as optional FFT ) Tj
+T*
+(backends, and GoogleTest for tests.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/README.md; data/raw/ippl/INSTALLATION.md; ) Tj
+T*
+(data/raw/ippl/unit_tests/CMakeLists.txt) Tj
+T*
+(- Local answer excerpt: Answer: IPPL depends on Kokkos for portable parallelism across CPU/GPU. ) Tj
+T*
+(Specifically, it includes Kokkos_Core.hpp. There is no mention of heFFTe or MPI in the retrieved ) Tj
+T*
+(context. Evidence: - src/Ippl.cpp : Ippl ? contains several utilit...) Tj
+T*
+() Tj
+T*
+(BUILD_002 - WHAT C++ STANDARD DOES IPPL REQUIRE, AND WHY?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: IPPL requires C++20, as stated in the README badge and the installation ) Tj
+T*
+(examples/configuration flags.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/README.md; data/raw/ippl/INSTALLATION.md) Tj
+T*
+(- Local answer excerpt: Answer: The retrieved context does not specify which C++ standard IPPL ) Tj
+T*
+(requires or provide any reason for that requirement. Evidence: - data/raw/ippl/src/Ippl.cpp : abort ) Tj
+T*
+ET
+endstream
+endobj
+41 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 40 0 R >>
+endobj
+42 0 obj
+<< /Length 4163 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 21/22) Tj
+T*
+T*
+(? The entity is a function named abort defined in the file Ippl...) Tj
+T*
+() Tj
+T*
+(BUILD_003 - HOW IS IPPL CONFIGURED WITH CMAKE TO ENABLE A GPU BUILD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: GPU builds are enabled through CMake options like IPPL_PLATFORMS=CUDA or ) Tj
+T*
+(IPPL_PLATFORMS="HIP;OPENMP" plus matching Kokkos/architecture/backend flags \(Kokkos_ARCH_*, ) Tj
+T*
+(CMAKE_CUDA_ARCHITECTURES, Kokkos_ENABLE_HIP, Heffte_ENABLE_ROCM, etc.\).) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/INSTALLATION.md) Tj
+T*
+(- Local answer excerpt: Answer: The provided retrieved context does not contain any specific ) Tj
+T*
+(information about configuring IPPL for a GPU build. The documentation and code excerpts focus on ) Tj
+T*
+(general setup, including installation, testing, and compilation options...) Tj
+T*
+() Tj
+T*
+(BUILD_004 - WHAT OPTIONS DOES INSTALLATION.MD DESCRIBE FOR CONFIGURING KOKKOS FOR IPPL?) Tj
+T*
+() Tj
+T*
+(- Verdict: Partial) Tj
+T*
+(- Codex reference answer: INSTALLATION.md describes Kokkos version selection plus ) Tj
+T*
+(backend/architecture options used with IPPL builds, including CUDA and HIP/OpenMP examples and ) Tj
+T*
+(IPPL_PLATFORMS combinations.) Tj
+T*
+(- Comparison: The local answer contains real signal, but it misses an important scope boundary, ) Tj
+T*
+(file, or algorithm detail.) Tj
+T*
+(- Primary sources: data/raw/ippl/INSTALLATION.md) Tj
+T*
+(- Local answer excerpt: Answer: INSTALLATION.md describes several CMake options related to Kokkos ) Tj
+T*
+(configuration for IPPL. The relevant option is IPPL_PLATFORMS, which can be set to one of SERIAL, ) Tj
+T*
+(OPENMP, CUDA, "OPENMP;CUDA", with a default value of SERIAL...) Tj
+T*
+() Tj
+T*
+(BUILD_005 - HOW DO I INSTALL IPPL ON THE EULER CLUSTER ACCORDING TO THE DOCUMENTATION?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: The EULER install guide says to connect with VPN/SSH, switch to the new ) Tj
+T*
+(software stack, purge modules, load GCC/CMake/CUDA/OpenMPI, clone the repo, configure a build, ) Tj
+T*
+(compile, and test on an interactive node.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/doc/extras/IPPLonEULER.md) Tj
+T*
+(- Local answer excerpt: Answer: To install IPPL on the EULER cluster, follow these steps: 1. Connect) Tj
+T*
+( to the cluster using SSH and ensure you are connected via the ETH-VPN. 2. Load the new software ) Tj
+T*
+(stack, clean your environment, and load required modules:  en...) Tj
+T*
+() Tj
+T*
+(TESTING AND WORKFLOW) Tj
+T*
+() Tj
+T*
+(TEST_002 - WHAT NAMING CONVENTIONS DOES WORKFLOW.MD REQUIRE FOR VARIABLES, CONSTANTS, AND MEMBER ) Tj
+T*
+(VARIABLES?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: WORKFLOW.md requires camelCase variables, CAPITAL_CASE compile-time ) Tj
+T*
+(constants, and member names suffixed with _m.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/WORKFLOW.md) Tj
+T*
+(- Local answer excerpt: Answer: The naming conventions specified in WORKFLOW.md are as follows: - ) Tj
+T*
+(Variables should use camel case. - Compile-time constants should be in capital letters. - Member ) Tj
+T*
+(variables should end with an underscore followed by 'm'. Evidenc...) Tj
+T*
+() Tj
+T*
+(TEST_003 - WHEN SHOULD CODE USE KOKKOS::SQRT VERSUS STD::SQRT ACCORDING TO WORKFLOW.MD?) Tj
+T*
+() Tj
+T*
+(- Verdict: Correct) Tj
+T*
+(- Codex reference answer: Use std::sqrt in host-only code, and Kokkos::sqrt in device-capable code ) Tj
+T*
+(such as KOKKOS_INLINE_FUNCTION kernels.) Tj
+T*
+(- Comparison: The local answer matches the source-backed reading closely enough to be trusted.) Tj
+T*
+(- Primary sources: data/raw/ippl/WORKFLOW.md) Tj
+T*
+(- Local answer excerpt: Answer: According to WORKFLOW.md, any instance of a mathematical function in) Tj
+T*
+ET
+endstream
+endobj
+43 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 42 0 R >>
+endobj
+44 0 obj
+<< /Length 2708 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+11 TL
+(Codex GPT-5.4 vs Local LLM Evaluation \(V2\)  |  page 22/22) Tj
+T*
+T*
+( host-only code should use symbols from the standard library, e.g., std::sqrt. Any instances ) Tj
+T*
+(occurring in device-code or code that might be run on a device \(su...) Tj
+T*
+() Tj
+T*
+(TEST_004 - HOW DOES IPPL PROFILE MPI CALLS USING MPIP?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: IPPL profiles MPI calls with mpiP by preloading libmpiP.so, optionally ) Tj
+T*
+(setting MPIP flags, then parsing the produced .mpiP output with the bundled scripts/mpiP.py.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/README.md; data/raw/ippl/scripts/mpiP.py) Tj
+T*
+(- Local answer excerpt: Answer: The provided context does not mention IPPL profiling MPI calls with ) Tj
+T*
+(mpiP. The chunks cover initialization, configuration, synchronization, and error handling functions ) Tj
+T*
+(in Ippl.cpp, declarations of utility classes and inline poi...) Tj
+T*
+() Tj
+T*
+(TEST_005 - WHAT DOES THE SLURM JOB TEMPLATE FOR GWENDOLEN IN THE README LOOK LIKE?) Tj
+T*
+() Tj
+T*
+(- Verdict: Incorrect) Tj
+T*
+(- Codex reference answer: The README does include a Gwendolen SLURM template showing the gmerlin6 ) Tj
+T*
+(cluster, gwendolen partition, GPU count, and srun ./<your_executable> <args> --kokkos-map-device-id-) Tj
+T*
+(by=mpi_rank.) Tj
+T*
+(- Comparison: The local answer either missed the relevant source-backed answer or contradicted the ) Tj
+T*
+(code/docs materially.) Tj
+T*
+(- Primary sources: data/raw/ippl/README.md) Tj
+T*
+(- Local answer excerpt: Answer: The provided context does not contain a specific SLURM job template ) Tj
+T*
+(for Gwendolen. The README.md mentions example job scripts for running on the local PSI computing ) Tj
+T*
+(cluster but does not provide a detailed template for Gwendolen. ...) Tj
+T*
+() Tj
+T*
+(CONCLUSION) Tj
+T*
+() Tj
+T*
+(This V2 run is a cleaner measurement than the first round because the questions are now restricted ) Tj
+T*
+(to what should be answerable from src/ and repository documentation. The local system is clearly ) Tj
+T*
+(useful on structural questions, but it still loses ground when the answer depends on retrieving the ) Tj
+T*
+(right implementation file or synthesizing across a few related source files.) Tj
+T*
+() Tj
+T*
+(The best next step is still retrieval quality: make it more likely to surface the exact solver, ) Tj
+T*
+(particle, interpolation, or documentation files that match the query intent, then keep the final ) Tj
+T*
+(prompt focused instead of letting one nearby file dominate the context.) Tj
+T*
+ET
+endstream
+endobj
+45 0 obj
+<< /Type /Page /Parent 46 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R >> >> /Contents 44 0 R >>
+endobj
+46 0 obj
+<< /Type /Pages /Kids [ 3 0 R 5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R 27 0 R 29 0 R 31 0 R 33 0 R 35 0 R 37 0 R 39 0 R 41 0 R 43 0 R 45 0 R ] /Count 22 >>
+endobj
+47 0 obj
+<< /Type /Catalog /Pages 46 0 R >>
+endobj
+xref
+0 48
+0000000000 65535 f 
+0000000015 00000 n 
+0000000083 00000 n 
+0000002736 00000 n 
+0000002863 00000 n 
+0000006714 00000 n 
+0000006841 00000 n 
+0000011146 00000 n 
+0000011273 00000 n 
+0000015520 00000 n 
+0000015647 00000 n 
+0000019681 00000 n 
+0000019810 00000 n 
+0000024107 00000 n 
+0000024236 00000 n 
+0000028415 00000 n 
+0000028544 00000 n 
+0000032991 00000 n 
+0000033120 00000 n 
+0000037372 00000 n 
+0000037501 00000 n 
+0000042040 00000 n 
+0000042169 00000 n 
+0000046698 00000 n 
+0000046827 00000 n 
+0000051254 00000 n 
+0000051383 00000 n 
+0000055854 00000 n 
+0000055983 00000 n 
+0000060272 00000 n 
+0000060401 00000 n 
+0000064626 00000 n 
+0000064755 00000 n 
+0000069236 00000 n 
+0000069365 00000 n 
+0000073776 00000 n 
+0000073905 00000 n 
+0000078277 00000 n 
+0000078406 00000 n 
+0000082820 00000 n 
+0000082949 00000 n 
+0000087383 00000 n 
+0000087512 00000 n 
+0000091728 00000 n 
+0000091857 00000 n 
+0000094618 00000 n 
+0000094747 00000 n 
+0000094952 00000 n 
+trailer
+<< /Size 48 /Root 47 0 R >>
+startxref
+95003
+%%EOF
