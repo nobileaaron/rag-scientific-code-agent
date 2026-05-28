@@ -39,15 +39,34 @@ class Embedder:
                 self.transformer_model_name,
                 **model_kwargs,
             )
+        # Regex pattern to detect file names like Ippl.cpp, BareField.h etc...
         self.file_extension_pattern = re.compile(
             r"\b[A-Za-z0-9_\-]+\.(?:cpp|hpp|h|md|rst|txt)\b",
             re.IGNORECASE,
         )
-
+        self.cpp_code_syntax_pattern = re.compile(
+            r"""
+            `([^`]*?(?:::|->|\.|<[^`<>]+>|\([^`]*\)|;|\{|\}|\#include)[^`]*)`
+            |
+            \#include\s*[<"][^>"]+[>"]
+            |
+            \b[A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)+
+            (?:\s*<[^>\n]+>)?(?:\s*\([^)\n]*\))?
+            |
+            \b[A-Za-z_][A-Za-z0-9_]*(?:->|\.)[A-Za-z_][A-Za-z0-9_]*\s*\([^)\n]*\)
+            |
+            \b[A-Za-z_][A-Za-z0-9_]*\s*<[^>\n]+>\s+[A-Za-z_][A-Za-z0-9_]*\b
+            |
+            \b[A-Za-z_][A-Za-z0-9_]*\s*\([^)\n]*\)\s*;?
+            """,
+            re.VERBOSE,
+        )
+    # returns active backend name, e.g. "ollama" or "sentence_transformer"
     @property
     def embedding_backend(self):
         return self.backend
-
+    
+    # returns active embedding model name, e.g. "nomic-embed-text" for ollama or "all-MiniLM-L6-v2" for sentence_transformer
     @property
     def embedding_model_name(self):
         if self.backend == "sentence_transformer":
@@ -148,19 +167,29 @@ Code:
 """
 
     def _build_query_embedding_prompt(self, text):
-        file_name = self._extract_file_name(text)
-        intent = self._infer_intent(text)
+        file_names = self._extract_file_names(text)
+        file_name = ", ".join(file_names)
+        intent = (
+            "find relation across FILES which is asked in QUESTION"
+            if len(file_names) > 1
+            else self._infer_intent(text)
+        )
+        chunk_types = self._find_chunk_type(text)
+        chunk_type = ", ".join(chunk_types) if chunk_types else "any"
+        detected_code = self._extract_detected_code(text)
 
-        return f"""
-File: {file_name}
-Symbol:
-Chunk Type: query
-Parent Symbol:
-Section Path:
-Intent: {intent}
-Code:
-{text}
-"""
+        sections = []
+        if file_name:
+            sections.append(f"File: {file_name}")
+        if chunk_type:
+            sections.append(f"Chunk Type: {chunk_type}")
+        if intent:
+            sections.append(f"Intent: {intent}")
+        sections.append(f"Question:\n{text}")
+        if detected_code:
+            sections.append(f"Code:\n{detected_code}")
+
+        return "\n" + "\n".join(sections) + "\n"
 
     def _is_bge_code_model(self):
         return self.transformer_model_name in self.BGE_CODE_MODEL_NAMES
@@ -169,8 +198,35 @@ Code:
         return f"<instruct>{self.BGE_CODE_QUERY_INSTRUCTION}\n<query>"
 
     def _extract_file_name(self, text):
-        match = self.file_extension_pattern.search(text)
-        return match.group(0) if match else ""
+        file_names = self._extract_file_names(text)
+        return file_names[0] if file_names else ""
+
+    def _extract_file_names(self, text):
+        seen = set()
+        file_names = []
+        for match in self.file_extension_pattern.finditer(text):
+            file_name = match.group(0)
+            normalized = file_name.lower()
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            file_names.append(file_name)
+        return file_names
+
+    def _extract_detected_code(self, text):
+        seen = set()
+        snippets = []
+        for match in self.cpp_code_syntax_pattern.finditer(text):
+            snippet = match.group(1) or match.group(0)
+            snippet = " ".join(snippet.split())
+            if not snippet:
+                continue
+            normalized = snippet.lower()
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            snippets.append(snippet)
+        return ", ".join(snippets)
 
     def _infer_intent(self, text):
         lowered = text.lower()
@@ -181,6 +237,27 @@ Code:
         if "how" in lowered:
             return "explain implementation details"
         return "answer question using retrieved context"
+    
+    def _find_chunk_type(self, text):
+        lowered = text.lower()
+        chunk_types = []
+        if "method" in lowered or "method definition" in lowered:
+            chunk_types.append("method_definition, method_declaration")
+        if " class " in lowered:
+            chunk_types.append("class_or_struct")
+        if "data flow" in lowered or "workflow" in lowered:
+            chunk_types.append("call_chain_level")
+        if " struct " in lowered:
+            chunk_types.append("struct")
+        if "function" in lowered or "function definition" in lowered:
+            chunk_types.append("function_definition")
+        if "file" in lowered:
+            chunk_types.append("file_level")
+        if "module" in lowered:
+            chunk_types.append("module_level")
+        if " documentation " in lowered:
+            chunk_types.append("section, paragraph, code_block")
+        return chunk_types 
 
     def _truncate_for_embedding(self, text, max_chars):
         if max_chars is None:
