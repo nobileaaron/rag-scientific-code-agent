@@ -5,11 +5,15 @@
     "max_chunk_size": 3000,
     "chunk_explanation_allowed_types": [
       "function_definition",
+      "function_declaration",
       "method_definition",
+      "method_declaration",
       "class",
       "struct",
-      "section",
-      "paragraph",
+      "enum",
+      "type_alias",
+      "global_variable",
+      "namespace",
       "code_block"
     ],
     "chunk_explanation_min_content_length": 120,
@@ -44,6 +48,14 @@
     "candidate_k": 20,
     "supplementary_k": 3,
     "supplementary_candidate_k": 10,
+    "primary_score_relative_floor": 0.4,
+    "primary_score_gap_threshold": 8.0,
+    "primary_score_absolute_floor": 1.25,
+    "primary_same_symbol_cap": 1,
+    "primary_same_file_cap": 2,
+    "dominant_file_ratio": 0.75,
+    "lexical_metadata_weight": 0.4,
+    "entity_target_weight": 0.7,
     "debug_enabled_by_default": false
   }
 }

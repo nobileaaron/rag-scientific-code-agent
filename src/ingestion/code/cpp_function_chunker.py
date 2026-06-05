@@ -62,6 +62,7 @@ class CppFunctionChunker:
                         "language": function.get("language", "cpp"),
                         "section_path": function.get("section_path", function.get("namespace_path", "")),
                         "namespace_path": function.get("namespace_path", ""),
+                        "qualified_symbol_name": function.get("qualified_symbol_name", ""),
                         "chunk_index": i,
                         "total_chunks": total_chunks,
                         "function_name": chunk_name,

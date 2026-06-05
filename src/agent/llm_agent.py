@@ -99,6 +99,8 @@ class LLMAgent:
             chunk_type = chunk.get("chunk_type", chunk.get("entity_type", ""))
             entity_level = chunk.get("entity_level", "")
             file_path = chunk.get("path", chunk.get("file", ""))
+            namespace_path = chunk.get("namespace_path", "")
+            qualified_symbol_name = chunk.get("qualified_symbol_name", "")
             section_path = chunk.get("section_path", "")
             parameters = chunk.get("parameters", "")
             chunk_index = chunk.get("chunk_index", 1)
@@ -155,6 +157,10 @@ class LLMAgent:
                 f"Symbol: {symbol_name or 'unknown'}",
                 f"Path: {file_path or 'unknown'}",
             ]
+            if namespace_path:
+                chunk_lines.append(f"Namespace: {namespace_path}")
+            if qualified_symbol_name:
+                chunk_lines.append(f"Qualified Symbol: {qualified_symbol_name}")
             if self._should_show_chunk_type(
                 display_chunk_type=display_chunk_type,
                 display_entity_level=display_entity_level,
@@ -213,9 +219,11 @@ class LLMAgent:
         display_parent_symbol,
         explanation_text,
         expansion_text,
-    ):
+        ):
         symbol_name = chunk.get("symbol_name", chunk.get("function_name", ""))
         file_path = chunk.get("path", chunk.get("file", ""))
+        namespace_path = chunk.get("namespace_path", "")
+        qualified_symbol_name = chunk.get("qualified_symbol_name", "")
         chunk_lines = [
             f"### Retrieved Chunk {rank}",
             "Retrieval Role: supplementary",
@@ -223,6 +231,10 @@ class LLMAgent:
             f"Symbol: {symbol_name or 'unknown'}",
             f"Path: {file_path or 'unknown'}",
         ]
+        if namespace_path:
+            chunk_lines.append(f"Namespace: {namespace_path}")
+        if qualified_symbol_name:
+            chunk_lines.append(f"Qualified Symbol: {qualified_symbol_name}")
 
         if self._should_show_chunk_type(
             display_chunk_type=display_chunk_type,

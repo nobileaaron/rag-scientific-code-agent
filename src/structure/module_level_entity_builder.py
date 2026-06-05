@@ -116,6 +116,10 @@ class ModuleLevelEntityBuilder:
                     entity.get("contained_symbol_names", [])
                     for entity in member_file_entities
                 ),
+                "contained_qualified_symbol_names": self._aggregate_unique(
+                    entity.get("contained_qualified_symbol_names", [])
+                    for entity in member_file_entities
+                ),
                 "contained_symbol_types": self._aggregate_unique(
                     entity.get("contained_symbol_types", [])
                     for entity in member_file_entities
@@ -195,13 +199,16 @@ class ModuleLevelEntityBuilder:
                 for file_record in file_records
             )
         ) or "- none"
-        symbol_text = "\n".join(
-            f"- {symbol_name}"
-            for symbol_name in self._aggregate_unique(
+        contained_symbols = self._aggregate_unique(
+            entity.get("contained_qualified_symbol_names", [])
+            for entity in member_file_entities
+        )
+        if not contained_symbols:
+            contained_symbols = self._aggregate_unique(
                 entity.get("contained_symbol_names", [])
                 for entity in member_file_entities
             )
-        ) or "- none"
+        symbol_text = "\n".join(f"- {symbol_name}" for symbol_name in contained_symbols) or "- none"
         source_types = sorted(
             {
                 file_record.get("source_type", "")

@@ -22,6 +22,7 @@ class TreeSitterCallGraphBuilder:
         self.symbol_records = symbol_records
         self.callable_types = {
             "function_definition",
+            "function_declaration",
             "method_definition",
             "method_declaration",
         }
@@ -128,6 +129,7 @@ class TreeSitterCallGraphBuilder:
 
             symbol_name = symbol.get("symbol_name", "")
             parent_symbol = symbol.get("parent_symbol", "")
+            qualified_symbol_name = symbol.get("qualified_symbol_name", "")
             file_path = symbol.get("file_path", "")
             module_scope = symbol.get("module_scope", "")
             module_path = symbol.get("module_path", "")
@@ -137,6 +139,8 @@ class TreeSitterCallGraphBuilder:
                 self.symbols_by_name[symbol_name].append(symbol)
                 self.symbols_by_file_and_name[(file_path, symbol_name)].append(symbol)
                 self.symbols_by_module_and_name[(module_key, symbol_name)].append(symbol)
+            if qualified_symbol_name:
+                self.symbols_by_qualified_name[qualified_symbol_name].append(symbol)
             if symbol_name and parent_symbol:
                 self.symbols_by_qualified_name[f"{parent_symbol}::{symbol_name}"].append(symbol)
 
@@ -217,8 +221,9 @@ class TreeSitterCallGraphBuilder:
         file_path = entity.get("path", entity.get("file", ""))
         symbol_name = entity.get("symbol_name", entity.get("function_name", ""))
         parent_symbol = entity.get("parent_symbol", entity.get("class_name", ""))
+        namespace_path = entity.get("namespace_path", "")
         entity_type = entity.get("entity_type", entity.get("chunk_type", "entity"))
-        return f"{file_path}::{parent_symbol}::{symbol_name}::{entity_type}"
+        return f"{file_path}::{namespace_path}::{parent_symbol}::{symbol_name}::{entity_type}"
 
     def _module_path_for_file(self, file_path):
         path_text = file_path.replace("\\", "/")

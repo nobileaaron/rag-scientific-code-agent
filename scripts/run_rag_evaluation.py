@@ -127,6 +127,12 @@ def build_agent_from_settings():
     retrieval_candidate_k = settings["retrieval"]["candidate_k"]
     retrieval_supplementary_k = settings["retrieval"]["supplementary_k"]
     retrieval_supplementary_candidate_k = settings["retrieval"]["supplementary_candidate_k"]
+    primary_score_relative_floor = settings["retrieval"].get("primary_score_relative_floor")
+    primary_score_gap_threshold = settings["retrieval"].get("primary_score_gap_threshold")
+    primary_score_absolute_floor = settings["retrieval"].get("primary_score_absolute_floor")
+    primary_same_symbol_cap = settings["retrieval"].get("primary_same_symbol_cap")
+    primary_same_file_cap = settings["retrieval"].get("primary_same_file_cap")
+    dominant_file_ratio = settings["retrieval"].get("dominant_file_ratio")
     retrieval_debug_default = settings["retrieval"]["debug_enabled_by_default"]
 
     parser_type = rag_main.resolve_parser_type(preferred_parser_type)
@@ -198,6 +204,12 @@ def build_agent_from_settings():
         candidate_k=retrieval_candidate_k,
         supplementary_k=retrieval_supplementary_k,
         supplementary_candidate_k=retrieval_supplementary_candidate_k,
+        primary_score_relative_floor=primary_score_relative_floor,
+        primary_score_gap_threshold=primary_score_gap_threshold,
+        primary_score_absolute_floor=primary_score_absolute_floor,
+        primary_same_symbol_cap=primary_same_symbol_cap,
+        primary_same_file_cap=primary_same_file_cap,
+        dominant_file_ratio=dominant_file_ratio,
     )
     llm = LLMWrapper(model=answer_model)
     retrieval_debugger = RetrievalDebugger(enabled=retrieval_debug_default)

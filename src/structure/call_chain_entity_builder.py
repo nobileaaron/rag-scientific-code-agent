@@ -13,6 +13,7 @@ class CallChainEntityBuilder:
         self.summary_char_limit = summary_char_limit
         self.callable_types = {
             "function_definition",
+            "function_declaration",
             "method_definition",
             "method_declaration",
         }
@@ -110,6 +111,7 @@ class CallChainEntityBuilder:
                 "symbol_name": symbol.get("symbol_name", ""),
                 "function_name": symbol.get("symbol_name", ""),
                 "parent_symbol": symbol.get("parent_symbol", ""),
+                "qualified_symbol_name": symbol.get("qualified_symbol_name", ""),
                 "chunk_type": "call_chain_level",
                 "entity_type": "call_chain_level",
                 "language": self._language_for_source_type(symbol.get("source_type", "")),
@@ -223,7 +225,9 @@ class CallChainEntityBuilder:
 Symbol Type: {symbol.get('chunk_type', '')}
 File Path: {symbol.get('file_path', '')}
 Module Key: {symbol.get('module_key', '')}
+Namespace: {symbol.get('namespace_path', '') or 'none'}
 Parent Symbol: {symbol.get('parent_symbol', '') or 'none'}
+Qualified Symbol: {symbol.get('qualified_symbol_name', '') or self._display_symbol(symbol)}
 Central Symbol Summary: {central_explanation or 'none'}
 Central File Summary: {file_summary or 'none'}
 Central Module Summary: {module_summary or 'none'}
@@ -366,8 +370,9 @@ Incoming Calls:
         file_path = entity.get("path", entity.get("file", ""))
         symbol_name = entity.get("symbol_name", entity.get("function_name", ""))
         parent_symbol = entity.get("parent_symbol", entity.get("class_name", ""))
+        namespace_path = entity.get("namespace_path", "")
         entity_type = entity.get("entity_type", entity.get("chunk_type", "entity"))
-        return f"{file_path}::{parent_symbol}::{symbol_name}::{entity_type}"
+        return f"{file_path}::{namespace_path}::{parent_symbol}::{symbol_name}::{entity_type}"
 
     def _language_for_source_type(self, source_type):
         if source_type in {"cpp", "header"}:

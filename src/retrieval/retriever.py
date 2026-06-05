@@ -16,33 +16,6 @@ class Retriever:
     PRIMARY_SAME_SYMBOL_CAP = 1
     PRIMARY_SAME_FILE_CAP = 2
     DOMINANT_FILE_RATIO = 0.75
-    WORKFLOW_KEY_SYMBOLS = frozenset(
-        {
-            "solve",
-            "initializefields",
-            "greensfunction",
-            "setgradfd",
-        }
-    )
-    WORKFLOW_SYMBOL_PRIORITY = {
-        "solve": 0,
-        "greensfunction": 1,
-        "initializefields": 2,
-        "setgradfd": 3,
-    }
-    DATA_FLOW_ROLE_PRIORITY = {
-        "producer": 0,
-        "consumer": 1,
-        "interpolation": 2,
-    }
-    DATA_FLOW_CONSUMER_SYMBOLS = frozenset({"gather"})
-    DATA_FLOW_INTERPOLATION_SYMBOLS = frozenset({"gatherfromfield", "scattertofield"})
-    COMPARISON_ROLE_PRIORITY = {
-        "fft_overview": 0,
-        "fft_impl": 1,
-        "cg_overview": 2,
-        "baseline": 3,
-    }
 
     # Scopes/files treated as build or test infrastructure. These are dropped
     # from the final retrieved context unless the query itself is about tests
@@ -69,15 +42,56 @@ class Retriever:
         candidate_k=20,
         supplementary_k=3,
         supplementary_candidate_k=10,
+        primary_score_relative_floor=None,
+        primary_score_gap_threshold=None,
+        primary_score_absolute_floor=None,
+        primary_same_symbol_cap=None,
+        primary_same_file_cap=None,
+        dominant_file_ratio=None,
+        lexical_metadata_weight=None,
+        entity_target_weight=None,
         structural_expander=None,
         query_intent_router=None,
     ):
         self.embedder = embedder
         self.vector_store = vector_store
-        self.reranker = reranker or MetadataReranker()
+        self.reranker = reranker or MetadataReranker(
+            lexical_metadata_weight=lexical_metadata_weight,
+            entity_target_weight=entity_target_weight,
+        )
         self.candidate_k = candidate_k
         self.supplementary_k = supplementary_k
         self.supplementary_candidate_k = supplementary_candidate_k
+        self.PRIMARY_SCORE_RELATIVE_FLOOR = (
+            self.PRIMARY_SCORE_RELATIVE_FLOOR
+            if primary_score_relative_floor is None
+            else primary_score_relative_floor
+        )
+        self.PRIMARY_SCORE_GAP_THRESHOLD = (
+            self.PRIMARY_SCORE_GAP_THRESHOLD
+            if primary_score_gap_threshold is None
+            else primary_score_gap_threshold
+        )
+        self.PRIMARY_SCORE_ABSOLUTE_FLOOR = (
+            self.PRIMARY_SCORE_ABSOLUTE_FLOOR
+            if primary_score_absolute_floor is None
+            else primary_score_absolute_floor
+        )
+        self.PRIMARY_SAME_SYMBOL_CAP = (
+            self.PRIMARY_SAME_SYMBOL_CAP
+            if primary_same_symbol_cap is None
+            else primary_same_symbol_cap
+        )
+        self.PRIMARY_SAME_FILE_CAP = (
+            self.PRIMARY_SAME_FILE_CAP
+            if primary_same_file_cap is None
+            else primary_same_file_cap
+        )
+        self.DOMINANT_FILE_RATIO = (
+            self.DOMINANT_FILE_RATIO
+            if dominant_file_ratio is None
+            else dominant_file_ratio
+        )
         self.structural_expander = structural_expander or StructuralExpander(
             vector_store.metadata
         )
@@ -110,25 +124,17 @@ class Retriever:
         # 2 search the vector store for a wider candidate set
         candidate_count = max(k, self.candidate_k)
         semantic_candidates = self.vector_store.search(query_embedding, candidate_count)
-        exact_filename_candidates = self.vector_store.get_chunks_by_filenames(exact_filenames)
+        exact_filename_targets = set(exact_filenames) | set(exact_symbols)
+        exact_filename_candidates = self.vector_store.get_chunks_by_filenames(
+            exact_filename_targets,
+            query_embedding,
+        )
         if intent_result.get("intent") == "comparison":
             exact_symbol_candidates = []
             subject_file_candidates = []
-            workflow_subject_candidates = []
         else:
             exact_symbol_candidates = self.vector_store.get_chunks_by_symbols(exact_symbols)
             subject_file_candidates = self._retrieve_subject_file_candidates(exact_symbols)
-            workflow_subject_candidates = self._retrieve_workflow_subject_candidates(
-                exact_symbols,
-                query,
-                intent_result,
-            )
-        data_flow_candidates = self._retrieve_data_flow_candidates(
-            query,
-            intent_result,
-            data_flow_terms,
-            data_flow_direction,
-        )
         comparison_candidates = self._retrieve_comparison_candidates(
             query,
             intent_result,
@@ -148,8 +154,6 @@ class Retriever:
             exact_filename_candidates,
             exact_symbol_candidates,
             subject_file_candidates,
-            workflow_subject_candidates,
-            data_flow_candidates,
             comparison_candidates,
             literal_api_candidates,
             target_aligned_candidates,
@@ -173,8 +177,6 @@ class Retriever:
             k,
             exact_symbols,
             api_bearing_terms,
-            data_flow_terms,
-            data_flow_direction,
             comparison_subjects,
             intent_result,
         )
@@ -217,12 +219,8 @@ class Retriever:
         reranked["diagnostics"]["exact_filename_candidate_count"] = len(exact_filename_candidates)
         reranked["diagnostics"]["exact_symbol_candidate_count"] = len(exact_symbol_candidates)
         reranked["diagnostics"]["subject_file_candidate_count"] = len(subject_file_candidates)
-        reranked["diagnostics"]["workflow_subject_candidate_count"] = len(
-            workflow_subject_candidates
-        )
         reranked["diagnostics"]["data_flow_direction"] = data_flow_direction
         reranked["diagnostics"]["data_flow_terms"] = sorted(data_flow_terms)
-        reranked["diagnostics"]["data_flow_candidate_count"] = len(data_flow_candidates)
         reranked["diagnostics"]["comparison_subjects"] = comparison_subjects
         reranked["diagnostics"]["comparison_candidate_count"] = len(comparison_candidates)
         reranked["diagnostics"]["api_bearing_terms"] = sorted(api_bearing_terms)
@@ -252,13 +250,9 @@ class Retriever:
                     and api_bearing_terms
                 )
                 else (
-                    "data_flow_role_coverage_plus_diversity"
-                    if intent_result.get("intent") == "data_flow"
-                    else (
-                        "comparison_side_coverage_plus_diversity"
-                        if intent_result.get("intent") == "comparison"
-                        else "score_gate_plus_diversity"
-                    )
+                    "comparison_side_coverage_plus_diversity"
+                    if intent_result.get("intent") == "comparison"
+                    else "score_gate_plus_diversity"
                 )
             )
         )
@@ -286,8 +280,6 @@ class Retriever:
         k,
         exact_symbols,
         api_bearing_terms,
-        data_flow_terms,
-        data_flow_direction,
         comparison_subjects,
         intent_result,
     ):
@@ -297,14 +289,6 @@ class Retriever:
             k,
             exact_symbols,
             api_bearing_terms,
-            intent_result,
-        )
-        refined_candidates = self._refine_data_flow_primary_candidates(
-            refined_candidates,
-            reranked_candidates,
-            k,
-            data_flow_terms,
-            data_flow_direction,
             intent_result,
         )
         refined_candidates = self._refine_comparison_primary_candidates(
@@ -422,79 +406,6 @@ class Retriever:
 
         return selected_candidates
 
-    def _refine_data_flow_primary_candidates(
-        self,
-        selected_candidates,
-        reranked_candidates,
-        k,
-        data_flow_terms,
-        data_flow_direction,
-        intent_result,
-    ):
-        """Ensure data-flow queries cover producer, consumer, and interpolation.
-
-        A handoff query like "How does the electric field flow from the grid
-        back to particles after a poisson solve?" needs evidence from multiple
-        modules:
-
-        - a producer chunk showing the field exists on the grid
-        - a consumer chunk showing particle code gathers that field
-        - an interpolation chunk showing how the transfer is computed
-
-        Semantic search tends to stay in the producer file. This refinement
-        keeps the final primary set coverage-oriented by selecting one strong
-        chunk per role when available.
-        """
-
-        if intent_result.get("intent") != "data_flow":
-            return selected_candidates
-        if not data_flow_direction:
-            return selected_candidates
-
-        candidate_pool = []
-        seen_candidates = set()
-        for candidate in list(selected_candidates) + list(reranked_candidates):
-            candidate_key = self._chunk_key(candidate["chunk"])
-            if candidate_key in seen_candidates:
-                continue
-            seen_candidates.add(candidate_key)
-            candidate_pool.append(candidate)
-
-        candidate_pool = self._sort_data_flow_candidate_pool(candidate_pool)
-
-        selected_by_role = {}
-        fallback_candidates = []
-        seen_chunks = set()
-
-        for candidate in candidate_pool:
-            chunk = candidate["chunk"]
-            chunk_key = self._chunk_key(chunk)
-            if chunk_key in seen_chunks:
-                continue
-            seen_chunks.add(chunk_key)
-
-            role = self._classify_data_flow_role(chunk)
-            if role and role not in selected_by_role:
-                selected_by_role[role] = candidate
-            else:
-                fallback_candidates.append(candidate)
-
-        prioritized = [
-            selected_by_role[role]
-            for role in ("producer", "consumer", "interpolation")
-            if role in selected_by_role
-        ]
-
-        for candidate in fallback_candidates:
-            if len(prioritized) >= k:
-                break
-            prioritized.append(candidate)
-
-        if prioritized:
-            return prioritized[:k]
-
-        return selected_candidates
-
     def _refine_comparison_primary_candidates(
         self,
         selected_candidates,
@@ -503,16 +414,7 @@ class Retriever:
         comparison_subjects,
         intent_result,
     ):
-        """Ensure comparison queries cover both named sides plus a baseline.
-
-        Example:
-        - FFT-side Poisson solver
-        - CG-side Poisson solver
-        - shared Poisson interface / baseline
-
-        Without this step, broad exact-symbol matches such as `FFT` can fill
-        every primary slot with one side of the comparison.
-        """
+        """Ensure comparison queries keep evidence for each compared subject."""
 
         if intent_result.get("intent") != "comparison":
             return selected_candidates
@@ -530,7 +432,7 @@ class Retriever:
 
         candidate_pool = self._sort_comparison_candidate_pool(candidate_pool, comparison_subjects)
 
-        selected_by_role = {}
+        selected_by_subject = {}
         fallback_candidates = []
         seen_chunks = set()
 
@@ -541,20 +443,19 @@ class Retriever:
                 continue
             seen_chunks.add(chunk_key)
 
-            role = self._classify_comparison_role(chunk, comparison_subjects)
-            if role and role not in selected_by_role:
-                selected_by_role[role] = candidate
+            subject = self._comparison_subject_for_chunk(chunk, comparison_subjects)
+            if subject and subject not in selected_by_subject:
+                selected_by_subject[subject] = candidate
             else:
                 fallback_candidates.append(candidate)
 
         prioritized = [
-            selected_by_role[role]
-            for role in ("fft_overview", "fft_impl", "cg_overview", "baseline")
-            if role in selected_by_role
+            selected_by_subject[subject]
+            for subject in comparison_subjects
+            if subject in selected_by_subject
         ]
 
-        desired_roles = {"fft_overview", "fft_impl", "cg_overview", "baseline"}
-        if desired_roles.issubset(set(selected_by_role)):
+        if len(selected_by_subject) >= len(comparison_subjects):
             return prioritized[:k]
 
         for candidate in fallback_candidates:
@@ -663,13 +564,6 @@ class Retriever:
             ):
                 continue
 
-            if intent_result.get("intent") == "data_flow":
-                if not any(
-                    marker in path_lower
-                    for marker in ("/poissonsolvers/", "/particle/", "/interpolation/")
-                ):
-                    continue
-
             if symbol_counts.get(symbol_group, 0) >= self.PRIMARY_SAME_SYMBOL_CAP:
                 continue
 
@@ -714,12 +608,8 @@ class Retriever:
             priority = 99
             if injection_reason == "subject_file_alignment":
                 priority = 0
-            elif injection_reason == "workflow_subject_alignment":
-                priority = 1 + self.WORKFLOW_SYMBOL_PRIORITY.get(symbol_name, 10)
             elif entity_level == "file_level" and exact_subject_file:
                 priority = 10
-            elif symbol_name in self.WORKFLOW_KEY_SYMBOLS and exact_subject_file:
-                priority = 20 + self.WORKFLOW_SYMBOL_PRIORITY.get(symbol_name, 10)
             elif exact_subject_file:
                 priority = 40
 
@@ -732,43 +622,18 @@ class Retriever:
 
         return sorted(candidate_pool, key=sort_key)
 
-    def _sort_data_flow_candidate_pool(self, candidate_pool):
-        def sort_key(candidate):
-            chunk = candidate["chunk"]
-            role = self._classify_data_flow_role(chunk)
-            symbol_name = str(
-                chunk.get("symbol_name", chunk.get("function_name", "")) or ""
-            ).lower()
-            entity_level = str(chunk.get("entity_level", "") or "")
-            path = str(chunk.get("path", chunk.get("file", "")) or "").lower()
-
-            role_detail_priority = 5
-            if role == "consumer" and symbol_name == "gather":
-                role_detail_priority = 0
-            elif role == "interpolation" and symbol_name in self.DATA_FLOW_INTERPOLATION_SYMBOLS:
-                role_detail_priority = 0
-            elif role == "interpolation" and entity_level in {"function_level", "call_chain_level"}:
-                role_detail_priority = 1
-            elif role == "producer" and symbol_name == "solve":
-                role_detail_priority = 0
-                if "/fft" in path:
-                    role_detail_priority = -1
-            return (
-                self.DATA_FLOW_ROLE_PRIORITY.get(role, 99),
-                role_detail_priority,
-                -float(candidate.get("combined_score", 0.0)),
-                path,
-                symbol_name,
-            )
-
-        return sorted(candidate_pool, key=sort_key)
-
     def _sort_comparison_candidate_pool(self, candidate_pool, comparison_subjects):
         def sort_key(candidate):
             chunk = candidate["chunk"]
-            role = self._classify_comparison_role(chunk, comparison_subjects)
+            subject = self._comparison_subject_for_chunk(chunk, comparison_subjects)
+            subject_index = (
+                comparison_subjects.index(subject)
+                if subject in comparison_subjects
+                else len(comparison_subjects)
+            )
             return (
-                self.COMPARISON_ROLE_PRIORITY.get(role, 99),
+                subject_index,
+                self._comparison_chunk_priority(chunk, subject),
                 -float(candidate.get("combined_score", 0.0)),
                 str(chunk.get("path", chunk.get("file", ""))),
                 str(chunk.get("symbol_name", chunk.get("function_name", ""))).lower(),
@@ -894,171 +759,13 @@ class Retriever:
 
         return injected_candidates
 
-    def _retrieve_workflow_subject_candidates(self, exact_symbols, query, intent_result):
-        """Inject key implementation methods from a subject-matched solver file."""
-
-        if intent_result.get("intent") != "workflow_explanation":
-            return []
-
-        exact_symbols = {str(symbol).lower() for symbol in (exact_symbols or set()) if symbol}
-        if not exact_symbols:
-            return []
-
-        query_mentions_tests = self._query_mentions_tests(query)
-        matched_file_paths = set()
-        for chunk in self.vector_store.metadata:
-            if self._file_matches_exact_symbol(chunk, exact_symbols):
-                matched_file_paths.add(chunk.get("path", chunk.get("file", "")))
-
-        if not matched_file_paths:
-            return []
-
-        injected_candidates = []
-        seen_symbol_groups = set()
-
-        for chunk in self.vector_store.metadata:
-            file_path = chunk.get("path", chunk.get("file", ""))
-            if file_path not in matched_file_paths:
-                continue
-
-            if not query_mentions_tests:
-                if self._is_test_scope_chunk(chunk) or self._is_build_file_chunk(chunk):
-                    continue
-
-            symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
-            if symbol_name not in self.WORKFLOW_KEY_SYMBOLS:
-                continue
-
-            chunk_type = str(chunk.get("chunk_type", chunk.get("entity_type", "")) or "")
-            if chunk_type not in {"function_definition", "method_definition", "call_chain_level"}:
-                continue
-
-            symbol_group = (file_path, symbol_name)
-            if symbol_group in seen_symbol_groups:
-                continue
-            seen_symbol_groups.add(symbol_group)
-
-            distance = 0.18 if chunk_type in {"function_definition", "method_definition"} else 0.24
-            injected_candidates.append(
-                {
-                    "chunk": chunk,
-                    "distance": distance,
-                    "injected": True,
-                    "injection_reason": "workflow_subject_alignment",
-                }
-            )
-
-        injected_candidates.sort(
-            key=lambda candidate: (
-                self.WORKFLOW_SYMBOL_PRIORITY.get(
-                    str(
-                        candidate["chunk"].get(
-                            "symbol_name",
-                            candidate["chunk"].get("function_name", ""),
-                        )
-                    ).lower(),
-                    99,
-                ),
-                candidate["distance"],
-                str(candidate["chunk"].get("path", candidate["chunk"].get("file", ""))),
-            )
-        )
-        return injected_candidates
-
-    def _retrieve_data_flow_candidates(
-        self,
-        query,
-        intent_result,
-        data_flow_terms,
-        data_flow_direction,
-    ):
-        """Inject chunks that explain a cross-module data handoff.
-
-        For grid/field <-> particle questions we want at least three kinds of
-        evidence in the candidate pool:
-
-        - a producer (`solve` in a Poisson solver)
-        - a consumer (`ParticleAttrib::gather` / `scatter`)
-        - an interpolation helper (`gatherFromField` / `scatterToField`)
-
-        This helper injects those cross-module anchors directly instead of
-        hoping semantic retrieval will jump from one subsystem to another.
-        """
-
-        if intent_result.get("intent") != "data_flow":
-            return []
-        if not data_flow_direction or not data_flow_terms:
-            return []
-
-        query_mentions_tests = self._query_mentions_tests(query)
-        best_by_role = {}
-
-        for chunk in self.vector_store.metadata:
-            if not query_mentions_tests:
-                if self._is_test_scope_chunk(chunk) or self._is_build_file_chunk(chunk):
-                    continue
-
-            role = self._classify_data_flow_role(chunk)
-            if not role:
-                continue
-
-            matched_terms = self.reranker.match_data_flow_terms(chunk, data_flow_terms)
-            if not matched_terms and role != "producer":
-                continue
-
-            if role == "producer" and "poisson" in query.lower():
-                path = str(chunk.get("path", chunk.get("file", "")) or "").lower()
-                if "/poissonsolvers/" not in path:
-                    continue
-                symbol_name = str(
-                    chunk.get("symbol_name", chunk.get("function_name", "")) or ""
-                ).lower()
-                if symbol_name != "solve":
-                    continue
-
-            distance = {
-                "producer": 0.23,
-                "consumer": 0.14,
-                "interpolation": 0.12,
-            }.get(role, 0.25)
-            candidate = {
-                "chunk": chunk,
-                "distance": distance,
-                "injected": True,
-                "injection_reason": f"data_flow_{role}",
-            }
-            sort_key = self._data_flow_injection_sort_key(candidate, role)
-            best_entry = best_by_role.get(role)
-            if best_entry is None or sort_key < best_entry["sort_key"]:
-                best_by_role[role] = {
-                    "candidate": candidate,
-                    "sort_key": sort_key,
-                }
-
-        injected_candidates = [
-            best_by_role[role]["candidate"]
-            for role in ("producer", "consumer", "interpolation")
-            if role in best_by_role
-        ]
-        injected_candidates.sort(
-            key=lambda candidate: (
-                self.DATA_FLOW_ROLE_PRIORITY.get(
-                    self._classify_data_flow_role(candidate["chunk"]),
-                    99,
-                ),
-                candidate["distance"],
-                str(candidate["chunk"].get("path", candidate["chunk"].get("file", ""))),
-            )
-        )
-        return injected_candidates
-
     def _retrieve_comparison_candidates(
         self,
         query,
         intent_result,
         comparison_subjects,
     ):
-        """Inject comparison-side anchors for solver tradeoff queries."""
+        """Inject one strong anchor per compared subject."""
 
         if intent_result.get("intent") != "comparison":
             return []
@@ -1066,46 +773,41 @@ class Retriever:
             return []
 
         query_mentions_tests = self._query_mentions_tests(query)
-        best_by_role = {}
+        best_by_subject = {}
 
         for chunk in self.vector_store.metadata:
             if not query_mentions_tests:
                 if self._is_test_scope_chunk(chunk) or self._is_build_file_chunk(chunk):
                     continue
 
-            role = self._classify_comparison_role(chunk, comparison_subjects)
-            if not role:
+            subject = self._comparison_subject_for_chunk(chunk, comparison_subjects)
+            if not subject:
                 continue
 
             candidate = {
                 "chunk": chunk,
-                "distance": {
-                    "fft_overview": 0.12,
-                    "fft_impl": 0.10,
-                    "cg_overview": 0.11,
-                    "baseline": 0.16,
-                }.get(role, 0.2),
+                "distance": 0.12 + (0.02 * self._comparison_chunk_priority(chunk, subject)),
                 "injected": True,
-                "injection_reason": f"comparison_{role}",
+                "injection_reason": "comparison_subject_alignment",
+                "comparison_subject": subject,
             }
-            sort_key = self._comparison_injection_sort_key(candidate, role)
-            best_entry = best_by_role.get(role)
+            sort_key = self._comparison_injection_sort_key(candidate, subject)
+            best_entry = best_by_subject.get(subject)
             if best_entry is None or sort_key < best_entry["sort_key"]:
-                best_by_role[role] = {
+                best_by_subject[subject] = {
                     "candidate": candidate,
                     "sort_key": sort_key,
                 }
 
         injected_candidates = [
-            best_by_role[role]["candidate"]
-            for role in ("fft_overview", "fft_impl", "cg_overview", "baseline")
-            if role in best_by_role
+            best_by_subject[subject]["candidate"]
+            for subject in comparison_subjects
+            if subject in best_by_subject
         ]
         injected_candidates.sort(
             key=lambda candidate: (
-                self.COMPARISON_ROLE_PRIORITY.get(
-                    self._classify_comparison_role(candidate["chunk"], comparison_subjects),
-                    99,
+                comparison_subjects.index(
+                    candidate.get("comparison_subject", comparison_subjects[0])
                 ),
                 candidate["distance"],
                 str(candidate["chunk"].get("path", candidate["chunk"].get("file", ""))),
@@ -1216,7 +918,20 @@ class Retriever:
     def _chunk_matches_exact_target(self, chunk, exact_filenames, exact_symbols):
         file_name = str(chunk.get("file_name", "")).lower()
         symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", ""))).lower()
-        return file_name in exact_filenames or symbol_name in exact_symbols
+        qualified_symbol_name = str(chunk.get("qualified_symbol_name", "")).lower()
+        namespace_path = str(chunk.get("namespace_path", "")).lower()
+        namespace_symbol = (
+            f"{namespace_path}::{symbol_name}"
+            if namespace_path and symbol_name
+            else ""
+        )
+        return (
+            file_name in exact_filenames
+            or symbol_name in exact_symbols
+            or qualified_symbol_name in exact_symbols
+            or namespace_symbol in exact_symbols
+            or namespace_path in exact_symbols
+        )
 
     def _file_matches_exact_symbol(self, chunk, exact_symbols):
         file_path = str(chunk.get("path", chunk.get("file", "")) or "")
@@ -1252,160 +967,51 @@ class Retriever:
             return dominant_file_path
         return ""
 
-    def _classify_data_flow_role(self, chunk):
-        path = str(chunk.get("path", chunk.get("file", "")) or "").lower()
-        symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
-        searchable_text = self.reranker._build_chunk_search_text(chunk)
-        normalized_text = searchable_text.replace(" ", "")
+    def _comparison_subject_for_chunk(self, chunk, comparison_subjects):
+        return self.reranker.classify_comparison_subject(chunk, comparison_subjects)
 
-        if "/poissonsolvers/" in path and symbol_name == "solve":
-            return "producer"
+    def _comparison_chunk_priority(self, chunk, subject):
+        if not subject:
+            return 99
 
-        if (
-            "/particle/" in path
-            and symbol_name in self.DATA_FLOW_CONSUMER_SYMBOLS
-        ):
-            return "consumer"
-
-        if (
-            "/interpolation/" in path
-            or symbol_name in self.DATA_FLOW_INTERPOLATION_SYMBOLS
-            or "gatherfromfield" in normalized_text
-            or "scattertofield" in normalized_text
-        ):
-            return "interpolation"
-
-        return ""
-
-    def _classify_comparison_role(self, chunk, comparison_subjects):
-        comparison_role = self.reranker.classify_comparison_subject(chunk, comparison_subjects)
-        path = str(chunk.get("path", chunk.get("file", "")) or "").lower()
         entity_level = str(chunk.get("entity_level", "") or "")
         chunk_type = str(chunk.get("chunk_type", chunk.get("entity_type", "")) or "")
-        symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
+        symbol_name = self._normalize_comparison_text(
+            chunk.get("symbol_name", chunk.get("function_name", ""))
+        )
+        file_name = str(chunk.get("file_name", "") or "")
+        file_stem = self._normalize_comparison_text(
+            file_name.rsplit(".", 1)[0] if "." in file_name else file_name
+        )
+        base_name = self._normalize_comparison_text(chunk.get("base_name", ""))
+        normalized_subject = self._normalize_comparison_text(subject)
 
-        if comparison_role == "fft":
-            if (
-                "fftperiodicpoissonsolver" in path
-                and symbol_name == "solve"
-                and chunk_type in {"method_definition", "function_definition"}
-            ):
-                return "fft_impl"
-            if entity_level == "file_level" or chunk_type == "class":
-                return "fft_overview"
+        if entity_level == "function_level" and symbol_name == normalized_subject:
+            return 0
+        if entity_level == "file_level" and normalized_subject in {file_stem, base_name}:
+            return 1
+        if chunk_type in {"class", "struct"} and symbol_name == normalized_subject:
+            return 2
+        if entity_level == "call_chain_level" and symbol_name == normalized_subject:
+            return 3
+        if entity_level == "module_level" and symbol_name == normalized_subject:
+            return 4
+        return 5
 
-        if comparison_role == "cg":
-            if entity_level == "file_level" or chunk_type == "class":
-                return "cg_overview"
-
-        if comparison_role == "baseline":
-            if entity_level == "file_level" or chunk_type == "class":
-                return "baseline"
-
-        return ""
-
-    def _data_flow_injection_sort_key(self, candidate, role):
+    def _comparison_injection_sort_key(self, candidate, subject):
         chunk = candidate["chunk"]
         path = str(chunk.get("path", chunk.get("file", "")) or "").lower()
         symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
-        entity_level = str(chunk.get("entity_level", "") or "")
-        normalized_text = self.reranker._build_chunk_search_text(chunk).replace(" ", "")
+        return (
+            self._comparison_chunk_priority(chunk, subject),
+            float(candidate.get("distance", 0.0)),
+            path,
+            symbol_name,
+        )
 
-        if role == "producer":
-            chunk_type = str(chunk.get("chunk_type", chunk.get("entity_type", "")) or "")
-            return (
-                0 if "/fft" in path else 1,
-                0 if chunk_type in {"function_definition", "method_definition"} else 1,
-                0 if symbol_name == "solve" else 1,
-                path,
-            )
+    def _normalize_comparison_text(self, value):
+        return "".join(char for char in str(value).lower() if char.isalnum())
 
-        if role == "consumer":
-            return (
-                0 if symbol_name == "gather" else 1,
-                0 if entity_level == "function_level" else 1,
-                path,
-            )
-
-        if role == "interpolation":
-            return (
-                0 if "gatherfromfield" in normalized_text else 1,
-                0 if symbol_name in self.DATA_FLOW_INTERPOLATION_SYMBOLS else 1,
-                0 if entity_level in {"function_level", "call_chain_level"} else 1,
-                path,
-            )
-
-        return (path,)
-
-    def _comparison_injection_sort_key(self, candidate, role):
-        chunk = candidate["chunk"]
-        path = str(chunk.get("path", chunk.get("file", "")) or "").lower()
-        symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
-        chunk_type = str(chunk.get("chunk_type", chunk.get("entity_type", "")) or "")
-        entity_level = str(chunk.get("entity_level", "") or "")
-
-        if role == "fft_impl":
-            return (
-                0 if path.endswith("fftperiodicpoissonsolver.hpp") else 1,
-                0 if symbol_name == "solve" else 1,
-                0 if chunk_type in {"method_definition", "function_definition"} else 1,
-                path,
-            )
-
-        if role == "fft_overview":
-            return (
-                0 if path.endswith("fftperiodicpoissonsolver.h") else 1,
-                0 if entity_level == "file_level" else 1,
-                path,
-            )
-
-        if role == "cg_overview":
-            return (
-                0 if path.endswith("poissoncg.h") else 1,
-                0 if entity_level == "file_level" else 1,
-                path,
-            )
-
-        if role == "baseline":
-            return (
-                0 if path.endswith("poisson.h") else 1,
-                0 if entity_level == "file_level" else 1,
-                path,
-            )
-
-        return (path,)
-
-    def _prioritize_exact_chunks_for_target(self, chunks, retrieval_preferences):
-        preferred_entity_levels = {
-            str(entity_level)
-            for entity_level in (retrieval_preferences or {}).get(
-                "preferred_entity_levels",
-                (),
-            )
-            if entity_level
-        }
-        preferred_chunk_types = {
-            str(chunk_type)
-            for chunk_type in (retrieval_preferences or {}).get(
-                "preferred_chunk_types",
-                (),
-            )
-            if chunk_type
-        }
-
-        def sort_key(chunk):
-            entity_level = str(chunk.get("entity_level", "") or "")
-            chunk_type = str(chunk.get("chunk_type", chunk.get("entity_type", "")) or "")
-            symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "")
-            file_path = str(chunk.get("path", chunk.get("file", "")) or "")
-            return (
-                0 if entity_level in preferred_entity_levels else 1,
-                0 if chunk_type in preferred_chunk_types else 1,
-                file_path,
-                symbol_name,
-            )
-
-        return sorted(chunks, key=sort_key)
 
     def _select_primary_candidates(self, reranked_candidates, k):
         """Keep only the strong prefix of reranked candidates for primary use.
@@ -1537,15 +1143,25 @@ class Retriever:
     ):
         entity_level = str(chunk.get("entity_level", "") or "")
         symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
+        qualified_symbol_name = str(chunk.get("qualified_symbol_name", "") or "").lower()
+        namespace_path = str(chunk.get("namespace_path", "") or "").lower()
         module_key = str(chunk.get("module_key", "") or "").lower()
         module_path = str(chunk.get("module_path", "") or "").lower()
         base_name = str(chunk.get("base_name", "") or "").lower()
         file_name = str(chunk.get("file_name", "") or "").lower()
         file_stem = file_name.rsplit(".", 1)[0] if "." in file_name else file_name
+        namespace_symbol = (
+            f"{namespace_path}::{symbol_name}"
+            if namespace_path and symbol_name
+            else ""
+        )
 
         if entity_target == "file_level" and entity_level == "file_level":
             return (
                 symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
                 or base_name in exact_symbols
                 or file_stem in exact_symbols
             )
@@ -1555,21 +1171,40 @@ class Retriever:
             module_path_tail = module_path.split("/")[-1] if "/" in module_path else module_path
             return (
                 symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
                 or module_key_tail in exact_symbols
                 or module_path_tail in exact_symbols
             )
 
         if entity_target == "call_chain_level" and entity_level == "call_chain_level":
-            return symbol_name in exact_symbols
+            return (
+                symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
+            )
 
         if entity_target == "function_level" and entity_level == "function_level":
-            return symbol_name in exact_symbols
+            return (
+                symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
+            )
 
         if (
             entity_target == "documentation_section_level"
             and entity_level == "documentation_section_level"
         ):
-            return symbol_name in exact_symbols or base_name in exact_symbols
+            return (
+                symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
+                or base_name in exact_symbols
+            )
 
         return False
 

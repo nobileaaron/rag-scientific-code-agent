@@ -1,0 +1,608 @@
+{
+  "version": "v2",
+  "model": "GPT-5.4 (Codex)",
+  "source_report": "old_test_run/codex_vs_local_llm_evaluation_v2_20260424.md",
+  "question_source": "eval_questions_v2.json",
+  "answers": [
+    {
+      "id": "file_001",
+      "category": "file_purpose",
+      "question": "What does Ippl.h do?",
+      "answer": "Declares the top-level IPPL runtime handles (`Comm`, `Env`, `Info`, `Warn`, `Error`) and the lifecycle wrappers `initialize`, `finalize`, `fence`, and `abort`."
+    },
+    {
+      "id": "file_002",
+      "category": "file_purpose",
+      "question": "What is the purpose of Ippl.cpp?",
+      "answer": "Implements runtime setup/teardown: command-line option parsing, MPI communicator/environment creation, logger setup, Kokkos init/finalize, and abort/fence helpers."
+    },
+    {
+      "id": "file_003",
+      "category": "file_purpose",
+      "question": "What does FFT.hpp implement?",
+      "answer": "Implements `FFTBase` setup plus the FFT specialization family for complex/real, sine, cosine, and cosine-I transforms on IPPL fields via heFFTe."
+    },
+    {
+      "id": "file_004",
+      "category": "file_purpose",
+      "question": "What is BareField.h responsible for?",
+      "answer": "Defines the core distributed field container: Kokkos-backed storage, owned/allocated domains, field layout access, halo exchange hooks, and expression-style assignment."
+    },
+    {
+      "id": "file_005",
+      "category": "file_purpose",
+      "question": "What does Field.h add on top of BareField?",
+      "answer": "Adds mesh awareness and boundary-condition management on top of `BareField`, plus volume integral/average helpers."
+    },
+    {
+      "id": "file_006",
+      "category": "file_purpose",
+      "question": "What role does HaloCells.h play in IPPL?",
+      "answer": "Defines the halo-exchange machinery for fields: pack/unpack, boundary exchange, and periodic handling for ghost cells."
+    },
+    {
+      "id": "file_007",
+      "category": "file_purpose",
+      "question": "What is the purpose of FieldLayout.h?",
+      "answer": "Defines how a global `NDIndex` domain is partitioned across MPI ranks, including local subdomains, neighbors, and communication ranges."
+    },
+    {
+      "id": "file_008",
+      "category": "file_purpose",
+      "question": "What does ParticleBase.h define?",
+      "answer": "Defines the generic particle container base class with positions, optional IDs, registered attributes, and a particle layout that controls migration."
+    },
+    {
+      "id": "file_009",
+      "category": "file_purpose",
+      "question": "What is the purpose of ParticleSpatialLayout.h?",
+      "answer": "Defines the spatial particle layout that decides ownership by region and migrates particles to the correct rank after motion."
+    },
+    {
+      "id": "file_010",
+      "category": "file_purpose",
+      "question": "What does ParticleAttrib.h implement?",
+      "answer": "Implements the `ParticleAttrib` storage object: a Kokkos-view-backed particle attribute with resize, serialization, and mirror/access helpers."
+    },
+    {
+      "id": "file_011",
+      "category": "file_purpose",
+      "question": "What is UniformCartesian.h for?",
+      "answer": "Defines the uniform Cartesian mesh class with spacing, origin, cell volume, total mesh volume, and vertex-position helpers."
+    },
+    {
+      "id": "file_012",
+      "category": "file_purpose",
+      "question": "What does OrthogonalRecursiveBisection.h do?",
+      "answer": "Declares the orthogonal recursive bisection domain-decomposition/load-balancing class and its cut/median/repartition helpers."
+    },
+    {
+      "id": "file_013",
+      "category": "file_purpose",
+      "question": "What is the purpose of CIC.h in the Interpolation subsystem?",
+      "answer": "Declares the first-order cloud-in-cell interpolation helpers for scatter/gather between particles and grid fields."
+    },
+    {
+      "id": "loc_001",
+      "category": "definition_location",
+      "question": "Where is FFT initialization implemented in IPPL?",
+      "answer": "FFT initialization lives in `src/FFT/FFT.hpp`, especially `FFTBase` construction/setup and the transform-specific constructors that build the heFFTe plans."
+    },
+    {
+      "id": "loc_002",
+      "category": "definition_location",
+      "question": "Where does IPPL set up the MPI environment?",
+      "answer": "IPPL sets up MPI in `src/Ippl.cpp::initialize()` by constructing `mpi::Environment` and `mpi::Communicator`; the low-level `MPI_Init` check/call is in `src/Communicate/Environment.cpp`."
+    },
+    {
+      "id": "loc_003",
+      "category": "definition_location",
+      "question": "Where is Kokkos initialized and finalized inside IPPL?",
+      "answer": "Kokkos is initialized and finalized directly in `src/Ippl.cpp` inside `ippl::initialize()` and `ippl::finalize()`."
+    },
+    {
+      "id": "loc_004",
+      "category": "definition_location",
+      "question": "Where is the orthogonal recursive bisection load balancer implemented?",
+      "answer": "The ORB load balancer is implemented in `src/Decomposition/OrthogonalRecursiveBisection.hpp` with declarations in the matching header."
+    },
+    {
+      "id": "loc_005",
+      "category": "definition_location",
+      "question": "Where are boundary conditions applied to a Field?",
+      "answer": "Field BCs are attached in `Field::setFieldBC()` and actually applied through `BConds::apply()` and the concrete face classes in `BcTypes.hpp`."
+    },
+    {
+      "id": "loc_006",
+      "category": "definition_location",
+      "question": "Where is the CIC (cloud-in-cell) scatter implemented?",
+      "answer": "CIC scatter is implemented in `src/Interpolation/CIC.hpp`, primarily `scatterToPoint()` and `scatterToField()`."
+    },
+    {
+      "id": "loc_007",
+      "category": "definition_location",
+      "question": "Where is the CIC gather implemented?",
+      "answer": "CIC gather is implemented in `src/Interpolation/CIC.hpp`, primarily `gatherFromPoint()` and `gatherFromField()`."
+    },
+    {
+      "id": "loc_008",
+      "category": "definition_location",
+      "question": "Where is halo exchange for BareField implemented?",
+      "answer": "Halo exchange for `BareField` is surfaced in `src/Field/BareField.hpp` and actually performed in `src/Field/HaloCells.hpp`."
+    },
+    {
+      "id": "loc_009",
+      "category": "definition_location",
+      "question": "Where are the FFT-based open-boundary Poisson solver routines defined?",
+      "answer": "The FFT open-boundary Poisson routines are defined in `src/PoissonSolvers/FFTOpenPoissonSolver.h` and `src/PoissonSolvers/FFTOpenPoissonSolver.hpp`."
+    },
+    {
+      "id": "loc_010",
+      "category": "definition_location",
+      "question": "Where is the conjugate gradient solver algorithm implemented?",
+      "answer": "The CG/PCG algorithm implementation is in `src/LinearSolvers/PCG.h`; the Poisson wrapper that instantiates it is `src/PoissonSolvers/PoissonCG.h`."
+    },
+    {
+      "id": "loc_011",
+      "category": "definition_location",
+      "question": "Where is the FEM Poisson solver implemented?",
+      "answer": "The FEM Poisson solver is implemented in `src/PoissonSolvers/FEMPoissonSolver.h`."
+    },
+    {
+      "id": "loc_012",
+      "category": "definition_location",
+      "question": "Where is the FDTD Maxwell solver base class defined?",
+      "answer": "The FDTD Maxwell solver base class is defined in `src/MaxwellSolvers/FDTDSolverBase.h` with implementation in `FDTDSolverBase.hpp`."
+    },
+    {
+      "id": "loc_013",
+      "category": "definition_location",
+      "question": "Where is the LagrangeSpace class defined?",
+      "answer": "The `LagrangeSpace` class is defined in `src/FEM/LagrangeSpace.h` with methods implemented in `src/FEM/LagrangeSpace.hpp`."
+    },
+    {
+      "id": "loc_014",
+      "category": "definition_location",
+      "question": "Where is the particle update routine (that moves particles across ranks) implemented?",
+      "answer": "Particle migration between ranks is implemented in `ParticleSpatialLayout::update()` in `src/Particle/ParticleSpatialLayout.hpp`."
+    },
+    {
+      "id": "loc_015",
+      "category": "definition_location",
+      "question": "Where are IPPL timers defined?",
+      "answer": "IPPL timers are defined by the singleton timing layer in `src/Utility/IpplTimings.h/.cpp`, not just the low-level `Timer` helper."
+    },
+    {
+      "id": "cls_001",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the BareField class?",
+      "answer": "`BareField` is the core distributed field storage class: it owns the data view, domain metadata, layout link, and halo operations."
+    },
+    {
+      "id": "cls_002",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the Field class compared to BareField?",
+      "answer": "`Field` extends `BareField` with a mesh, boundary-condition container, and mesh-aware integral/average semantics."
+    },
+    {
+      "id": "cls_003",
+      "category": "class_responsibility",
+      "question": "What does the FieldLayout class do and what are its main template parameters?",
+      "answer": "`FieldLayout<Dim>` distributes a global `NDIndex<Dim>` over ranks and stores local domains, neighbors, and communication ranges; its only template parameter is `Dim`."
+    },
+    {
+      "id": "cls_004",
+      "category": "class_responsibility",
+      "question": "What is the purpose of the ParticleBase class and how is it meant to be used?",
+      "answer": "`ParticleBase` is the user-extensible base container for particles; derived classes add attributes and register them so layout-driven migration can move them."
+    },
+    {
+      "id": "cls_005",
+      "category": "class_responsibility",
+      "question": "What does the ParticleSpatialLayout class do?",
+      "answer": "`ParticleSpatialLayout` decides which spatial region/rank owns each particle and performs the migration/update workflow after particles move."
+    },
+    {
+      "id": "cls_006",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of UniformCartesian?",
+      "answer": "`UniformCartesian` represents a uniform Cartesian mesh and exposes spacing/origin/volume and vertex-position geometry queries."
+    },
+    {
+      "id": "cls_007",
+      "category": "class_responsibility",
+      "question": "What does the Mesh base class define?",
+      "answer": "`Mesh` is the abstract base interface for meshes: origin, grid size, spacing, vertex positions, and volume queries."
+    },
+    {
+      "id": "cls_008",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of the Communicator class in ippl::mpi?",
+      "answer": "`ippl::mpi::Communicator` wraps MPI point-to-point, collectives, tag handling, and managed communication buffers."
+    },
+    {
+      "id": "cls_009",
+      "category": "class_responsibility",
+      "question": "What is the role of the Environment class in ippl::mpi?",
+      "answer": "`ippl::mpi::Environment` manages MPI environment lifetime checks/teardown and provides an abort hook."
+    },
+    {
+      "id": "cls_010",
+      "category": "class_responsibility",
+      "question": "What does the Archive class do in the Communicate module?",
+      "answer": "`Archive` serializes and deserializes Kokkos views and vector-valued views into raw byte buffers for MPI transfer."
+    },
+    {
+      "id": "cls_011",
+      "category": "class_responsibility",
+      "question": "What is the role of the BConds class?",
+      "answer": "`BConds` is the container of boundary-condition faces and orchestrates neighbor discovery, BC application, and ghost-to-physical assignment."
+    },
+    {
+      "id": "cls_012",
+      "category": "class_responsibility",
+      "question": "What is the role of the BaseManager class?",
+      "answer": "`BaseManager` provides the simulation loop skeleton: `pre_run`, `pre_step`, `advance`, `post_step`, and `run(nt)`."
+    },
+    {
+      "id": "cls_013",
+      "category": "class_responsibility",
+      "question": "What does the Index class represent and what operations does it support?",
+      "answer": "`Index` represents a regular strided integer range/slice and supports range-style arithmetic and comparison operations used in domain descriptions."
+    },
+    {
+      "id": "alg_001",
+      "category": "algorithm",
+      "question": "How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?",
+      "answer": "The FFT open-boundary solver embeds/extends the RHS onto larger domains, FFTs both the density and a precomputed Green's function, multiplies in Fourier space, inverse transforms, and optionally computes gradients/Hessians."
+    },
+    {
+      "id": "alg_002",
+      "category": "algorithm",
+      "question": "How does the FFT-based periodic Poisson solver work in IPPL?",
+      "answer": "The periodic FFT solver FFTs the charge density, divides each Fourier mode by `|k|^2` (with the zero mode handled separately), then inverse transforms; gradients are computed by multiplying by `ik/|k|^2` before the inverse FFT."
+    },
+    {
+      "id": "alg_003",
+      "category": "algorithm",
+      "question": "How does the truncated Green periodic Poisson solver differ from the standard periodic one?",
+      "answer": "The truncated-Green periodic solver replaces the simple `1/|k|^2` kernel with the FFT of a truncated/erf-smoothed Green's function `forceConstant * erf(alpha r) / r`, then follows the same transform-multiply-inverse pattern."
+    },
+    {
+      "id": "alg_004",
+      "category": "algorithm",
+      "question": "How does IPPL's CG solver iterate in the PCG.h implementation?",
+      "answer": "In `PCG.h`, the CG iteration forms residual/direction fields, applies the operator, computes `alpha` and `beta` from inner products, updates the solution/residual/direction, and stops on tolerance or iteration count; the preconditioned variant inserts `M^{-1}` applications on the residual."
+    },
+    {
+      "id": "alg_005",
+      "category": "algorithm",
+      "question": "How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?",
+      "answer": "CIC computes lower/upper weights per axis, scatters with atomic adds to the `2^Dim` neighboring grid points, and gathers by summing the same weighted stencil back to particles."
+    },
+    {
+      "id": "alg_006",
+      "category": "algorithm",
+      "question": "How does the standard FDTD solver advance the electromagnetic field in time?",
+      "answer": "The standard FDTD solver advances the source-like field with a second-order finite-difference update using the previous and current time levels plus neighboring cells and source terms, then fills halos and reapplies BCs."
+    },
+    {
+      "id": "alg_007",
+      "category": "algorithm",
+      "question": "How does the LagrangeSpace class evaluate degrees of freedom per element?",
+      "answer": "`LagrangeSpace` evaluates element DOFs by mapping local element indices to global DOF indices, then evaluates order-1 reference-element shape functions and gradients on those local DOFs."
+    },
+    {
+      "id": "alg_008",
+      "category": "algorithm",
+      "question": "How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?",
+      "answer": "Gauss-Jacobi quadrature computes nodes/weights by Newton iteration on Jacobi polynomial roots, starting from Chebyshev or LehrFEM-style guesses, and uses the resulting rule on reference elements in FEM."
+    },
+    {
+      "id": "alg_009",
+      "category": "algorithm",
+      "question": "How does the orthogonal recursive bisection decide where to cut the domain?",
+      "answer": "ORB chooses a cut axis from the domain geometry and then finds a weight-balanced cut/median so recursive splits distribute load more evenly."
+    },
+    {
+      "id": "alg_010",
+      "category": "algorithm",
+      "question": "How does inverse transform sampling generate particles from a given distribution in IPPL?",
+      "answer": "Inverse transform sampling maps uniform random values in CDF space to samples by estimating the inverse and refining it with Newton-Raphson, dimension by dimension."
+    },
+    {
+      "id": "alg_011",
+      "category": "algorithm",
+      "question": "How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?",
+      "answer": "The FFT layer builds heFFTe boxes/plans in `setup()`, copies IPPL field data into the required views/subviews, calls heFFTe forward/backward transforms, and copies results back for CC/RC/DST/DCT variants."
+    },
+    {
+      "id": "alg_012",
+      "category": "algorithm",
+      "question": "How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?",
+      "answer": "PCG applies a chosen preconditioner from `Preconditioner.h` to the residual, uses the preconditioned residual in its inner products and direction updates, and iterates until tolerance/max iterations."
+    },
+    {
+      "id": "flow_001",
+      "category": "data_flow",
+      "question": "How does charge density flow from particles to the grid in a typical PIC step in IPPL?",
+      "answer": "In the PIC workflow, particle charges and positions are deposited onto the grid with CIC (`scatter`) or FEM assembly (`assemble_rhs_from_particles`), accumulated into `rho`, and then normalized/background-shifted in the manager before solving."
+    },
+    {
+      "id": "flow_002",
+      "category": "data_flow",
+      "question": "How does the electric field flow from the grid back to particles after a Poisson solve?",
+      "answer": "After the field solve, the manager gathers the electric field back to particles with CIC `gather(...)` or FEM `interpolate_grad_to_diracs(...)`, storing particle-local `E` values for the push step."
+    },
+    {
+      "id": "flow_003",
+      "category": "data_flow",
+      "question": "How are halo cells exchanged between neighboring MPI ranks for a BareField?",
+      "answer": "Halo exchange uses `FieldLayout` neighbor/range metadata to pack field subviews, send/receive them with MPI, unpack into ghost or physical regions, and handle serial-periodic dimensions locally."
+    },
+    {
+      "id": "flow_004",
+      "category": "data_flow",
+      "question": "How are particles migrated between MPI ranks by ParticleSpatialLayout?",
+      "answer": "`ParticleSpatialLayout::update()` applies particle BCs, locates destination ranks, advertises receive counts with RMA, sends all registered attributes, destroys invalid local particles, and receives the incoming ones."
+    },
+    {
+      "id": "flow_005",
+      "category": "data_flow",
+      "question": "How does FieldLayout decide which index ranges live on which rank?",
+      "answer": "`FieldLayout` uses the partitioner and the requested parallel/serial decomposition flags to assign each rank a local `NDIndex`, plus neighbor and communication range tables."
+    },
+    {
+      "id": "flow_006",
+      "category": "data_flow",
+      "question": "How is a ParameterList used to configure the FFT and solver classes?",
+      "answer": "`ParameterList` is merged into FFT and solver objects, then consumed by `setup()/initialize()/solve()` for communication mode, pencil/reorder flags, transform direction, solver type, tolerances, preconditioner settings, and output type."
+    },
+    {
+      "id": "flow_007",
+      "category": "data_flow",
+      "question": "How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?",
+      "answer": "`BaseManager::run()` executes `pre_step()`, `advance()`, and `post_step()` for each timestep; derived managers use those hooks for deposit/solve/gather, time updates, and output."
+    },
+    {
+      "id": "flow_008",
+      "category": "data_flow",
+      "question": "How does the FEM solver move data between fields and FEMVector representations?",
+      "answer": "FEM solvers move data by assembling field data into FEM load/stiffness representations (`evaluateLoadVector`, `evaluateAx`, `FEMVector`) and then interpolating the solved field quantities back where needed."
+    },
+    {
+      "id": "flow_009",
+      "category": "data_flow",
+      "question": "How does OrthogonalRecursiveBisection redistribute particles after rebalancing?",
+      "answer": "After ORB recomputes the decomposition, particle ownership changes are realized by updating the layout/regions and then migrating particles with the usual particle update path."
+    },
+    {
+      "id": "api_001",
+      "category": "api_usage",
+      "question": "How do I create a 3D Field of doubles in IPPL?",
+      "answer": "A typical 3D field is `Field<double, 3, UniformCartesian<double, 3>, Cell>` constructed from a `UniformCartesian` mesh and a `FieldLayout<3>`."
+    },
+    {
+      "id": "api_002",
+      "category": "api_usage",
+      "question": "How do I construct a UniformCartesian mesh with custom spacing and origin?",
+      "answer": "Construct the mesh as `UniformCartesian<double, Dim> mesh(domain, hx, origin);` where `hx` is the spacing vector and `origin` is the mesh origin."
+    },
+    {
+      "id": "api_003",
+      "category": "api_usage",
+      "question": "How do I attach a boundary condition (e.g. periodic) to a Field?",
+      "answer": "Create a `BConds<FieldT, Dim>`, assign per-face BC objects such as `PeriodicFace<FieldT>`, then call `field.setFieldBC(bc)`."
+    },
+    {
+      "id": "api_004",
+      "category": "api_usage",
+      "question": "How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?",
+      "answer": "Define a class derived from `ParticleBase<ParticleSpatialLayout<...>>`, add `mass` and `velocity` attributes as members, and register them with `addAttribute()` in the constructor."
+    },
+    {
+      "id": "api_005",
+      "category": "api_usage",
+      "question": "How do I call ippl::initialize and ippl::finalize in a main program?",
+      "answer": "Call the free namespace functions `ippl::initialize(argc, argv);` and `ippl::finalize();` from `main`, as shown in the docs/examples."
+    },
+    {
+      "id": "api_006",
+      "category": "api_usage",
+      "question": "How do I set up and run a forward FFT on an IPPL Field?",
+      "answer": "Set up the relevant layouts/fields/parameters, build an `FFT<CCTransform, ...>` or `FFT<RCTransform, ...>` object, and call `transform(FORWARD, ...)` on the field(s)."
+    },
+    {
+      "id": "api_007",
+      "category": "api_usage",
+      "question": "How do I construct an FFTPeriodicPoissonSolver and solve for the potential?",
+      "answer": "Construct `FFTPeriodicPoissonSolver(lhs, rhs)` (or default construct then set fields/params), ensure the RHS is attached, and call `solve()` to write the potential/gradient outputs."
+    },
+    {
+      "id": "api_008",
+      "category": "api_usage",
+      "question": "How do I invoke the conjugate gradient Poisson solver on a Field?",
+      "answer": "Use `PoissonCG<FieldT>` (or the Alpine `FieldSolver` wrapper around it), set its fields/parameters, and call `solve()` so the internal CG/PCG object iterates on the field."
+    },
+    {
+      "id": "api_009",
+      "category": "api_usage",
+      "question": "How do I sample particles from a normal distribution using IPPL Random utilities?",
+      "answer": "For Gaussian draws, IPPL exposes both `randn` convenience generation and the more general `InverseTransformSampling` + `NormalDistribution` path."
+    },
+    {
+      "id": "api_010",
+      "category": "api_usage",
+      "question": "How do I register particle attributes with ParticleBase so that they are communicated on migration?",
+      "answer": "Register each particle attribute with `addAttribute(...)`; migration then serializes and transfers all registered attributes automatically."
+    },
+    {
+      "id": "api_011",
+      "category": "api_usage",
+      "question": "How do I access the MPI rank and size through the IPPL Communicator?",
+      "answer": "Access rank and size with `ippl::Comm->rank()` and `ippl::Comm->size()` (or the same methods on a `Communicator` object)."
+    },
+    {
+      "id": "api_012",
+      "category": "api_usage",
+      "question": "How do I use IpplTimings to measure a region of code?",
+      "answer": "Get a timer handle with `IpplTimings::getTimer(\"name\")`, surround the code with `startTimer()` / `stopTimer()`, and print with `IpplTimings::print()`."
+    },
+    {
+      "id": "par_001",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL achieve performance portability across CPUs and GPUs?",
+      "answer": "IPPL gets performance portability by combining Kokkos execution/memory abstractions with MPI and heFFTe, so the same code paths can target CPUs and GPUs."
+    },
+    {
+      "id": "par_002",
+      "category": "parallelism_and_kokkos",
+      "question": "Why does IPPL use Kokkos::View for field storage?",
+      "answer": "IPPL uses `Kokkos::View` because fields need execution-space-aware storage, subviews, mirrors, and portable kernels across host/device memory spaces."
+    },
+    {
+      "id": "par_003",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL parallelize loops over field indices using Kokkos RangePolicy?",
+      "answer": "Loops are parallelized through `ippl::getRangePolicy` / `createRangePolicy` and the `ippl::parallel_for` wrapper over Kokkos `RangePolicy`/`MDRangePolicy`."
+    },
+    {
+      "id": "par_004",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL support mixed precision (float vs double) for fields?",
+      "answer": "Precision is chosen by the field value type (`Field<float,...>` vs `Field<double,...>`), and the codebase also contains mixed-precision examples where fields/particles deliberately use different precisions."
+    },
+    {
+      "id": "par_005",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?",
+      "answer": "Multiple execution spaces are enabled at build time through `IPPL_PLATFORMS` and Kokkos/HeFFTe backend flags; IPPL also has container helpers for multi-space data."
+    },
+    {
+      "id": "par_006",
+      "category": "parallelism_and_kokkos",
+      "question": "What is the purpose of ParallelDispatch.h and what helpers does it expose?",
+      "answer": "`ParallelDispatch.h` wraps Kokkos policies and functors, exposing `RangePolicy`, `getRangePolicy`, `createRangePolicy`, `parallel_for`, and `parallel_reduce`."
+    },
+    {
+      "id": "par_007",
+      "category": "parallelism_and_kokkos",
+      "question": "How does the Archive class serialize/deserialize Kokkos views for MPI transfer?",
+      "answer": "`Archive` serializes Kokkos views into one-dimensional byte buffers with Kokkos kernels and `memcpy`, then deserializes them back into views on receive."
+    },
+    {
+      "id": "par_008",
+      "category": "parallelism_and_kokkos",
+      "question": "How are MPI tags managed in IPPL to avoid collisions across subsystems?",
+      "answer": "MPI tags are managed with fixed base tags in `Tags.h` and the cyclic tag allocator in `TagMaker`, which `Communicator` inherits."
+    },
+    {
+      "id": "par_009",
+      "category": "parallelism_and_kokkos",
+      "question": "What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?",
+      "answer": "`Kokkos::fence()` waits for outstanding kernels; IPPL exposes `ippl::fence()` as a runtime wrapper in `Ippl.cpp` and also fences internally after many kernel/data-movement steps."
+    },
+    {
+      "id": "bc_001",
+      "category": "boundary_and_halo",
+      "question": "What boundary condition types are provided in BcTypes.h?",
+      "answer": "`BcTypes.h` provides periodic, constant, zero, extrapolating, and no-BC face classes."
+    },
+    {
+      "id": "bc_002",
+      "category": "boundary_and_halo",
+      "question": "How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?",
+      "answer": "Periodic BCs wrap values from the opposite side of the domain; there is no explicit `NeumannFace` class in this codebase, so the closest non-periodic behavior is constant/extrapolating face treatment."
+    },
+    {
+      "id": "bc_003",
+      "category": "boundary_and_halo",
+      "question": "How are ghost cells populated during a halo exchange?",
+      "answer": "Ghost cells are populated mainly by `fillHalo()` / `PeriodicFace::apply()`: source slabs are packed, exchanged, and unpacked into ghost regions; `accumulateHalo_noghost()` is a different operation."
+    },
+    {
+      "id": "bc_004",
+      "category": "boundary_and_halo",
+      "question": "How are physical-cell values copied into ghost cells for periodic boundary conditions?",
+      "answer": "Periodic ghost cells are filled from opposite-side physical cells in `applyPeriodicSerialDim()` and the multi-rank `PeriodicFace::apply()` path."
+    },
+    {
+      "id": "bc_005",
+      "category": "boundary_and_halo",
+      "question": "How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?",
+      "answer": "The absorbing Maxwell BC uses second-order Mur-style formulas with precomputed weights and previous/current/next boundary values plus tangential neighbors to damp outgoing waves."
+    },
+    {
+      "id": "num_001",
+      "category": "numerical_meaning",
+      "question": "What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?",
+      "answer": "The FFT Poisson solvers compute electrostatic potential (and optionally field/gradient) from charge density, i.e. the discretized Coulomb potential corresponding to `-Δφ = ρ`."
+    },
+    {
+      "id": "num_002",
+      "category": "numerical_meaning",
+      "question": "What is the physical meaning of the fields advanced by the FDTD solver?",
+      "answer": "The Maxwell solvers evolve electromagnetic field data: electric and magnetic fields (`E`, `B`) driven by a source/four-current field."
+    },
+    {
+      "id": "num_007",
+      "category": "numerical_meaning",
+      "question": "What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?",
+      "answer": "FFT Poisson is fast and direct on structured uniform grids with compatible BCs but less flexible; CG/PCG is iterative and may be slower/convergence-limited, but it is more flexible for alternative discretizations, BCs, and preconditioning."
+    },
+    {
+      "id": "build_001",
+      "category": "build_and_install",
+      "question": "Which third-party libraries does IPPL depend on, and what are they used for?",
+      "answer": "Core third-party dependencies are MPI for distributed communication, Kokkos for performance portability, heFFTe for FFT backends/plans, FFTW/CuFFT as optional FFT backends, and GoogleTest for tests."
+    },
+    {
+      "id": "build_002",
+      "category": "build_and_install",
+      "question": "What C++ standard does IPPL require, and why?",
+      "answer": "IPPL requires C++20, as stated in the README badge and the installation examples/configuration flags."
+    },
+    {
+      "id": "build_003",
+      "category": "build_and_install",
+      "question": "How is IPPL configured with CMake to enable a GPU build?",
+      "answer": "GPU builds are enabled through CMake options like `IPPL_PLATFORMS=CUDA` or `IPPL_PLATFORMS=\"HIP;OPENMP\"` plus matching Kokkos/architecture/backend flags (`Kokkos_ARCH_*`, `CMAKE_CUDA_ARCHITECTURES`, `Kokkos_ENABLE_HIP`, `Heffte_ENABLE_ROCM`, etc.)."
+    },
+    {
+      "id": "build_004",
+      "category": "build_and_install",
+      "question": "What options does INSTALLATION.md describe for configuring Kokkos for IPPL?",
+      "answer": "`INSTALLATION.md` describes Kokkos version selection plus backend/architecture options used with IPPL builds, including CUDA and HIP/OpenMP examples and `IPPL_PLATFORMS` combinations."
+    },
+    {
+      "id": "build_005",
+      "category": "build_and_install",
+      "question": "How do I install IPPL on the EULER cluster according to the documentation?",
+      "answer": "The EULER install guide says to connect with VPN/SSH, switch to the new software stack, purge modules, load GCC/CMake/CUDA/OpenMPI, clone the repo, configure a build, compile, and test on an interactive node."
+    },
+    {
+      "id": "test_002",
+      "category": "testing_and_workflow",
+      "question": "What naming conventions does WORKFLOW.md require for variables, constants, and member variables?",
+      "answer": "`WORKFLOW.md` requires camelCase variables, CAPITAL_CASE compile-time constants, and member names suffixed with `_m`."
+    },
+    {
+      "id": "test_003",
+      "category": "testing_and_workflow",
+      "question": "When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?",
+      "answer": "Use `std::sqrt` in host-only code, and `Kokkos::sqrt` in device-capable code such as `KOKKOS_INLINE_FUNCTION` kernels."
+    },
+    {
+      "id": "test_004",
+      "category": "testing_and_workflow",
+      "question": "How does IPPL profile MPI calls using mpiP?",
+      "answer": "IPPL profiles MPI calls with mpiP by preloading `libmpiP.so`, optionally setting `MPIP` flags, then parsing the produced `.mpiP` output with the bundled `scripts/mpiP.py`."
+    },
+    {
+      "id": "test_005",
+      "category": "testing_and_workflow",
+      "question": "What does the SLURM job template for Gwendolen in the README look like?",
+      "answer": "The README does include a Gwendolen SLURM template showing the `gmerlin6` cluster, `gwendolen` partition, GPU count, and `srun ./<your_executable> <args> --kokkos-map-device-id-by=mpi_rank`."
+    }
+  ]
+}

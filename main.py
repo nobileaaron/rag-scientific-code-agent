@@ -91,6 +91,8 @@ def save_explanation_snapshots(entities, output_path, entity_level):
                     entity.get("function_name", entity.get("section_title", "")),
                 ),
                 "parent_symbol": entity.get("parent_symbol", entity.get("class_name", "")),
+                "namespace_path": entity.get("namespace_path", ""),
+                "qualified_symbol_name": entity.get("qualified_symbol_name", ""),
                 "chunk_type": entity.get("chunk_type", entity.get("entity_type", "")),
                 "source_type": entity.get("source_type", entity.get("doc_type", "")),
                 "module_key": entity.get("module_key", ""),
@@ -327,6 +329,7 @@ def build_vector_store_manifest(
         "parser_type": parser_type,
         "max_chunk_size": max_chunk_size,
         "chunker_version": "2.0-leading-comment-prepended",
+        "code_metadata_version": "4.0-lightweight-cpp-entities",
         "embedding_backend": embedder.embedding_backend,
         "embedding_model": embedder.embedding_model_name,
         "chunk_explanation_prompt_mode": chunk_explanation_prompt_mode,
@@ -456,6 +459,14 @@ def main():
     retrieval_candidate_k = settings["retrieval"]["candidate_k"]
     retrieval_supplementary_k = settings["retrieval"]["supplementary_k"]
     retrieval_supplementary_candidate_k = settings["retrieval"]["supplementary_candidate_k"]
+    primary_score_relative_floor = settings["retrieval"].get("primary_score_relative_floor")
+    primary_score_gap_threshold = settings["retrieval"].get("primary_score_gap_threshold")
+    primary_score_absolute_floor = settings["retrieval"].get("primary_score_absolute_floor")
+    primary_same_symbol_cap = settings["retrieval"].get("primary_same_symbol_cap")
+    primary_same_file_cap = settings["retrieval"].get("primary_same_file_cap")
+    dominant_file_ratio = settings["retrieval"].get("dominant_file_ratio")
+    lexical_metadata_weight = settings["retrieval"].get("lexical_metadata_weight")
+    entity_target_weight = settings["retrieval"].get("entity_target_weight")
     retrieval_debug_default = settings["retrieval"]["debug_enabled_by_default"]
     parser_type = resolve_parser_type(preferred_parser_type)
     prompt_template = get_prompt_template(answer_prompt_mode)
@@ -695,6 +706,14 @@ def main():
         candidate_k=retrieval_candidate_k,
         supplementary_k=retrieval_supplementary_k,
         supplementary_candidate_k=retrieval_supplementary_candidate_k,
+        primary_score_relative_floor=primary_score_relative_floor,
+        primary_score_gap_threshold=primary_score_gap_threshold,
+        primary_score_absolute_floor=primary_score_absolute_floor,
+        primary_same_symbol_cap=primary_same_symbol_cap,
+        primary_same_file_cap=primary_same_file_cap,
+        dominant_file_ratio=dominant_file_ratio,
+        lexical_metadata_weight=lexical_metadata_weight,
+        entity_target_weight=entity_target_weight,
     )
 
     # 6 INITIALIZING LLM

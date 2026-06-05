@@ -143,6 +143,8 @@ class Embedder:
         symbol_name = chunk.get("symbol_name", chunk.get("function_name", ""))
         chunk_type = chunk.get("chunk_type", chunk.get("entity_type", ""))
         parent_symbol = chunk.get("parent_symbol", "")
+        namespace_path = chunk.get("namespace_path", "")
+        qualified_symbol_name = chunk.get("qualified_symbol_name", "")
         section_path = chunk.get("section_path", chunk.get("parameters", ""))
         limits = prompt_limits or {}
         generated_explanation = self._truncate_for_embedding(
@@ -159,6 +161,8 @@ File: {file_name}
 Symbol: {symbol_name}
 Chunk Type: {chunk_type}
 Parent Symbol: {parent_symbol}
+Namespace: {namespace_path}
+Qualified Symbol: {qualified_symbol_name}
 Section Path: {section_path}
 Generated Explanation:
 {generated_explanation}
@@ -185,7 +189,7 @@ Code:
             sections.append(f"Chunk Type: {chunk_type}")
         if intent:
             sections.append(f"Intent: {intent}")
-        sections.append(f"Question:\n{text}")
+        sections.append(f"Question:\n{text}")               
         if detected_code:
             sections.append(f"Code:\n{detected_code}")
 

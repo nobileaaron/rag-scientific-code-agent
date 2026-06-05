@@ -52,14 +52,6 @@ class RetrievalDebugger:
         if subject_file_candidate_count:
             print(f"Subject file candidate count: {subject_file_candidate_count}")
 
-        workflow_subject_candidate_count = diagnostics.get("workflow_subject_candidate_count", 0)
-        if workflow_subject_candidate_count:
-            print(f"Workflow subject candidate count: {workflow_subject_candidate_count}")
-
-        data_flow_candidate_count = diagnostics.get("data_flow_candidate_count", 0)
-        if data_flow_candidate_count:
-            print(f"Data-flow candidate count: {data_flow_candidate_count}")
-
         comparison_candidate_count = diagnostics.get("comparison_candidate_count", 0)
         if comparison_candidate_count:
             print(f"Comparison candidate count: {comparison_candidate_count}")

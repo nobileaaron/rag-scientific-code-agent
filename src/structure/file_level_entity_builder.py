@@ -128,9 +128,16 @@ class FileLevelEntityBuilder:
             contained_symbol_names = self._dedupe_preserving_order(
                 [symbol["symbol_name"] for symbol in symbol_records]
             )
+            contained_qualified_symbol_names = self._dedupe_preserving_order(
+                [
+                    symbol.get("qualified_symbol_name", "")
+                    for symbol in symbol_records
+                    if symbol.get("qualified_symbol_name")
+                ]
+            )
             contained_symbol_types = self._dedupe_preserving_order(
                 [
-                    f"{symbol['symbol_name']} ({symbol['chunk_type']})"
+                    f"{symbol.get('qualified_symbol_name') or symbol['symbol_name']} ({symbol['chunk_type']})"
                     for symbol in symbol_records
                 ]
             )
@@ -174,6 +181,7 @@ class FileLevelEntityBuilder:
                 "referenced_files": file_record.get("referenced_files", []),
                 "contained_symbol_ids": symbol_ids,
                 "contained_symbol_names": contained_symbol_names,
+                "contained_qualified_symbol_names": contained_qualified_symbol_names,
                 "contained_symbol_types": contained_symbol_types,
                 "owned_symbols": owned_symbols,
                 "inherited_base_symbols": inherited_base_symbols,
@@ -379,9 +387,15 @@ Raw File Content Fallback:
             return 0
         if chunk_type in {"function_definition", "method_definition"}:
             return 1
-        if chunk_type == "method_declaration":
+        if chunk_type in {"function_declaration", "method_declaration"}:
             return 2
-        return 3
+        if chunk_type in {"enum", "type_alias"}:
+            return 3
+        if chunk_type == "global_variable":
+            return 4
+        if chunk_type == "namespace":
+            return 5
+        return 6
 
     def _build_key_symbol_lines(self, ranked_symbols, explained_entities):
         """Render the small symbol list shown in ``symbol_aggregated`` file facts.
@@ -398,7 +412,8 @@ Raw File Content Fallback:
                 explained_entity.get("generated_explanation", "") if explained_entity else "",
                 char_limit=self.symbol_summary_char_limit,
             )
-            symbol_line = f"- {symbol['symbol_name']} ({symbol['chunk_type']})"
+            display_symbol = symbol.get("qualified_symbol_name") or symbol["symbol_name"]
+            symbol_line = f"- {display_symbol} ({symbol['chunk_type']})"
             if explanation_summary:
                 symbol_line += f": {explanation_summary}"
             key_symbol_lines.append(symbol_line)
@@ -447,7 +462,7 @@ Raw File Content Fallback:
 
         symbol_descriptions = self._dedupe_preserving_order(
             [
-                f"{symbol['symbol_name']} ({symbol['chunk_type']})"
+                f"{symbol.get('qualified_symbol_name') or symbol['symbol_name']} ({symbol['chunk_type']})"
                 for symbol in ranked_symbols[: self.max_key_symbols]
             ]
         )
@@ -502,8 +517,9 @@ Raw File Content Fallback:
         file_path = entity.get("path", entity.get("file", ""))
         symbol_name = entity.get("symbol_name", entity.get("function_name", ""))
         parent_symbol = entity.get("parent_symbol", entity.get("class_name", ""))
+        namespace_path = entity.get("namespace_path", "")
         entity_type = entity.get("entity_type", entity.get("chunk_type", "entity"))
-        return f"{file_path}::{parent_symbol}::{symbol_name}::{entity_type}"
+        return f"{file_path}::{namespace_path}::{parent_symbol}::{symbol_name}::{entity_type}"
 
     def _format_raw_content(self, raw_content):
         if not raw_content:

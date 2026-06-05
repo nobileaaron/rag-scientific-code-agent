@@ -189,6 +189,8 @@ class EntityExplanationGenerator:
         parent_symbol = entity.get("parent_symbol", entity.get("class_name", ""))
         chunk_type = entity.get("chunk_type", entity.get("entity_type", ""))
         file_path = entity.get("path", entity.get("file", ""))
+        namespace_path = entity.get("namespace_path", "")
+        qualified_symbol_name = entity.get("qualified_symbol_name", "")
         section_path = entity.get("section_path", "")
         parameters = entity.get("parameters", "")
         return_type = entity.get("return_type", "")
@@ -214,6 +216,10 @@ class EntityExplanationGenerator:
             f"Symbol: {symbol_name or 'unknown'}",
             f"Path: {file_path or 'unknown'}",
         ]
+        if namespace_path:
+            context_lines.append(f"Namespace: {namespace_path}")
+        if qualified_symbol_name:
+            context_lines.append(f"Qualified Symbol: {qualified_symbol_name}")
         if self._should_show_chunk_type(display_chunk_type, display_entity_level):
             context_lines.append(f"Chunk Type: {display_chunk_type}")
         if self._should_show_return_type(chunk_type, return_type):

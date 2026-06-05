@@ -129,6 +129,7 @@ class ProjectStructureBuilder:
                     "symbol_id": symbol_id,
                     "symbol_name": symbol_name,
                     "parent_symbol": entity.get("parent_symbol", entity.get("class_name", "")),
+                    "qualified_symbol_name": entity.get("qualified_symbol_name", ""),
                     "entity_type": entity.get("entity_type", entity.get("chunk_type", "")),
                     "chunk_type": entity.get("chunk_type", entity.get("entity_type", "")),
                     "source_type": entity.get("source_type", self._source_type_from_path(file_path)),
@@ -344,8 +345,9 @@ class ProjectStructureBuilder:
         file_path = entity.get("path", entity.get("file", ""))
         symbol_name = entity.get("symbol_name", entity.get("function_name", ""))
         parent_symbol = entity.get("parent_symbol", entity.get("class_name", ""))
+        namespace_path = entity.get("namespace_path", "")
         entity_type = entity.get("entity_type", entity.get("chunk_type", "entity"))
-        return f"{file_path}::{parent_symbol}::{symbol_name}::{entity_type}"
+        return f"{file_path}::{namespace_path}::{parent_symbol}::{symbol_name}::{entity_type}"
 
     def _extract_base_classes(self, inheritance_text):
         if not inheritance_text:

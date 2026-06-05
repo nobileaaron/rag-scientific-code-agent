@@ -66,9 +66,13 @@ class QueryIntentRouter:
     SYMBOL_LEVEL_CHUNK_HINTS = {
         "class": ("class",),
         "struct": ("struct",),
+        "structs": ("struct",),
         "method": ("method_definition", "method_declaration"),
+        "methods": ("method_definition", "method_declaration"),
         "function": ("function_definition", "method_definition"),
         "routine": ("function_definition", "method_definition"),
+        "namespace": ("namespace",),
+        "namespaces": ("namespace",),
     }
 
     def route(self, query, exact_filenames=None, exact_symbols=None):
@@ -87,7 +91,14 @@ class QueryIntentRouter:
         if self._contains_any(
             lowered,
             (
-                "where",
+                "where is",
+                "what file",
+                "what module",
+                "what folder",
+                "what namespace",
+                "what class",
+                "what struct",
+                "what function",
                 "find",
                 "located",
                 "implemented",
@@ -162,7 +173,9 @@ class QueryIntentRouter:
     def _looks_like_data_flow_query(self, lowered_query):
         if self._contains_any(
             lowered_query,
-            (
+            (   
+                "dataflow"
+                "data flow",
                 "flow from",
                 "flows from",
                 "back to particles",
@@ -215,14 +228,11 @@ class QueryIntentRouter:
                 " vs ",
             )
         )
-        mentions_fft = "fft" in lowered_query
-        mentions_cg = any(
-            phrase in lowered_query
-            for phrase in (" cg ", "cg ", " cg", "conjugate gradient", "conjugate-gradient")
+        has_comparison_connector = any(
+            connector in lowered_query
+            for connector in (" and ", " with ", " to ", " versus ", " vs ", " between ")
         )
-        mentions_poisson = "poisson" in lowered_query
-        mentions_solver = "solver" in lowered_query or "solvers" in lowered_query
-        return mentions_compare and mentions_fft and mentions_cg and (mentions_poisson or mentions_solver)
+        return mentions_compare and has_comparison_connector
 
     def _looks_like_api_usage_query(self, lowered_query):
         if lowered_query.startswith(("how do i ", "how can i ", "how to ")):

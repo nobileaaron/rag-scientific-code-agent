@@ -68,6 +68,7 @@ class HeaderChunker:
                         "language": entity.get("language", "cpp"),
                         "section_path": entity.get("section_path", ""),
                         "namespace_path": entity.get("namespace_path", ""),
+                        "qualified_symbol_name": entity.get("qualified_symbol_name", ""),
                         "chunk_index": index,
                         "total_chunks": total_chunks,
                         "function_name": chunk_name,

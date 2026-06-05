@@ -8,7 +8,14 @@ class MetadataReranker:
     # cases the user is usually looking for the concrete source location of a
     # literal call site, not just thematically related infrastructure.
     LOCATION_QUERY_KEYWORDS = (
-        "where",
+        "where is",
+        "what file",
+        "what module",
+        "what folder",
+        "what namespace",
+        "what class",
+        "what struct",
+        "what function",
         "find",
         "located",
         "implemented",
@@ -205,7 +212,24 @@ class MetadataReranker:
         "documentation_section_level",
     }
 
-    def __init__(self):
+    LEXICAL_METADATA_WEIGHT = 0.4
+    ENTITY_TARGET_WEIGHT = 0.7
+
+    def __init__(
+        self,
+        lexical_metadata_weight=None,
+        entity_target_weight=None,
+    ):
+        self.lexical_metadata_weight = (
+            self.LEXICAL_METADATA_WEIGHT
+            if lexical_metadata_weight is None
+            else lexical_metadata_weight
+        )
+        self.entity_target_weight = (
+            self.ENTITY_TARGET_WEIGHT
+            if entity_target_weight is None
+            else entity_target_weight
+        )
         self.file_extension_pattern = re.compile(
             r"\b[A-Za-z0-9_\-]+\.(?:cpp|hpp|h|md|rst|txt)\b",
             re.IGNORECASE,
@@ -302,7 +326,10 @@ class MetadataReranker:
                 retrieval_preferences,
                 exact_symbols,
             )
-            metadata_score = lexical_metadata_score + entity_target_score
+            metadata_score = (
+                self.lexical_metadata_weight * lexical_metadata_score
+                + self.entity_target_weight * entity_target_score
+            )
             combined_score = semantic_score + metadata_score
 
             rescored_candidates.append(
@@ -345,6 +372,8 @@ class MetadataReranker:
                     "preferred_chunk_types": list(
                         retrieval_preferences.get("preferred_chunk_types", ())
                     ),
+                    "lexical_metadata_weight": self.lexical_metadata_weight,
+                    "entity_target_weight": self.entity_target_weight,
                     "reranked_candidates": rescored_candidates,
                 },
             }
@@ -368,6 +397,8 @@ class MetadataReranker:
         file_name = str(chunk.get("file_name", Path(chunk.get("file", "")).name)).lower()
         path = str(chunk.get("path", chunk.get("file", ""))).lower()
         symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", ""))).lower()
+        namespace_path = str(chunk.get("namespace_path", "") or "").lower()
+        qualified_symbol_name = str(chunk.get("qualified_symbol_name", "") or "").lower()
         source_type = str(chunk.get("source_type", "")).lower()
         entity_level = str(chunk.get("entity_level", "")).lower()
         matched_api_terms = []
@@ -379,10 +410,16 @@ class MetadataReranker:
             score += 20.0
         if exact_symbols and symbol_name in exact_symbols:
             score += 20.0
+        if exact_symbols and qualified_symbol_name in exact_symbols:
+            score += 20.0
+        if exact_symbols and namespace_path in exact_symbols:
+            score += 12.0
 
         file_name_tokens = self._split_metadata_tokens(file_name)
         path_tokens = self._split_metadata_tokens(path)
         symbol_tokens = self._split_metadata_tokens(symbol_name)
+        namespace_tokens = self._split_metadata_tokens(namespace_path)
+        qualified_symbol_tokens = self._split_metadata_tokens(qualified_symbol_name)
         low_signal_symbol_name = self._is_low_signal_symbol_name(symbol_name)
         if low_signal_symbol_name:
             symbol_tokens = set()
@@ -391,10 +428,18 @@ class MetadataReranker:
         meaningful_file_name_tokens = file_name_tokens - self.low_signal_tokens
         meaningful_path_tokens = path_tokens - self.low_signal_tokens
         meaningful_symbol_tokens = symbol_tokens - self.low_signal_tokens
+        meaningful_namespace_tokens = namespace_tokens - self.low_signal_tokens
+        meaningful_qualified_symbol_tokens = (
+            qualified_symbol_tokens - self.low_signal_tokens
+        )
 
         file_name_overlap = len(meaningful_query_tokens & meaningful_file_name_tokens)
         path_overlap = len(meaningful_query_tokens & meaningful_path_tokens)
         symbol_overlap = len(meaningful_query_tokens & meaningful_symbol_tokens)
+        namespace_overlap = len(meaningful_query_tokens & meaningful_namespace_tokens)
+        qualified_symbol_overlap = len(
+            meaningful_query_tokens & meaningful_qualified_symbol_tokens
+        )
 
         if exact_filenames and file_name in exact_filenames and file_name_overlap > 0:
             score += 4.0
@@ -409,6 +454,8 @@ class MetadataReranker:
         score += 4.0 * file_name_overlap
         score += 2.0 * path_overlap
         score += 2.0 * symbol_overlap
+        score += 2.0 * namespace_overlap
+        score += 2.0 * qualified_symbol_overlap
 
         if any(filename.endswith((".hpp", ".h")) for filename in exact_filenames) and source_type == "header":
             score += 1.0
@@ -434,7 +481,7 @@ class MetadataReranker:
             score += 8.0
         if (
             exact_symbols
-            and symbol_name in exact_symbols
+            and (symbol_name in exact_symbols or qualified_symbol_name in exact_symbols)
             and source_type in {"cpp", "header"}
             and not low_signal_symbol_name
         ):
@@ -514,29 +561,9 @@ class MetadataReranker:
                 data_flow_term_score -= 14.0
 
         if comparison_subjects:
-            comparison_role = self.classify_comparison_subject(chunk, comparison_subjects)
-            if comparison_role == "fft":
+            comparison_subject = self.classify_comparison_subject(chunk, comparison_subjects)
+            if comparison_subject:
                 comparison_score += 24.0
-                if "/poissonsolvers/" in path:
-                    comparison_score += 6.0
-            elif comparison_role == "cg":
-                comparison_score += 24.0
-                if "/poissonsolvers/" in path:
-                    comparison_score += 6.0
-            elif comparison_role == "baseline":
-                comparison_score += 12.0
-
-            if (
-                "fftperiodicpoissonsolver" in comparison_subjects
-                and (
-                    path.startswith("source:fft")
-                    or path.startswith("test:test/fft")
-                    or path.startswith("unit_tests:unit_tests/fft")
-                    or "/src/fft/" in path
-                )
-                and comparison_role != "fft"
-            ):
-                comparison_score -= 18.0
 
         score += api_term_score + data_flow_term_score + comparison_score
         return {
@@ -608,15 +635,25 @@ class MetadataReranker:
         exact_symbols = {str(symbol).lower() for symbol in exact_symbols if symbol}
         entity_level = str(chunk.get("entity_level", "") or "")
         symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
+        qualified_symbol_name = str(chunk.get("qualified_symbol_name", "") or "").lower()
+        namespace_path = str(chunk.get("namespace_path", "") or "").lower()
         module_key = str(chunk.get("module_key", "") or "").lower()
         module_path = str(chunk.get("module_path", "") or "").lower()
         base_name = str(chunk.get("base_name", "") or "").lower()
         file_name = str(chunk.get("file_name", "") or "").lower()
         file_stem = file_name.rsplit(".", 1)[0] if "." in file_name else file_name
+        namespace_symbol = (
+            f"{namespace_path}::{symbol_name}"
+            if namespace_path and symbol_name
+            else ""
+        )
 
         if explicit_target == "file_level" and entity_level == "file_level":
             return (
                 symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
                 or base_name in exact_symbols
                 or file_stem in exact_symbols
             )
@@ -626,21 +663,40 @@ class MetadataReranker:
             module_path_tail = module_path.split("/")[-1] if "/" in module_path else module_path
             return (
                 symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
                 or module_key_tail in exact_symbols
                 or module_path_tail in exact_symbols
             )
 
         if explicit_target == "call_chain_level" and entity_level == "call_chain_level":
-            return symbol_name in exact_symbols
+            return (
+                symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
+            )
 
         if explicit_target == "function_level" and entity_level == "function_level":
-            return symbol_name in exact_symbols
+            return (
+                symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
+            )
 
         if (
             explicit_target == "documentation_section_level"
             and entity_level == "documentation_section_level"
         ):
-            return symbol_name in exact_symbols or base_name in exact_symbols
+            return (
+                symbol_name in exact_symbols
+                or qualified_symbol_name in exact_symbols
+                or namespace_symbol in exact_symbols
+                or namespace_path in exact_symbols
+                or base_name in exact_symbols
+            )
 
         return False
 
@@ -756,31 +812,67 @@ class MetadataReranker:
             return []
 
         subjects = []
-        mentions_fft = "fft" in lowered_query
-        mentions_cg = any(
-            phrase in lowered_query
-            for phrase in (" cg ", "cg ", " cg", "conjugate gradient", "conjugate-gradient")
+        for raw_token in self.token_pattern.findall(query):
+            if not self._looks_like_exact_symbol_token(raw_token):
+                continue
+            self._add_comparison_subject(subjects, raw_token)
+
+        comparison_patterns = (
+            r"\bdifference between\s+(?P<left>.+?)\s+and\s+(?P<right>.+?)(?:[?.!,;]|$)",
+            r"\bcompare\s+(?P<left>.+?)\s+(?:and|with|to|against|versus|vs\.?)\s+(?P<right>.+?)(?:[?.!,;]|$)",
+            r"\b(?P<left>[A-Za-z0-9_:./-]+)\s+(?:versus|vs\.?)\s+(?P<right>[A-Za-z0-9_:./-]+)\b",
         )
-        mentions_poisson = "poisson" in lowered_query
-
-        if mentions_fft and mentions_poisson:
-            if any(phrase in lowered_query for phrase in ("open", "open-boundary", "open boundary")):
-                subjects.append("fftopenpoissonsolver")
-            elif any(
-                phrase in lowered_query
-                for phrase in ("truncated green", "truncated-green", "green periodic")
-            ):
-                subjects.append("ffttruncatedgreenperiodicpoissonsolver")
-            else:
-                subjects.append("fftperiodicpoissonsolver")
-
-        if mentions_cg and mentions_poisson:
-            subjects.append("poissoncg")
-
-        if mentions_poisson:
-            subjects.append("poisson")
+        for pattern in comparison_patterns:
+            match = re.search(pattern, query, flags=re.IGNORECASE)
+            if not match:
+                continue
+            self._add_comparison_subject(subjects, match.group("left"))
+            self._add_comparison_subject(subjects, match.group("right"))
 
         return subjects
+
+    def _add_comparison_subject(self, subjects, raw_subject):
+        subject = str(raw_subject).strip(" `\"'.,;:?!()[]{}")
+        subject = re.sub(
+            r"^(?:the|a|an|compare|comparison|difference|between)\s+",
+            "",
+            subject,
+            flags=re.IGNORECASE,
+        )
+        subject = re.sub(
+            r"\s+(?:implementation|implementations|class|classes|function|functions|method|methods|file|files|solver|solvers)$",
+            "",
+            subject,
+            flags=re.IGNORECASE,
+        ).strip()
+        subject_tokens = self.token_pattern.findall(subject)
+        exact_subject_tokens = [
+            token for token in subject_tokens if self._looks_like_exact_symbol_token(token)
+        ]
+        if len(subject_tokens) > 1 and exact_subject_tokens:
+            for token in exact_subject_tokens:
+                self._add_comparison_subject(subjects, token)
+            return
+
+        normalized_subject = self._normalize_comparison_subject(subject)
+        if not normalized_subject:
+            return
+        if normalized_subject in self.query_stopwords or normalized_subject in self.low_signal_tokens:
+            return
+        if normalized_subject in {
+            "compare",
+            "comparison",
+            "difference",
+            "different",
+            "between",
+            "versus",
+            "vs",
+            "with",
+            "against",
+        }:
+            return
+        if normalized_subject not in subjects:
+            subjects.append(normalized_subject)
 
     def match_api_bearing_terms(self, chunk, api_terms):
         if not api_terms:
@@ -822,63 +914,36 @@ class MetadataReranker:
         symbol_name = str(chunk.get("symbol_name", chunk.get("function_name", "")) or "").lower()
         file_name = str(chunk.get("file_name", "") or "").lower()
         file_stem = file_name.rsplit(".", 1)[0] if "." in file_name else file_name
+        base_name = str(chunk.get("base_name", "") or "").lower()
+        module_name = str(chunk.get("module_name", "") or "").lower()
         searchable_text = self._build_chunk_search_text(chunk)
-
-        if (
-            "fftperiodicpoissonsolver" in comparison_subjects
-            and (
-                "fftperiodicpoissonsolver" in path
-                or "fftperiodicpoissonsolver" in file_stem
-                or "fftperiodicpoissonsolver" in symbol_name
-                or "fftperiodicpoissonsolver" in searchable_text
+        normalized_fields = {
+            self._normalize_comparison_subject(value)
+            for value in (
+                path,
+                symbol_name,
+                file_name,
+                file_stem,
+                base_name,
+                module_name,
+                searchable_text,
             )
-        ):
-            return "fft"
-
-        if (
-            "fftopenpoissonsolver" in comparison_subjects
-            and (
-                "fftopenpoissonsolver" in path
-                or "fftopenpoissonsolver" in file_stem
-                or "fftopenpoissonsolver" in symbol_name
-                or "fftopenpoissonsolver" in searchable_text
-            )
-        ):
-            return "fft"
-
-        if (
-            "ffttruncatedgreenperiodicpoissonsolver" in comparison_subjects
-            and (
-                "ffttruncatedgreenperiodicpoissonsolver" in path
-                or "ffttruncatedgreenperiodicpoissonsolver" in file_stem
-                or "ffttruncatedgreenperiodicpoissonsolver" in symbol_name
-                or "ffttruncatedgreenperiodicpoissonsolver" in searchable_text
-            )
-        ):
-            return "fft"
-
-        if (
-            "poissoncg" in comparison_subjects
-            and (
-                "poissoncg" in path
-                or "poissoncg" in file_stem
-                or "poissoncg" in symbol_name
-                or "poissoncg" in searchable_text
-            )
-        ):
-            return "cg"
-
-        if (
-            "poisson" in comparison_subjects
-            and (
-                path.endswith("/poisson.h")
-                or file_stem == "poisson"
-                or symbol_name == "poisson"
-            )
-        ):
-            return "baseline"
-
+            if value
+        }
+        for subject in comparison_subjects:
+            normalized_subject = self._normalize_comparison_subject(subject)
+            if not normalized_subject:
+                continue
+            if normalized_subject in normalized_fields:
+                return subject
+            if len(normalized_subject) >= 3 and any(
+                normalized_subject in field for field in normalized_fields
+            ):
+                return subject
         return ""
+
+    def _normalize_comparison_subject(self, value):
+        return "".join(char for char in str(value).lower() if char.isalnum())
 
     def _extract_query_tokens(self, query):
         tokens = set()
@@ -948,13 +1013,11 @@ class MetadataReranker:
 
     def _looks_like_comparison_query(self, lowered_query):
         mentions_compare = any(keyword in lowered_query for keyword in self.COMPARISON_QUERY_KEYWORDS)
-        mentions_fft = "fft" in lowered_query
-        mentions_cg = any(
-            phrase in lowered_query
-            for phrase in (" cg ", "cg ", " cg", "conjugate gradient", "conjugate-gradient")
+        has_comparison_connector = any(
+            connector in lowered_query
+            for connector in (" and ", " with ", " to ", " versus ", " vs ", " between ")
         )
-        mentions_poisson = "poisson" in lowered_query or "solver" in lowered_query
-        return mentions_compare and mentions_fft and mentions_cg and mentions_poisson
+        return mentions_compare and has_comparison_connector
 
     def _extract_lifecycle_actions(self, lowered_query):
         actions = set()
@@ -1020,6 +1083,8 @@ class MetadataReranker:
             chunk.get("generated_explanation", ""),
             chunk.get("path", chunk.get("file", "")),
             chunk.get("file_name", ""),
+            chunk.get("namespace_path", ""),
+            chunk.get("qualified_symbol_name", ""),
             chunk.get("symbol_name", chunk.get("function_name", "")),
             chunk.get("function_name", ""),
             chunk.get("leading_comment", ""),
@@ -1030,6 +1095,8 @@ class MetadataReranker:
         identifier_fields = [
             chunk.get("file_name", ""),
             chunk.get("base_name", ""),
+            chunk.get("namespace_path", ""),
+            chunk.get("qualified_symbol_name", ""),
             chunk.get("symbol_name", chunk.get("function_name", "")),
             chunk.get("function_name", ""),
             chunk.get("parent_symbol", ""),
