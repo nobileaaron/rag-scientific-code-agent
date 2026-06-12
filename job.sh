@@ -2,7 +2,7 @@
 #SBATCH --job-name=rag-ippl
 #SBATCH --error=gwendolen.error
 #SBATCH --output=gwendolen.out
-#SBATCH --time=08:00:00
+#SBATCH --time=0
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --clusters=gmerlin6
