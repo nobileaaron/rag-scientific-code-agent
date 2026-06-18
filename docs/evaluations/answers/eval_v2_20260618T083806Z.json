@@ -1,0 +1,947 @@
+{
+  "schema": "rag-ippl-eval/v1",
+  "run_complete": true,
+  "run_metadata": {
+    "run_label": "gemma4_12b_v1",
+    "run_started_at_utc": "2026-06-18T08:41:42.823634+00:00",
+    "hostname": "merlin-g-100.psi.ch",
+    "slurm_job_id": "353458",
+    "slurm_partition": "gwendolen",
+    "python_executable": "/psi/home/ext-nobile_a/rag-scientific-code-agent/.venv/bin/python",
+    "questions_source": "/psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/eval_questions_v2.json",
+    "questions_version": "v2",
+    "vector_store_chunk_count": 4441,
+    "parser_type": "tree_sitter",
+    "answer_prompt_mode": "retrieval_answer_v2",
+    "answer_prompt_signature": "0be7649b698d20001c360de140d78a39125a7c0999629aafdc81bf060b389bd0",
+    "run_finished_at_utc": "2026-06-18T09:46:14.877584+00:00",
+    "answer_count": 100,
+    "failure_count": 0
+  },
+  "models": {
+    "answer_model": {
+      "raw": "gemma4:12b",
+      "manifest_key": "ollama:gemma4:12b"
+    },
+    "chunk_explanation_model": {
+      "raw": "qwen2.5-coder:32b",
+      "manifest_key": "ollama:qwen2.5-coder:32b"
+    },
+    "file_level_model": {
+      "raw": "qwen2.5-coder:32b-instruct-q4_K_M",
+      "manifest_key": "ollama:qwen2.5-coder:32b-instruct-q4_K_M"
+    },
+    "module_level_model": {
+      "raw": "qwen2.5-coder:32b-instruct-q4_K_M",
+      "manifest_key": "ollama:qwen2.5-coder:32b-instruct-q4_K_M"
+    },
+    "call_chain_model": {
+      "raw": "qwen2.5-coder:32b-instruct-q4_K_M",
+      "manifest_key": "ollama:qwen2.5-coder:32b-instruct-q4_K_M"
+    }
+  },
+  "settings_snapshot": {
+    "raw_data_path": "data/raw/ippl",
+    "ingestion": {
+      "preferred_parser_type": "tree_sitter",
+      "max_chunk_size": 3000,
+      "chunk_explanation_allowed_types": [
+        "function_definition",
+        "function_declaration",
+        "method_definition",
+        "method_declaration",
+        "class",
+        "struct",
+        "enum",
+        "type_alias",
+        "global_variable",
+        "namespace",
+        "code_block"
+      ],
+      "chunk_explanation_min_content_length": 120,
+      "chunk_explanation_pilot_limit": null
+    },
+    "embedding": {
+      "backend": "ollama",
+      "ollama_model": "nomic-embed-text",
+      "sentence_transformer_model": "BAAI/bge-code-v1"
+    },
+    "prompts": {
+      "answer_prompt_mode": "retrieval_answer_v2",
+      "chunk_explanation_prompt_mode": "general",
+      "file_level_prompt_mode": "file_level",
+      "file_level_fallback_prompt_mode": "file_level_fallback",
+      "module_level_prompt_mode": "module_level",
+      "call_chain_prompt_mode": "call_chain"
+    },
+    "models": {
+      "answer_model": "gemma4:12b",
+      "chunk_explanation_model": "qwen2.5-coder:32b",
+      "file_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
+      "module_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
+      "call_chain_model": "qwen2.5-coder:32b-instruct-q4_K_M"
+    },
+    "strategies": {
+      "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",
+      "module_level_entity_strategy": "module_entities_from_descendant_files_v1",
+      "call_chain_entity_strategy": "direct_call_neighborhood_v1"
+    },
+    "retrieval": {
+      "candidate_k": 20,
+      "supplementary_k": 3,
+      "supplementary_candidate_k": 10,
+      "primary_score_relative_floor": 0.4,
+      "primary_score_gap_threshold": 8.0,
+      "primary_score_absolute_floor": 1.25,
+      "primary_same_symbol_cap": 1,
+      "primary_same_file_cap": 2,
+      "dominant_file_ratio": 0.75,
+      "lexical_metadata_weight": 0.4,
+      "entity_target_weight": 0.7,
+      "debug_enabled_by_default": false
+    }
+  },
+  "vector_store_manifest": {
+    "raw_data_path": "data/raw/ippl",
+    "parser_type": "tree_sitter",
+    "max_chunk_size": 3000,
+    "chunker_version": "2.0-leading-comment-prepended",
+    "code_metadata_version": "4.0-lightweight-cpp-entities",
+    "embedding_backend": "ollama",
+    "embedding_model": "nomic-embed-text",
+    "chunk_explanation_prompt_mode": "general",
+    "chunk_explanation_prompt_signature": "0f74488b34c09ab440b4c4a693bd37f566a56a2bd1cf4053b67c30bc32f566ca",
+    "chunk_explanation_model": "ollama:qwen2.5-coder:32b",
+    "chunk_explanation_allowed_types": [
+      "function_definition",
+      "function_declaration",
+      "method_definition",
+      "method_declaration",
+      "class",
+      "struct",
+      "enum",
+      "type_alias",
+      "global_variable",
+      "namespace",
+      "code_block"
+    ],
+    "chunk_explanation_min_content_length": 120,
+    "chunk_explanation_pilot_limit": null,
+    "file_level_prompt_mode": "file_level",
+    "file_level_prompt_signature": "cd5ccd556d68f11d9d32e6f584925ae266abfb47be3ddcc413f4be068baee954",
+    "file_level_fallback_prompt_mode": "file_level_fallback",
+    "file_level_fallback_prompt_signature": "2c092659a7f3b84b20cd8451185e3781ee44df1bf7d0c55ab0b94c1e69d155c0",
+    "file_level_model": "ollama:qwen2.5-coder:32b-instruct-q4_K_M",
+    "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",
+    "module_level_prompt_mode": "module_level",
+    "module_level_prompt_signature": "5cefd25eef7f8b09d17f4e74b93f6d392de6577794718629f2b8cf708be50ff7",
+    "module_level_model": "ollama:qwen2.5-coder:32b-instruct-q4_K_M",
+    "module_level_entity_strategy": "module_entities_from_descendant_files_v1",
+    "call_chain_prompt_mode": "call_chain",
+    "call_chain_prompt_signature": "5208fb296e181c7d05cb62730176efdc642b23e6d1776b60664cfcbeb4a4d400",
+    "call_chain_model": "ollama:qwen2.5-coder:32b-instruct-q4_K_M",
+    "call_chain_entity_strategy": "direct_call_neighborhood_v1"
+  },
+  "answers": [
+    {
+      "id": "file_001",
+      "category": "file_purpose",
+      "question": "What does Ippl.h do?",
+      "answer": "Answer:\nIppl.h serves as a central header file in the root module of the IPPL library. It provides essential functions and variables for managing application initialization (`ippl::initialize`), termination (`ippl::finalize`), synchronization (`ippl::fence`), communication, and error handling (via `ippl::Error` and `ippl::Info`). Additionally, it defines global variables for environment and communication management (`ippl::Env` and `ippl::Comm`) and includes utility functions in the `ippl::detail` namespace for configuration option validation and retrieval, such as `checkOption` and `getNumericalOption`.\n\nEvidence:\n- data/raw/ippl/src/Ippl.h : Ippl.h — central header providing essential functions and variables for managing application initialization, termination, communication, and error handling.\n- data/raw/ippl/src/Ippl.cpp : Ippl.cpp — defines utility functions for initialization, finalization, error handling, configuration option validation, and synchronization points in parallel execution.",
+      "latency_seconds": 59.49553455389105,
+      "error": null
+    },
+    {
+      "id": "file_002",
+      "category": "file_purpose",
+      "question": "What is the purpose of Ippl.cpp?",
+      "answer": "Answer:\nThe `Ippl.cpp` file contains essential utility functions for managing initialization, finalization, and error handling within the IPPL framework. It is responsible for configuring and managing the library's runtime environment, which includes functionality for synchronization (`fence`), configuration option validation via `checkOption`, and core system setup through `initialize` and `finalize`.\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : Ippl.cpp — contains utility functions for managing initialization, finalization, error handling, and runtime environment configuration.\n- data/raw/ippl/src/Ippl.cpp : checkOption — compares command-line arguments against short and long string options.\n- data/raw/ippl/src/Ippl.cpp : abort — handles error termination by logging a message and invoking a communication abort with an error code.",
+      "latency_seconds": 22.47854876006022,
+      "error": null
+    },
+    {
+      "id": "file_003",
+      "category": "file_purpose",
+      "question": "What does FFT.hpp implement?",
+      "answer": "Answer:\nThe file `FFT.hpp` defines the base class `FFTBase<Field, FFT, Backend, T>` and several specializations for Fast Fourier Transform (FFT) operations within the `ippl` namespace. It supports various transform types, including real and complex field transformations such as `RCTransform`, `CCTransform`, `SinTransform`, `CosTransform`, and `Cos1Transform`. The file implements core methods including `domainToBounds`, `setup`, `transform`, and `warmup`.\n\nEvidence:\n- data/raw/ippl/src/FFT/FFT.hpp : FFT.hpp — defines the base class and specializations for Fast Fourier Transform (FFT) operations, supporting real and complex field transformations.\n- data/raw/ippl/src/FFT/FFT.hpp : ippl::FFTBase<Field, FFT, Backend, T>::domainToBounds — converts a domain representation into lower and upper bounds for use with the heffte library.\n- data/raw/ippl/src/FFT/FFT.hpp : ippl::FFT<CCTransform, ComplexField>::transform — provides the transformation logic for complex field types.",
+      "latency_seconds": 38.57359658787027,
+      "error": null
+    },
+    {
+      "id": "file_004",
+      "category": "file_purpose",
+      "question": "What is BareField.h responsible for?",
+      "answer": "Answer:\nThe `BareField.h` file defines the `ippl::BareField` class, which serves as a fundamental abstraction for representing fields in scientific computations within the IPPL framework. This class includes methods to access various properties of the field, including allocation status, communicator, domain, halo, host mirror, index, layout, ghost cells, and owned data.\n\nEvidence:\n- data/raw/ippl/src/Field/BareField.h : ippl::BareField — defines a fundamental abstraction for representing fields in scientific computations with methods to access properties like allocation status, communicator, domain, halo, host mirror, index, layout, ghost cells, and owned data.\n- source:Field : BareField.h — describes the file as defining the `ippl::BareField` class as a fundamental abstraction for representing fields in scientific computations.",
+      "latency_seconds": 30.146460372023284,
+      "error": null
+    },
+    {
+      "id": "file_005",
+      "category": "file_purpose",
+      "question": "What does Field.h add on top of BareField?",
+      "answer": "Answer:\n`Field.h` adds higher-level capabilities to the basic foundation provided by `BareField`. Specifically, it introduces boundary condition (BC) management through the methods `getFieldBC` and `setFieldBC`, integration with mesh representations like `UniformCartesian` via the `get_mesh` method, and numerical calculation methods for volume averages (`getVolumeAverage`) and integrals (`getVolumeIntegral`).\n\nEvidence:\n- data/raw/ippl/src/Field/Field.h : Field — provides boundary condition management (getFieldBC, setFieldBC), mesh interaction (get_mesh), and calculations like getVolumeAverage and getVolumeIntegral.\n- data/raw/ippl/src/Field/BareField.h : BareField — defines a basic field structure without additional features.",
+      "latency_seconds": 44.675077834166586,
+      "error": null
+    },
+    {
+      "id": "file_006",
+      "category": "file_purpose",
+      "question": "What role does HaloCells.h play in IPPL?",
+      "answer": "Answer:\nThe `HaloCells.h` file defines the `ippl::detail::HaloCells` class and related structures including `FieldBufferData`, `assign`, `lhs_plus_assign`, and `rhs_plus_assign`. Its primary role is to manage guard/ghost cells for field data, facilitating inter-process communication (IPC) in parallel computations. It ensures consistent field data across processes by managing boundary information, specifically handling the packing and unpacking of data for transmission between neighboring domains, as well as applying operations such as accumulation or assignment during these communications.\n\nEvidence:\n- data/raw/ippl/src/Field/HaloCells.h : ippl::detail::HaloCells — manages halo cells for field data to facilitate inter-process communication (IPC).\n- data/raw/ippl/src/Field/HaloCells.h : ippl::detail::FieldBufferData — handles serialization and deserialization of field buffer data.\n- data/raw/ippl/src/Field/HaloCells.h : ippl::detail::HaloCells (class_chunk) — manages guard/ghost cells to facilitate data exchange between neighboring domains in parallel computations.",
+      "latency_seconds": 24.37396645406261,
+      "error": null
+    },
+    {
+      "id": "file_007",
+      "category": "file_purpose",
+      "question": "What is the purpose of FieldLayout.h?",
+      "answer": "Answer:\nFieldLayout.h defines the FieldLayout class and related helper functions within the ippl namespace to manage field distribution, domain information, and layout configurations for scientific computations. It includes a bound_type struct to represent the bounds or dimensions of a field, as well as several utility functions in the ippl::detail namespace (including binomialCoefficient, countCubes, countHypercubes, getCube, and getFace) that support computational geometry and spatial distribution of data across computational domains.\n\nEvidence:\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : FieldLayout — manages field distribution, domain information, and layout configurations.\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : bound_type — represents bounds or dimensions of a field.\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : binomialCoefficient/countHypercubes — functions in ippl::detail used for combinatorics and spatial distribution.\n- source:FieldLayout : FieldLayout module — responsible for managing field layouts, domain information, and related configurations like distribution across domains and neighbor relationships.",
+      "latency_seconds": 49.0326156958472,
+      "error": null
+    },
+    {
+      "id": "file_008",
+      "category": "file_purpose",
+      "question": "What does ParticleBase.h define?",
+      "answer": "Answer:\nThe `ParticleBase.h` file defines the `ippl::ParticleBase` class, which serves as a foundational abstraction for managing particle data within the IPPL framework, including attributes, layout, and local/global particle counts. It also defines the `ippl::ParticleBaseBase` class, which acts as a parent or intermediate layer in the inheritance hierarchy. The `ParticleBase` class includes several methods for accessing and modifying properties: `getAttributeNum`, `getLayout`, `getLocalNum`, `getTotalNum`, `setLocalNum`, `setParticleBC`, and `update`.\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleBase.h : ippl::ParticleBase — primary base class for managing attributes, layout, and counts.\n- data/raw/ippl/src/Particle/ParticleBase.h : ippl::ParticleBaseBase — a parent or intermediate layer within the inheritance hierarchy.\n- data/raw/ippl/src/Particle/ParticleBase.h : ippl::ParticleBase::{getAttributeNum, getLayout, getLocalNum, getTotalNum, setLocalNum, setParticleBC, update} — methods for accessing and modifying particle properties.",
+      "latency_seconds": 39.63896603905596,
+      "error": null
+    },
+    {
+      "id": "file_009",
+      "category": "file_purpose",
+      "question": "What is the purpose of ParticleSpatialLayout.h?",
+      "answer": "Answer:\nThe `ParticleSpatialLayout` class is designed to manage the spatial layout and communication regions for particles within the IPPL library. It ensures that particles are distributed across processors based on their positions relative to a fixed grid or specified `FieldLayout` or `RegionLayout`, ensuring they remain on the same node as the field region to which they are local. The class also manages the movement of particles between processors during update routines and performs load balancing after a specific number of updates.\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.h : ParticleSpatialLayout — manages spatial layout and communication regions for particles, providing methods to configure, update, and retrieve information necessary for particle distribution and neighbor interactions.\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.h : ParticleSpatialLayout — a specialized version of `ParticleLayout` that places particles on processors based on their spatial location relative to a fixed grid or an associated `FieldLayout`/`RegionLayout`.\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp : ParticleSpatialLayout — manages spatial layout and communication for particles in a simulation environment, including methods for initializing, updating, and positioning particles across regions.",
+      "latency_seconds": 22.8614470269531,
+      "error": null
+    },
+    {
+      "id": "file_010",
+      "category": "file_purpose",
+      "question": "What does ParticleAttrib.h implement?",
+      "answer": "Answer:\nThe header file `ParticleAttrib.h` defines a class template, `ippl::ParticleAttrib`, within the `ippl` namespace. This class is used to manage and manipulate attributes associated with particles in a simulation (such as position or velocity). It provides specific methods for serialization (`deserialize`), metadata retrieval (`get_name`, `print`), memory management (`realloc`, `resize`), and data access (`getView`, `i`, `packedSize`, `getHostMirror`).\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleAttrib.h : ParticleAttrib — defines a class template for managing particle attributes, including methods like deserialize, get_name, getView, realloc, and resize.\n- data/raw/ippl/src/Particle/ParticleAttribBase.h : ParticleAttribBase — provides foundational functionality used by the attribute management system.",
+      "latency_seconds": 29.16283946391195,
+      "error": null
+    },
+    {
+      "id": "file_011",
+      "category": "file_purpose",
+      "question": "What is UniformCartesian.h for?",
+      "answer": "Answer:\nThe file `UniformCartesian.h` defines the `UniformCartesian` class family in the `ippl::Meshes` namespace, which specializes uniform Cartesian meshes used in computational physics and numerical simulations involving structured grids. It provides methods for managing mesh properties, including `getDeltaVertex`, `getVertexPosition`, `getCellVolume`, `getMeshSpacing`, `getMeshVolume`, `initialize`, `setMeshSpacing`, and `updateCellVolume_m`. The related header `UniformCartesian.hpp` defines the `UniformCartesian<T, Dim>` class template for these meshes used in simulations or calculations.\n\nEvidence:\n- data/raw/ippl/src/Meshes/UniformCartesian.h : UniformCartesian — Defines the `UniformCartesian` class family in the `ippl::Meshes` namespace, specializing uniform Cartesian meshes.\n- data/raw/ippl/src/Meshes/UniformCartesian.hpp : UniformCartesian<T, Dim> — Defines the `UniformCartesian<T, Dim>` class template representing a uniform Cartesian mesh used in simulations or computations.",
+      "latency_seconds": 32.87835125694983,
+      "error": null
+    },
+    {
+      "id": "file_012",
+      "category": "file_purpose",
+      "question": "What does OrthogonalRecursiveBisection.h do?",
+      "answer": "Answer:\nThe file `OrthogonalRecursiveBisection.h` defines the class `ippl::OrthogonalRecursiveBisection`, which implements an orthogonal recursive bisection algorithm for decomposing computational domains. This method is used in parallel computing to divide tasks into nearly equal parts across processors, facilitating better load balancing and reduced communication overhead. The header includes specific methods for this purpose: `cutDomain` (which splits a domain along a specified axis at a median point), `findCutAxis` (to identify the dimension of the cut), `findMedian` (to determine the midpoint for bisection), `initialize`, and `perpendicularReduction`.\n\nEvidence:\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.h : OrthogonalRecursiveBisection — class used for decomposing computational domains using an orthogonal recursive bisection algorithm.\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.h : cutDomain — method that splits the domain given by an iterator along a cut axis at the median.\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.h : findCutAxis, findMedian, initialize, perpendicularReduction — methods used for dimension identification, median determination, state preparation, and reduction during decomposition.",
+      "latency_seconds": 26.43371378700249,
+      "error": null
+    },
+    {
+      "id": "file_013",
+      "category": "file_purpose",
+      "question": "What is the purpose of CIC.h in the Interpolation subsystem?",
+      "answer": "Answer:\nThe file `CIC.h` defines several function declarations within the `ippl::detail` namespace that handle interpolation operations specifically for Cloud-in-Cell (CIC) methods. These functions are used to distribute particles' properties onto a grid and vice versa through \"scatter\" and \"gather\" operations. The specific function declarations included in `CIC.h` are `scatterToField`, `scatterToPoint`, `gatherFromField`, `gatherFromPoint`, `interpolationIndex`, and `interpolationWeight`.\n\nEvidence:\n- data/raw/ippl/src/Interpolation/CIC.h : CIC.h — defines function declarations within the ippl::detail namespace for Cloud-in-Cell (CIC) interpolation operations.\n- data/raw/ippl/src/Interpolation/CIC.h : gatherFromPoint — a function in CIC.h used to interpolate or sample data from a multidimensional view using specific indices and weights.\n- source:Interpolation : Interpolation — contains CIC.h, which provides functions like scatterToField and gatherFromField for handling interpolation operations.",
+      "latency_seconds": 19.80996308918111,
+      "error": null
+    },
+    {
+      "id": "loc_001",
+      "category": "definition_location",
+      "question": "Where is FFT initialization implemented in IPPL?",
+      "answer": "Answer:\nThe provided context does not contain information regarding FFT initialization. The available chunks cover MPI environment and command-line parsing in `Ippl.cpp`, field layout configuration in `FieldLayout.h`, FEM vector construction in `FEMVector.hpp`, uniform Cartesian mesh dimensions and spacing in `UniformCartesian.h`, and domain decomposition setup in `OrthogonalRecursiveBisection.hpp`.\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : initialize — manages MPI environment, communicator creation, and command-line argument parsing.\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : initialize — defines field distribution and dimensionality settings.\n- data/raw/ippl/src/FEM/FEMVector.hpp : FEMVector --- constructs objects for finite element method computations.\n- data/raw/ippl/src/Meshes/UniformCartesian.h : initialize — configures a uniform Cartesian grid's dimensions, spacing, and origin.\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.hpp : initialize — sets up domain decomposition strategies.",
+      "latency_seconds": 46.95285545405932,
+      "error": null
+    },
+    {
+      "id": "loc_002",
+      "category": "definition_location",
+      "question": "Where does IPPL set up the MPI environment?",
+      "answer": "Answer:\nThe provided context is insufficient to answer this question. The retrieved chunks cover Fourier Transform configuration and plan initialization using the HeFFTe library (e.g., `ippl::FFTBase::setup`), field memory allocation and sizing in `BareField` (e.g., `ippl::BareField::setup`), and the mapping of spatial domains to physical bounds for FFT processing.\n\nEvidence:\n- data/raw/ippl/src/FFT/FFT.hpp : setup — describes configuration of HeFFTe plan options, communication strategies, and resource management.\n- data/raw/ippl/src/Field/BareField.hpp : setup — handles calculation of local field dimensions and memory allocation including ghost cells.\n- data/raw/ippl/src/FFT/FFT.h : FFTBase — defines the base class for Fourier Transform types in the IPPL library.",
+      "latency_seconds": 46.16727179219015,
+      "error": null
+    },
+    {
+      "id": "loc_003",
+      "category": "definition_location",
+      "question": "Where is Kokkos initialized and finalized inside IPPL?",
+      "answer": "Answer:\nKokkos is initialized within the `ippl::initialize` function in `Ippl.cpp` using the call `Kokkos::initialize(argc, argv)` with the remaining command-line arguments. The `ippl::finalize` function, also located in `Ippl.cpp`, handles the cleanup of resources upon program termination.\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : ippl::initialize — initializes Kokkos with the remaining command-line arguments using `Kokkos::initialize(argc, argv)`.\n- data/raw/ippl/src/Ippl.cpp : ippl::finalize — responsible for cleaning up resources upon program termination.",
+      "latency_seconds": 63.35672733001411,
+      "error": null
+    },
+    {
+      "id": "loc_004",
+      "category": "definition_location",
+      "question": "Where is the orthogonal recursive bisection load balancer implemented?",
+      "answer": "Answer:\nThe orthogonal recursive bisection load balancer is implemented via the `ippl::OrthogonalRecursiveBisection` class (and its template version `ippl::OrthogonalRecursiveBisection<Field, Tp>`) located in the `Decomposition` module. The implementation resides specifically in the header files `src/Decomposition/OrthogonalRecursiveBisection.h` and `src/Decomposition/OrthogonalRecursiveBisection.hpp`. This class recursively divides a computational domain along orthogonal axes to ensure even weight distribution across processors using methods such as `cutDomain`, `findCutAxis`, `findMedian`, and `perpendicularReduction`.\n\nEvidence:\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.h : OrthogonalRecursiveBisection — defines the class used for decomposing computational domains using an orthogonal recursive bisection algorithm.\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.hpp : findCutAxis — method within the template class to determine the axis of bisection as part of the decomposition process.\n- source:Decomposition : Decomposition — module responsible for implementing algorithms that decompose computational domains, specifically using an orthogonal recursive bisection method.",
+      "latency_seconds": 19.947950162924826,
+      "error": null
+    },
+    {
+      "id": "loc_005",
+      "category": "definition_location",
+      "question": "Where are boundary conditions applied to a Field?",
+      "answer": "Answer:\nBoundary conditions for an `ippl::Field` are stored as a member variable `bc_m` of type `BConds_t` and configured via the `setFieldBC` method in `Field.h`. These conditions are applied within the `MaxwellSolvers` module during simulation; specifically, they are implemented through the `applyBCs` method in the `FDTDSolverBase` class and are applied post-update during the execution of the `step` method in the `NonStandardFDTDSolver` class.\n\nEvidence:\n- data/raw/ippl/src/Field/Field.h : Field — contains a `bc_m` member of type `BConds_t` to manage field boundary conditions.\n- data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.hpp : applyBCs — method in `FDTDSolverBase` that retrieves boundary condition data via `Field::getFieldBC`.\n- data/raw/ippl/src/MaxwellSolvers/NonStandardFDTDSolver.hpp : step — a method where boundary conditions are applied post-update to ensure fields adhere to specifications.",
+      "latency_seconds": 38.162368753924966,
+      "error": null
+    },
+    {
+      "id": "loc_006",
+      "category": "definition_location",
+      "question": "Where is the CIC (cloud-in-cell) scatter implemented?",
+      "answer": "Answer:\nThe core CIC (cloud-in-cell) scatter logic is implemented in the `ippl::detail` namespace within `data/raw/ippl/src/Interpolation/CIC.hpp`. This is primarily handled by the `scatterToField` function, which uses a fold expression to call `scatterToPoint` for each point in an index sequence to distribute values into a field based on specific weights and indices. The high-level implementation of scattering particle attributes onto fields is found in `ParticleAttrib::scatter` within `data/raw/ippl/src/Particle/ParticleAttrib.hpp`.\n\nEvidence:\n- data/raw/ippl/src/Interpolation/CIC.hpp : scatterToField — implements a fold expression to distribute values into a field using `scatterToPoint` and an index sequence.\n- data/raw/ippl/src/Particle/ParticleAttrib.hpp : ParticleAttrib::scatter — method responsible for distributing particle attributes across the computational domain, involving calls to `scatterToField`.\n- data/raw/ippl/src/Interpolation/CIC.h : scatterToField — declares functions within the `ippl::detail` namespace specifically for CIC methods like `scatterToField` and `scatterToPoint`.",
+      "latency_seconds": 26.700433030957356,
+      "error": null
+    },
+    {
+      "id": "loc_007",
+      "category": "definition_location",
+      "question": "Where is the CIC gather implemented?",
+      "answer": "Answer:\nThe CIC gather operations are implemented as the `gatherFromField` and `gatherFromPoint` methods within the `ippl::detail` namespace. These methods are defined in `data/raw/ippl/src/Interpolation/CIC.hpp` (and declared in `data/raw/ippl/src/Interpolation/CIC.h`) using Cloud-in-Cell (CIC) interpolation techniques to collect data from fields.\n\nEvidence:\n- data/raw/ippl/src/Interpolation/CIC.h : gatherFromField, gatherFromPoint — function declarations for CIC interpolation operations within the ippl::detail namespace.\n- data/raw/ippl/src/Interpolation/CIC.hpp : gatherFromField, gatherFromPoint — methods for gathering data from fields using Cloud-In-Cell (CIC) techniques.",
+      "latency_seconds": 29.045222555985674,
+      "error": null
+    },
+    {
+      "id": "loc_008",
+      "category": "definition_location",
+      "question": "Where is halo exchange for BareField implemented?",
+      "answer": "Answer:\nThe halo exchange for `BareField` is implemented through the `ippl::detail::HaloCells` class. The `BareField` class uses `detail::HaloCells` as its internal `halo_type` to manage ghost cells and support parallel computations. Specifically, the `HaloCells` class is responsible for managing and manipulating guard/ghost cells and handling the communication of halo (boundary) data between different parts of a decomposed field across multiple processors in distributed-memory settings.\n\nEvidence:\n- data/raw/ippl/src/Field/BareField.h : BareField — uses `detail::HaloCells` as its `halo_type` to manage ghost cells and handle parallel communication.\n- data/raw/ippl/src/Field/HaloCells.h : HaloCells — manages guard/ghost cells and handles the communication of halo (boundary) data across distributed-memory settings.",
+      "latency_seconds": 27.503776396857575,
+      "error": null
+    },
+    {
+      "id": "loc_009",
+      "category": "definition_location",
+      "question": "Where are the FFT-based open-boundary Poisson solver routines defined?",
+      "answer": "Answer:\nThe FFT-based open-boundary Poisson solver is implemented via the `FFTOpenPoissonSolver` class template (specifically `ippl::FFTOpenPoissonSolver<FieldLHS, FieldRHS>`), which inherits from `Poisson<FieldLHS, FieldRHS>`. The primary routines are located in `data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.h` and `data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.hpp`. Key methods included in these files are `solve()` (which handles the Fourier Transform approach, including Hockney, Vico, or Biharmonic algorithms), `communicateVico`, `greensFunction`, `initializeFields`, `setGradFD`, and `setRhs`.\n\nEvidence:\n- data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.h : FFTOpenPoissonSolver — class for FFT-based Poisson Solver for open boundaries.\n- data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.hpp : solve() — method responsible for solving the Poisson equation using a Fourier Transform (FFT) approach.\n- data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.hpp : communicateVico, greensFunction, initializeFields, setGradFD, setRhs — methods included in the header that support solver logic and field preparation.",
+      "latency_seconds": 29.357405395945534,
+      "error": null
+    },
+    {
+      "id": "loc_010",
+      "category": "definition_location",
+      "question": "Where is the conjugate gradient solver algorithm implemented?",
+      "answer": "Answer:\nThe core conjugate gradient algorithm is implemented in the `ippl::CG` class template found in `src/LinearSolvers/PCG.h`. This class manages the execution of the CG method, including configuration of operators and preconditioners for solving linear systems. Additionally, a specialized solver for Poisson equations using the conjugate gradient method is implemented in the `ippl::PoissonCG` class located in `src/PoissonSolvers/PoissonCG.h`, which utilizes an internal algorithm object to perform the calculation.\n\nEvidence:\n- src/LinearSolvers/PCG.h : ippl::CG — implements the Conjugate Gradient (CG) method for solving linear systems of equations.\n- src/PoissonSolvers/PoissonCG.h : ippl::PoissonCG — designed to solve Poisson equations using the Conjugate Gradient (CG) method.\n- src/LinearSolvers/PCG.h : ippl::PCG — defines a family of classes and methods for implementing the Conjugate Gradient algorithm with optional preconditioning.\n- src/PoissonSolvers/PoissonCG.h : ippl::PoissonCG::solve — executes the Poisson equation solution using CG method and provides access to iteration counts and residues.",
+      "latency_seconds": 26.680397960124537,
+      "error": null
+    },
+    {
+      "id": "loc_011",
+      "category": "definition_location",
+      "question": "Where is the FEM Poisson solver implemented?",
+      "answer": "Answer:\nThe FEM Poisson solver is implemented as the `FEMPoissonSolver` class in the file `data/raw/ippl/src/PoissonSolvers/FEMPoissonSolver.h`. This class inherits from `Poisson<FieldLHS, FieldRHS>` and solves the Poisson equation using finite element methods (FEM) combined with a Preconditioned Conjugate Gradient (PCG) algorithm.\n\nEvidence:\n- data/raw/ippl/src/PoissonSolvers/FEMPoissonSolver.h : FEMPoissonSolver — class that solves the poisson equation using finite element methods and Conjugate Gradient.\n- source:FEM : FEM — module providing foundational elements, vector operations (FEMVector), and space management (FiniteElementSpace, LagrangeSpace) for finite element calculations.",
+      "latency_seconds": 22.944388777948916,
+      "error": null
+    },
+    {
+      "id": "loc_012",
+      "category": "definition_location",
+      "question": "Where is the FDTD Maxwell solver base class defined?",
+      "answer": "Answer:\nThe `FieldSolverBase` class is defined in `src/Manager/FieldSolverBase.h` within the `ippl::Manager` namespace. It serves as an abstract base class for field solvers, providing common functionality and enforcing a specific interface including methods such as `initSolver`, `runSolver`, `getSolver`, `getStype`, `setSolver`, and `setStype`.\n\nEvidence:\n- src/Manager/FieldSolverBase.h : FieldSolverBase — This class serves as an abstract base class for field solvers, providing common functionality and a standard interface.\n- src/Manager/FieldSolverBase.h : FieldSolverBase (method_definition) — These methods provide access to solver properties and specify the execution flow for derived solvers.",
+      "latency_seconds": 40.997594838030636,
+      "error": null
+    },
+    {
+      "id": "loc_013",
+      "category": "definition_location",
+      "question": "Where is the LagrangeSpace class defined?",
+      "answer": "Answer:\nThe `ippl::LagrangeSpace` class is defined in the file `data/raw/ippl/src/FEM/LagrangeSpace.h`. This class, which inherits from `FiniteElementSpace`, represents a Lagrange space for finite element methods (FEM) on a structured grid and provides functionalities for Lagrangian finite element computations.\n\nEvidence:\n- data/raw/ippl/src/FEM/LagrangeSpace.h : ippl::LagrangeSpace — defines the class and associated methods used to handle Lagrangian finite element computations.\n- data/raw/ippl/src/FEM/LagrangeSpace.h : ippl::LagrangeSpace — a class representing a Lagrange space for finite element methods (FEM) on a structured grid, inheriting from FiniteElementSpace.",
+      "latency_seconds": 38.84304730198346,
+      "error": null
+    },
+    {
+      "id": "loc_014",
+      "category": "definition_location",
+      "question": "Where is the particle update routine (that moves particles across ranks) implemented?",
+      "answer": "Answer:\nThe particle update routines that move particles across ranks are implemented in two different classes depending on the layout used:\n\n1. **ippl::ParticleSpatialLayout<T, Dim, Mesh, Properties...>::update**: Located in `data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp`, this method manages the spatial distribution of particles across ranks using MPI. It identifies which particles need to be sent to other ranks based on their position relative to rank boundaries, sends them to appropriate ranks, receives particles from other ranks, and applies boundary conditions.\n2. **ippl::ParticleSpatialOverlapLayout<T, Dim, Mesh, Properties...>::update**: Located in `data/raw/ippl/src/Particle/ParticleSpatialOverlapLayout.hpp`, this method is responsible for managing the exchange of particles between different regions or processes (via `particleExchange`) and subsequently rebuilding spatial cells to reflect the new distribution.\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp : ippl::ParticleSpatialLayout<T, Dim, Mesh, Properties...>::update — manages spatial distribution of particles across ranks via MPI, including sending, receiving, and boundary conditions.\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.h : ParticleSpatialLayout — defines the 'update' routine to move particles between processors after their positions change.\n- data/raw/ippl/src/Particle/ParticleSpatialOverlapLayout.hpp : ippl::ParticleSpatialOverlapLayout<T, Dim, Mesh, Properties...>::update — manages exchange of particles between regions and updates spatial cells.",
+      "latency_seconds": 28.259688141057268,
+      "error": null
+    },
+    {
+      "id": "loc_015",
+      "category": "definition_location",
+      "question": "Where are IPPL timers defined?",
+      "answer": "Answer:\nThe provided context does not specify where IPPL timers are defined. The retrieved chunks cover the initialization of the IPPL system (including timer settings and `Timer::enableFences` in `Ippl.cpp`), buffer management logic, and the definition of a `LogEntry` structure that includes high-resolution timestamps.\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : initialize — mentions \"timer settings\" and the use of `Timer::enableFences`.\n- data/raw/ippl/src/Communicate/LogEntry.h : LogEntry — includes a timestamp field using `std::chrono::high_resolution_clock`.",
+      "latency_seconds": 44.406605215976015,
+      "error": null
+    },
+    {
+      "id": "cls_001",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the BareField class?",
+      "answer": "Answer:\nThe `ippl::BareField` class serves as a fundamental abstraction for representing fields in scientific computations within the IPPL framework. Its primary responsibilities include managing memory and access patterns for multidimensional fields while handling ghost cells (or halo regions) to facilitate communication between neighboring domains in parallel computing scenarios. It provides methods to access various property attributes such as allocation status, communicator, domain, halo, host mirror, index, layout, ghost cells, and owned data. Additionally, it supports functionality to initialize, resize, and manipulate field data while providing numerical aggregations such as sum, max, min, and product over the domain.\n\nEvidence:\n- data/raw/ippl/src/Field/BareField.h : BareField — fundamental abstraction for representing fields including access to properties like allocation status, communicator, domain, halo, host mirror, index, layout, ghost cells, and owned data.\n- data/raw/ippl/src/Field/BareField.h : BareField (class_chunk) — manages memory and access patterns for multidimensional fields, handles ghost cells for parallel computations, and provides functions for initialization, resizing, and numerical operations like sum or min/max.",
+      "latency_seconds": 24.158306753030047,
+      "error": null
+    },
+    {
+      "id": "cls_002",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the Field class compared to BareField?",
+      "answer": "Answer:\nThe provided context is insufficient to answer the question because it does not mention a 'Field' class or provide any comparison between a 'Field' and 'BareField'. The retrieved chunks cover the `ippl::BareField` class, which manages multidimensional fields, memory access patterns, layout management, and ghost cells for parallel computations.\n\nEvidence:\n- data/raw/ippl/src/Field/BareField.h : BareField — a field representation that manages multi-dimensional array properties like layout, memory access, and ghost layers.\n- data/raw/ippl/src/Field/BareField.h : BareField.h — defines the `ippl::BareField` class as a primary abstraction for fields in scientific computations.",
+      "latency_seconds": 53.675505383173004,
+      "error": null
+    },
+    {
+      "id": "cls_003",
+      "category": "class_responsibility",
+      "question": "What does the FieldLayout class do and what are its main template parameters?",
+      "answer": "Answer:\nThe `ippl::FieldLayout` class manages the distribution of a multi-dimensional index space (domain) across MPI ranks. It handles partitioning the domain among different ranks while allowing specific dimensions to be marked as non-partitioned ('SERIAL'). Additionally, it manages neighbor relationships for communication purposes and calculates local domains and overlapping regions (ghost cells). The primary template parameter is `Dim`, which represents the dimensionality of the field layout.\n\nEvidence:\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : FieldLayout — manages distribution of an NDIndex object's domain among MPI ranks and handles neighbor relationships for communication purposes.\n- data/raw/ippl/src/FieldLayout/FieldLayout.hpp : FieldLayout<Dim> — template class that manages field layouts and their associated domain decompositions.\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : Partitioning — allows specific dimensions to remain serial while others are parallelized.",
+      "latency_seconds": 37.856441848911345,
+      "error": null
+    },
+    {
+      "id": "cls_004",
+      "category": "class_responsibility",
+      "question": "What is the purpose of the ParticleBase class and how is it meant to be used?",
+      "answer": "Answer:\nThe `ParticleBase` class serves as a foundational abstraction for managing particle data within the IPPL framework. It functions as both a container and manager for sets of particles, providing methods to handle attributes (represented as instances of `ParticleAttribute<T>`), manage layout/distribution across processors, and track local and global particle counts (`localNum_m` and `totalNum_m`). To use it, users should define a class derived from `ParticleBase` to specify specific data attributes for their simulation. The class is templated on a `ParticleLayout` mechanism (a class derived from `ParticleLayout`) which manages how particles are distributed across processors and handles the necessary inter-processor communication. `ParticleBase` manages core common fields including spatial positions (`R`) and global indices (`ID`).\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleBase.h : ParticleBase — foundational abstraction for managing particle attributes, layout, and local/global counts.\n- data/raw/ippl/src/Particle/ParticleBase.h : ParticleBase — container and manager where users define a derived class to specify specific data attributes (e.g., mass or charge).\n- data/raw/ippl/src/Particle/ParticleBase.hpp : ParticleBase Constructor — initializes core quantities such as localNum_m, totalNum_m, and standard fields like R and ID.",
+      "latency_seconds": 31.91966330097057,
+      "error": null
+    },
+    {
+      "id": "cls_005",
+      "category": "class_responsibility",
+      "question": "What does the ParticleSpatialLayout class do?",
+      "answer": "Answer:\nThe `ippl::ParticleSpatialLayout` class manages the spatial distribution of particles across processors based on their positions relative to a fixed grid. It is a specialized version of `detail::ParticleLayout` designed to ensure that particles are maintained on the same nodes as the fields or regions to which they belong, as defined by a `FieldLayout` or `RegionLayout`. The class handles partition-specific data such as distribution regions (`rlayout_m`), neighbor information (`flayout_m`), and one-sided MPI communication via `mpi::rma::Window`. It includes functionality for updating the layout after time steps to move particles between processors and performing load balancing at a user-specified frequency. Key methods include `getRegionLayout`, `fillHash`, `getNeighborSize`, `numberOfSends`, `locateParticles`, and `updateLayout`.\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.h : ParticleSpatialLayout — manages spatial layout and communication regions for particles, including methods to configure, update, and retrieve information for distribution and neighbor interactions.\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.h : ParticleSpatialLayout (class) — a specialized version of `detail::ParticleLayout` that places particles on processors based on their spatial location relative to a fixed grid.\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp : ParticleSpatialLayout constructor — initializes the layout using `FieldLayout`, `Mesh`, and prepares an MPI window for multi-rank environments.\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.hpp : ParticleSpatialLayout (template) — manages spatial layout and communication with methods such as `fillHash`, `getNeighborSize`, `locateParticles`, `numberOfSends`, and `updateLayout`.",
+      "latency_seconds": 28.562301309080794,
+      "error": null
+    },
+    {
+      "id": "cls_006",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of UniformCartesian?",
+      "answer": "Answer:\nThe `UniformCartesian` class in the `ippl::Meshes` namespace (inheriting from `Mesh<T, Dim>`) is responsible for representing uniform-spacing Cartesian meshes used in numerical simulations. It provides functionality to initialize and manipulate these meshes, including setting and retrieving mesh spacing through methods like `setMeshSpacing` and `getMeshSpacing`, as well as calculating geometric properties such as cell volume (`getCellVolume`), mesh volume (`getMeshVolume`), and vertex positions (`getVertexPosition`). Additionally, it includes logic for determining the distance between vertices in a given cell via `getDeltaVertex`.\n\nEvidence:\n- data/raw/ippl/src/Meshes/UniformCartesian.h : UniformCartesian — Defines the class family specializing uniform Cartesian meshes with methods like getDeltaVertex and getVertexPosition.\n- data/raw/ippl/src/Meshes/UniformCartesian.h : UniformCartesian — Represents a uniform-spacing Cartesian mesh, providing functionality for initializing and manipulating grids including spacing and volume calculations.\n- data/raw/ippl/src/Meshes/UniformCartesian.hpp : UniformCartesian — Constructor implementation used to set up the grid with dimensions (ndi), spacing (hx), and origin coordinates.",
+      "latency_seconds": 20.12421484803781,
+      "error": null
+    },
+    {
+      "id": "cls_007",
+      "category": "class_responsibility",
+      "question": "What does the Mesh base class define?",
+      "answer": "Answer:\nThe provided context does not contain information regarding what the Mesh base class defines.\n\nEvidence:\n- data/raw/ippl/src/Meshes/CartesianCentering.h : CartesianCentering — handles logic and reporting for centering operations on Cartesian grids.\n- data/raw/ippl/src/Meshes/CartesianCentering.h : CCCEnums, CommonCartesianCenterings, CenteringEnum — provides types and enums to specify different types of centerings.",
+      "latency_seconds": 23.33975188806653,
+      "error": null
+    },
+    {
+      "id": "cls_008",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of the Communicator class in ippl::mpi?",
+      "answer": "Answer:\nThe `ippl::mpi::Communicator` class is responsible for encapsulating MPI communication functionalities, including managing barriers, rank retrieval, and size determination. It facilitates inter-process communication to enable efficient data exchange across multiple processors in distributed memory architectures. Additionally, the class manages communication operations involving buffer management, specifically providing functionality to delete and free memory buffers used during these processes.\n\nEvidence:\n- data/raw/ippl/src/Communicate/Communicator.cpp : ippl::mpi::Communicator — handles MPI-based communication and facilitates data exchange across multiple processors.\n- data/raw/ippl/src/Communicate/Communicator.h : ippl::mpi::Communicator — encapsulates MPI functionalities like barriers, rank retrieval, and size determination for distributed memory architectures.\n- data/raw/ippl/src/Communicate/Buffers.cpp : ippl::mpi::Communicator — manages buffer management functions for deleting and freeing memory buffers during communication operations.",
+      "latency_seconds": 26.961308561032638,
+      "error": null
+    },
+    {
+      "id": "cls_009",
+      "category": "class_responsibility",
+      "question": "What is the role of the Environment class in ippl::mpi?",
+      "answer": "Answer:\nThe `ippl::mpi::Environment` class manages Message Passing Interface (MPI) environment setup and teardown within the IPPL library. It provides functionality for initializing and finalizing the MPI environment, including member functions such as `initialized` to check if the environment is initialized, `finalized` to check if it is finalized, and an `abort` method.\n\nEvidence:\n- data/raw/ippl/src/Communicate/Environment.cpp : ippl::mpi::Environment — manages MPI environments including constructors, destructors, and utility functions like `initialized` and `finalized`.\n- data/raw/ippl/src/Communicate/Environment.h : ippl::mpi::Environment — manages MPI environment setup and teardown with methods `abort`, `finalized`, and `initialized`.",
+      "latency_seconds": 33.73435989697464,
+      "error": null
+    },
+    {
+      "id": "cls_010",
+      "category": "class_responsibility",
+      "question": "What does the Archive class do in the Communicate module?",
+      "answer": "Answer:\nThe `Archive` class family in the Communicate module provides functionality for managing data buffers and performing serialization and deserialization operations, particularly within communication or serialization contexts. Specifically, the `ippl::detail::Archive` class (defined in `Archive.h`) manages buffer-related operations such as allocation, resizing, and position resets through methods like `getBuffer`, `getSize`, `reallocBuffer`, `resetReadPos`, `resetWritePos`, and `resizeBuffer`. The templated class family `ippl::detail::Archive<Properties...>` (defined in `Archive.hpp`) is used to handle the serialization and deserialization of data structures for communication tasks, including those involving MPI operations such as `isend`.\n\nEvidence:\n- src/Communicate/Archive.h : ippl::detail::Archive — class responsible for managing data buffers and their operations like allocation, resizing, and position resets.\n- src/Communicate/Archive.hpp : ippl::detail::Archive<Properties...> — templated class family used for handling serialization and deserialization operations.\n- source:Communicate : Archive --- provides infrastructure for managing buffer management, data serialization, and deserialization in MPI-based communication.",
+      "latency_seconds": 38.274391904938966,
+      "error": null
+    },
+    {
+      "id": "cls_011",
+      "category": "class_responsibility",
+      "question": "What is the role of the BConds class?",
+      "answer": "Answer:\nThe `ippl::BConds` class serves as a container for boundary condition (BC) objects associated with fields. It manages and applies these conditions by interacting with specific BC classes (which inherit from `detail::BCondBase<Field>`). The class provides several key functional capabilities: it identifies neighbors subject to boundary conditions via `findBCNeighbors`, applies those boundary conditions to field data through the `apply` method, and handles ghost cell updates to physical cells using `assignGhostToPhysical`. Additionally, it includes a `changesPhysicalCells` method to determine if any associated BCs modify physical cells and a `write` method to serialize its content to an output stream for debugging or logging purposes.\n\nEvidence:\n- data/raw/ippl/src/Field/BConds.h : BConds — container class for field BCs that manages, applies, and finds neighbors based on specific boundary conditions.\n- data/raw/ippl/src/Field/BConds.h : ippl::BConds — handles boundary conditions, ghost cells, and writes field data in the IPPL framework.\n- data/raw/ippl/src/Field/BConds.hpp : changesPhysicalCells — checks whether any associated BCs modify physical cells of a computational domain.\n- data/raw/ippl/src/Field/BConds.hpp : write — outputs the contents of a BConds object to an output stream for debugging or logging.",
+      "latency_seconds": 31.470459936885163,
+      "error": null
+    },
+    {
+      "id": "cls_012",
+      "category": "class_responsibility",
+      "question": "What is the role of the BaseManager class?",
+      "answer": "Answer:\nThe `BaseManager` class is an abstract base class within the `ippl` namespace that provides a structured and standardized framework for managing simulation lifecycles, including setup, execution, and cleanup phases. It utilizes the Template Method pattern to define the overarching sequence of operations in its `run(int nt)` method, while allowing specific behaviors to be customized via overridden virtual methods: `pre_run()` for initial setup, `pre_step()` for preparation before each step, `post_step()` for cleanup or data output after each step, and a pure virtual `advance()` method for the actual core computation or time integration.\n\nEvidence:\n- data/raw/ippl/src/Manager/BaseManager.h : BaseManager — foundational class defining essential methods like run, pre_run, pre_step, and post_step to manage simulation workflows.\n- data/raw/ippl/src/Manager/BaseManager.h : BaseManager — abstract base class providing a structured way to manage the lifecycle of a simulation through setup, execution, and cleanup.\n- data/raw/ippl/src/Manager/BaseManager.h : advance — pure virtual method intended for implementation by derived classes to perform the core computation or time integration.\n- data/raw/ippl/src/Manager/BaseManager.h : run(int nt) — orchestrates the simulation loop by calling pre_step, advance, and post_step in sequence.",
+      "latency_seconds": 20.639231801964343,
+      "error": null
+    },
+    {
+      "id": "cls_013",
+      "category": "class_responsibility",
+      "question": "What does the Index class represent and what operations does it support?",
+      "answer": "Answer:\nThe provided context is insufficient to answer what the `Index` class represents; however, the retrieved chunks cover a variant type system including an `index()` member function for determining active types, a `Tuple` structure that utilizes index-based access via `get<Idx>()`, and Cartesian centering logic for mesh handling.\n\nEvidence:\n- data/raw/ippl/src/Types/Variant.h : index — a member function that returns the active type's index in a variant structure.\n- data/raw/ippl/src/Types/Tuple.h : Tuple --- provides a fixed-size container for heterogeneous types with access via `get<Idx>()`.\n- data/raw/ippl/src/Meshes/CartesianCentering.h : CartesianCentering — manages centering logic for meshes in numerical simulations.",
+      "latency_seconds": 44.893756297184154,
+      "error": null
+    },
+    {
+      "id": "alg_001",
+      "category": "algorithm",
+      "question": "How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?",
+      "answer": "Answer:\nThe `FFTOpenPoissonSolver` class template solves the Poisson equation using Fast Fourier Transform (FFT) techniques. To handle open boundaries specifically, it utilizes Vico-Greengard's Green's function via methods such as `green_function` and `grn_mr`. In a multi-rank distributed environment, the solver employs the `communicateVico` method to manage data exchange; this method defines eight domains corresponding to different quadrants of a multidimensional space and utilizes non-blocking MPI communication (via `solver_send` and `solver_recv`) to ensure data consistency across processors.\n\nEvidence:\n- data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.h : FFTOpenPoissonSolver — provides solvers for the Poisson equation using Fast Fourier Transform (FFT) techniques.\n- data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.h : communicateVico — handles multi-rank Vico-Greengard's Green's function for open boundary conditions.\n- data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.hpp : communicateVico — defines eight domains representing different quadrants to facilitate non-blocking MPI communication in the FFT-based Poisson solver.",
+      "latency_seconds": 76.52097707497887,
+      "error": null
+    },
+    {
+      "id": "alg_002",
+      "category": "algorithm",
+      "question": "How does the FFT-based periodic Poisson solver work in IPPL?",
+      "answer": "Answer:\nThe FFT-based periodic Poisson solver, specifically implemented in classes such as `FFTTruncatedGreenPeriodicPoissonSolver`, solves the equation $\\nabla^2 \\phi = -\\rho$ and calculates the electric field $E = -\\nabla \\phi$ by utilizing Fast Fourier Transforms (FFTs). The core mechanism involves using a truncated Green's function, defined as $G(r) = \\text{forceConstant} \\cdot \\frac{\\text{erf}(\\alpha \\cdot r)}{r}$, to manage long-range interactions in periodic domains. During the `solve` process, the solver performs a forward FFT on the charge density field; this converts the spatial convolution into an element-wise multiplication in Fourier space (e.g., $rhotr\\_m = -rhotr\\_m * grntr\\_m$). If required by the output settings, calculations such as gradients are performed directly in this frequency domain before a final inverse FFT is used to retrieve the solution in physical space.\n\nEvidence:\n- data/raw/ippl/src/PoissonSolvers/FFTTruncatedGreenPeriodicPoissonSolver.hpp : solve — Describes the process of forward FFT, multiplication in Fourier space where convolution becomes multiplication, and gradient calculation in frequency domain.\n- data/raw/ippl/src/PoissonSolvers/FFTTruncatedGreenPeriodicPoissonSolver.h : FFTTruncatedGreenPeriodicPoissonSolver — Details the use of a truncated Green's function $G(r) = \\text{forceConstant} \\cdot \\frac{\\text{erf}(\\alpha \\cdot r)}{r}$ and the transformation of the density field to frequency space for element-wise multiplication.\n- data/raw/ippl/src/PoissonSolvers/LaplaceHelpers.h : ippl::poisson — Describes the preparation of fields including boundary conditions and the use of `meta_poisson` structures for Poisson equations.",
+      "latency_seconds": 53.78842285298742,
+      "error": null
+    },
+    {
+      "id": "alg_003",
+      "category": "algorithm",
+      "question": "How does the truncated Green periodic Poisson solver differ from the standard periodic one?",
+      "answer": "Answer:\nThe `FFTTruncatedGreenPeriodicPoissonSolver` differs from the standard periodic solver (such as the `FFTPeriodicPoissonSolver`) by utilizing a **truncated Green's function** to handle periodic boundary conditions effectively. While both solvers utilize Fast Fourier Transform (FFT) techniques, the `FFTTruncatedGreenPeriodicPoissonSolver::solve` method includes specific logic to check if mesh spacing has changed and recompute the green's function via `greensFunction()` when necessary.\n\nEvidence:\n- data/raw/ippl/src/PoissonSolvers/FFTTruncatedGreenPeriodicPoissonSolver.hpp : solve — uses a truncated Green's function for periodic boundaries and includes logic to check mesh spacing and recompute the green_function.\n- source:PoissonSolvers : PoissonSolvers module — lists both `FFTPeriodicPoissonSolver` (for periodic equations using FFT) and `FFTTruncatedGreenPeriodicPoissonSolver` (using a truncated Green's function with FFT).",
+      "latency_seconds": 59.47151982295327,
+      "error": null
+    },
+    {
+      "id": "alg_004",
+      "category": "algorithm",
+      "question": "How does IPPL's CG solver iterate in the PCG.h implementation?",
+      "answer": "Answer:\nThe provided context does not contain specific details regarding the internal iteration logic or calculation steps used by the conjugate gradient method in `PCG.h`. The available documentation covers the configuration of operators and preconditioners via `setOperator` and `setPreconditioner`, provides methods for tracking metrics such as `getIterationCount` and `getResidue`, and describes the high-level workflow in `PreconditionedFEMPoissonSolver::solve` that culminates in executing the `pcg_algo_m` algorithm.\n\nEvidence:\n- data/raw/ippl/src/LinearSolvers/PCG.h : CG::setOperator — describes a preparatory step to configure linear operators for various solver types.\n- data/raw/ippl/src/LinearSolvers/PCG.h : PCG.h — identifies methods for getting iteration counts, residues, and initializing fields.\n- data/raw/ippl/src/PoissonSolvers/PreconditionedFEMPoissonSolver.h : solve — outlines a workflow that includes configuring the solver and executing the `pcg_algo_m` algorithm.",
+      "latency_seconds": 42.097473185975105,
+      "error": null
+    },
+    {
+      "id": "alg_005",
+      "category": "algorithm",
+      "question": "How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?",
+      "answer": "Answer:\nCloud-in-cell (CIC) interpolation is performed in both directions using a consistent coordinate transformation where particle positions are mapped to grid units $l$ via `(pp_view - origin) * invdx + 0.5`. In the **scatter** direction, the method `ParticleAttrib::scatter` uses the `detail::scatterToField` function; it calculates weights `whi` (the fractional part of $l$) and `wlo` ($1.0 - whi$) to distribute particle attributes onto a `Field`. In the **gather** direction, the method `ParticleAttrib::gather` utilizes the `detail::gatherFromField` function, which uses the same indices and weights (`whi`, `wlo`) to interpolate field values at the positions of particles.\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleAttrib.hpp : ParticleAttrib::scatter — calculates grid units $l$ and determines weights `whi` (fractional distance) and `wlo` for distributing attributes onto a field.\n- data/raw/ippl/src/Particle/ParticleAttrib.hpp : ParticleAttrib::gather — employs `detail::gatherFromField` with calculated indices and weights to interpolate values from a field into particle attributes.\n- data/raw/ippl/src/Interpolation/CIC.h : gatherFromField, scatterToField — defines the primary CIC interpolation functions used for grid-based calculations.\n- data/raw/ippl/src/Interpolation/CIC.hpp : gatherFromField, scatterToField — provides implementation details for the core CIC interpolation routines in the `ippl::detail` namespace.",
+      "latency_seconds": 32.5719208039809,
+      "error": null
+    },
+    {
+      "id": "alg_006",
+      "category": "algorithm",
+      "question": "How does the standard FDTD solver advance the electromagnetic field in time?",
+      "answer": "Answer:\nThe standard FDTD solver, implemented in the `StandardFDTDSolver` class, advances the electromagnetic field (`EMField`) by one time step using a leapfrog scheme. This method calculates several coefficients ($a_1$, $a_2$, $a_4$, $a_6$, and $a_8$) based on the time step size (`dt`) and spatial grid resolution (`hr_m`). During the `step` process, it updates field values in `anp1view` using current (`aview`) and previous (`anm1view`) values while skipping ghost cells. The update concludes by filling halo regions to exchange data between processors and applying boundary conditions via the `applyBCs` method.\n\nEvidence:\n- data/raw/ippl/src/MaxwellSolvers/StandardFDTDSolver.hpp : step — describes a leapfrog scheme update of EMFields using current and previous values with coefficients derived from dt and grid resolution.\n- data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.h : applyBCs — indicates this method is used by the `StandardFDTDSolver::step` method to perform a single time step update.",
+      "latency_seconds": 24.162485176930204,
+      "error": null
+    },
+    {
+      "id": "alg_007",
+      "category": "algorithm",
+      "question": "How does the LagrangeSpace class evaluate degrees of freedom per element?",
+      "answer": "Answer:\nThe `LagrangeSpace` class determines the number of degrees of freedom (DOFs) per element using the `getLagrangeNumElementDOFs(Dim, Order)` function. This value is determined based on the polynomial order and spatial dimension of the mesh. The calculation result is passed as a template argument to the `FiniteElementSpace` base class during the construction of the `LagrangeSpace` object.\n\nEvidence:\n- data/raw/ippl/src/FEM/LagrangeSpace.h : getLagrangeNumElementDOFs — function used to determine the number of degrees of freedom per element based on polynomial order and spatial dimension.\n- data/raw/ippl/src/FEM/LagrangeSpace.h : ippl::LagrangeSpace — class that manages DOFs for finite element calculations on a structured grid.\n- data/raw/ippl/src/FEM/LagrangeSpace.hpp : LagrangeSpace constructor — initializes the `FiniteElementSpace` base class using `getLagrangeNumElementDOFs(Dim, Order)` as a template parameter.",
+      "latency_seconds": 24.665659866994247,
+      "error": null
+    },
+    {
+      "id": "alg_008",
+      "category": "algorithm",
+      "question": "How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?",
+      "answer": "Answer:\nGauss-Jacobi quadrature is implemented through the `ippl::GaussJacobiQuadrature` class, which inherits from the `ippl::Quadrature` base class. The implementation uses a combination of Chebyshev nodes as initial guesses and Newton iterations to compute the accurate quadrature nodes and weights required for numerical integration; this algorithm is based on the LehrFEM++ library. A specialized derived class, `ippl::ChebyshevGaussQuadrature`, inherits from `ippl::GaussJacobiQuadrature` and sets the alpha and beta parameters to -0.5 to implement Chebyshev-Gauss quadrature. These quadrature rules are used within finite element methods (FEM) as evidenced by the `quadrature_m` member in the `FiniteElementSpace` class.\n\nEvidence:\n- data/raw/ippl/src/FEM/Quadrature/Quadrature.h : Quadrature — base class for all quadrature rules defining terms like nodes, weights, and degree of exactness.\n- data/raw/ippl/src/FEM/FiniteElementSpace.h : quadrature_m — member of FiniteElementSpace representing the quadrature rule used in FEM.\n- data/raw/ippl/src/FEM/Quadrature/GaussJacobiQuadrature.h : GaussJacobiQuadrature — class implementing Gauss-Jacobi rules using Newton iterations and Chebyshev nodes as initial guesses (based on LehrFEM++).\n- data/raw/ippl/src/FEM/Quadrature/GaussJacobiQuadrature.h : ChebyshevGaussQuadrature — specialized class inheriting from GaussJacobiQuadrature with alpha/beta parameters set to -0.5.",
+      "latency_seconds": 26.354891498107463,
+      "error": null
+    },
+    {
+      "id": "alg_009",
+      "category": "algorithm",
+      "question": "How does the orthogonal recursive bisection decide where to cut the domain?",
+      "answer": "Answer:\nThe orthogonal recursive bisection determines the cut location by first identifying the \"longest axis\" of the multi-dimensional domain using the `findCutAxis` method, which selects the dimension with the maximum length within an `NDIndex`. Once the axis is determined, the `cutDomain` method performs the split at a calculated \"median\" point along that specific axis to ensure even weight distribution across processors.\n\nEvidence:\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.h : OrthogonalRecursiveBisection — specifies using the longest axis for bisection and finding median values to balance weights.\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.hpp : findCutAxis — identifies the dimension with the maximum length as the optimal axis for cutting.\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.h : cutDomain — splits the domain at a median point along the chosen cut axis.",
+      "latency_seconds": 21.016982591012493,
+      "error": null
+    },
+    {
+      "id": "alg_010",
+      "category": "algorithm",
+      "question": "How does inverse transform sampling generate particles from a given distribution in IPPL?",
+      "answer": "Answer:\nInverse transform sampling is implemented in the `ippl::random::InverseTransformSampling` class. This process utilizes a `Distribution` object, which encapsulates the probability density function (PDF), cumulative distribution function (CDF), and an estimate function required for sampling methods. The `generate` method fills a view with random samples by iterating through each dimension (`Dim`) and executing a `Kokkos::parallel_for` loop that calls `fill_random`. This technique transforms uniformly distributed numbers into samples that follow the target distribution within specified minimum (`minbound_m`) and maximum (`maxbound_m`) bounds.\n\nEvidence:\n- data/raw/ippl/src/Random/Distribution.h : Distribution — encapsulates probability density function (PDF), cumulative distribution function (CDF), and an estimate function for sampling methods like inverse transform sampling.\n- data/raw/ippl/src/Random/InverseTransformSampling.h : InverseTransformSampling::generate — fills a view with random samples by iterating over dimensions and using `Kokkos::parallel_for` to call `fill_random`.",
+      "latency_seconds": 36.19767777505331,
+      "error": null
+    },
+    {
+      "id": "alg_011",
+      "category": "algorithm",
+      "question": "How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?",
+      "answer": "Answer:\nThe `FFT` class utilizes a family of specialized classes parameterized by various transform types, including `CCTransform`, `Cos1Transform`, and `RCTransform`, to handle different transformation modes. To interface with heFFTe, the class converts input and output layout objects into `heffte::box3d<long long>` structures (specifically `inbox` and `outbox`). This conversion is performed by the `domainToBounds` method, which maps an `NDIndex<Dim>` into 3-element arrays representing lower and upper bounds. These boxes are then passed along with a `ParameterList` to the `setup` method to configure the specific FFT operation required for the selected transform.\n\nEvidence:\n- src/FFT/FFT.h : FFT — defines a family of classes parameterized by transform types including CCTransform, Cos1Transform, and RCTransform.\n- src/FFT/FFT.hpp : FFT<RCTransform, RealField> — constructs heffte::box3d structures from layout inputs and calls the setup method.\n- src/FFT/FFT.h : domainToBounds — converts a multi-dimensional NDIndex domain into lower and upper bound coordinate arrays.\n- src/FFT/FFT.h : setup — configures or initializes an FFT operation using heffte::box3d inputs and a ParameterList.",
+      "latency_seconds": 46.67909699003212,
+      "error": null
+    },
+    {
+      "id": "alg_012",
+      "category": "algorithm",
+      "question": "How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?",
+      "answer": "Answer:\nThe preconditioned Conjugate Gradient (CG) solver, implemented via the `ippl::CG` class in `PCG.h`, uses the `setPreconditioner` method to select and configure a preconditioner from those defined in `Preconditioner.h`. The `preconditioner` struct serves as an abstraction for several specialized types, including `jacobi_preconditioner`, `gs_preconditioner`, and `polynomial_newton_preconditioner`. These structs provide the core functionality through the `operator()` method, which is designed to take a field $u$ and return the preconditioned version of that field. This mechanism functions as a configuration hook during the preparation of solvers—such as those for Poisson equations in `PoissonCG` or `PreconditionedFEMPoissonSolver`—to specify the strategy (e.g., Richardson or SOR) used to accelerate the convergence rate of iterative solutions.\n\nEvidence:\n- data/raw/ippl/src/LinearSolvers/Preconditioner.h : preconditioner — struct providing an operator() function that returns a preconditioned field to accelerate iterative solvers.\n- data/raw/ippl/src/LinearSolvers/PCG.h : CG::setPreconditioner — method responsible for setting up or configuring the preconditioner for the Conjugate Gradient (CG) algorithm.\n- data/raw/ippl/src/PoissonSolvers/PoissonCG.h : PoissonCG — solver implementation that uses setPreconditioner to configure solver types and preconditioner settings.\n- data/raw/ippl/src/LinearSolvers/Preconditioner.h : jacobi_preconditioner, ssor_preconditioner — specific preconditioning structures used for improving convergence in iterative solvers.",
+      "latency_seconds": 57.088821024866775,
+      "error": null
+    },
+    {
+      "id": "flow_001",
+      "category": "data_flow",
+      "question": "How does charge density flow from particles to the grid in a typical PIC step in IPPL?",
+      "answer": "Answer:\nIn a typical PIC step, charge density is transferred from particles to the grid using the `assemble_rhs_from_particles` function. This process involves depositing weighted values from particle attributes (such as charge) into a field $f$ based on their positions. For each particle, the system identifies its location and local coordinates ($\\xi$) using `locate_element_nd_and_xi` with mesh spacing ($hr$) and origin. It then determines the global DOF indices for that element and evaluates shape functions at the particle's position using `evaluateRefElementShapeFunction`. The contribution is added to the field via a `Kokkos::atomic_add` operation, where the value of the attribute is weighted by the shape function ($w$) and divided by the \"lumped mass\" ($m$) of the mesh node. Finally, the process accounts for ghost points in the distributed field by calling `f.accumulateHalo()`.\n\nEvidence:\n- data/raw/ippl/src/FEM/FEMInterpolate.hpp : assemble_rhs_from_particles — describes a PIC deposition step where particle attributes are interpolated onto mesh nodes using shape functions and accumulated via atomic operations.\n- data/raw/ippl/src/FEM/FEMInterpolate.hpp : evaluateRefElementShapeFunction — used to determine the weight ($w$) of a particle's contribution based on its position within an element.\n- data/raw/ippl/src/Meshes/Mesh.h : getMeshSpacing — provides mesh spacing information required for identifying particle locations and constructing the field representation.",
+      "latency_seconds": 27.272573350928724,
+      "error": null
+    },
+    {
+      "id": "flow_002",
+      "category": "data_flow",
+      "question": "How does the electric field flow from the grid back to particles after a Poisson solve?",
+      "answer": "Answer:\nThe retrieved context does not provide information on how the electric field flows from the grid back to particles; however, it covers the calculation of electric fields on a mesh using finite differences or Fourier-space convolution with a Green's function (Chunk 1, Chunk 3) and the assembly of particle attributes onto a field via shape functions and weight coefficients (Chunk 4).\n\nEvidence:\n- data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.hpp : solve — computes electric fields on the mesh using finite differences or Fourier domain convolution.\n- data/raw/ippl/src/PoissonSolvers/FFTTruncatedGreenPeriodicPoissonSolver.hpp : solve — solves Poisson equations and calculates gradients in the Fourier domain.\n- data/raw/ippl/src/FEM/FEMInterpolate.hpp : assemble_rhs_from_particles — deposits particle attributes onto a field using shape functions and weight calculations.",
+      "latency_seconds": 55.11724646994844,
+      "error": null
+    },
+    {
+      "id": "flow_003",
+      "category": "data_flow",
+      "question": "How are halo cells exchanged between neighboring MPI ranks for a BareField?",
+      "answer": "Answer:\nThe exchange of halo cells for a `BareField` is managed by the `ippl::detail::HaloCells` class, which facilitates inter-process communication (IPC) of boundary data between different parts of a decomposed field in a distributed-memory setting. While the `ippl::BareField` class provides the high-level abstraction and accessors for halo properties (such as `getHalo` and `getNghost`), the specific logic for managing these ghost cells is provided by the `HaloCells` class via methods such as `exchangeBoundaries`, `pack`, `unpack`, and `fillHalo`.\n\nEvidence:\n- data/raw/ippl/src/Field/BareField.h : BareField — provides access to property fields like halo, ghost cells, and haven't specified calculation logic.\n- data/raw/ippl/src/Field/HaloCells.h : HaloCells — manages and manipulates guard/ghost cells for inter-process communication (IPC) in parallel computations.\n- data/raw/ippl/src/Field/HaloCells.hpp : HaloCells — provides methods including exchangeBoundaries, pack, unpack, and fillHalo to manage halo cells for distributed numerical computations.",
+      "latency_seconds": 48.44408654491417,
+      "error": null
+    },
+    {
+      "id": "flow_004",
+      "category": "data_flow",
+      "question": "How are particles migrated between MPI ranks by ParticleSpatialLayout?",
+      "answer": "Answer:\nThe `ParticleSpatialLayout` class manages particle movement between processors through the `update` routine, which is called when changes affect the global layout. Migration involves the `locateParticles` method, which determines the target rank for each particle based on its location relative to a fixed grid or specified `FieldLayout`/`RegionLayout`, and identifies if particles are \"invalid\" (meaning they need to be sent). To prepare these particles for transmission, `fillHash` provides a mapping to ensure the send buffer is filled contiguously. The system also supports one-sided communication via `mpi::rma::Window`.\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.h : ParticleSpatialLayout — Describes the `update` routine for moving particles and `locateParticles` for determining rank and \"invalid\" status based on position.\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.h : fillHash — Provides a mapping to pack the send buffer contiguously.\n- data/raw/ippl/src/Particle/ParticleSpatialLayout.h : window_m (mpi::rma::Window) — Used for one-sided communication in MPI.",
+      "latency_seconds": 49.017092508031055,
+      "error": null
+    },
+    {
+      "id": "flow_005",
+      "category": "data_flow",
+      "question": "How does FieldLayout decide which index ranges live on which rank?",
+      "answer": "Answer:\nThe `FieldLayout<Dim>` class manages domain information and field distribution by utilizing multi-dimensional index spaces of type `NDIndex_t` to define spatial regions. It employs methods such as `getBounds`, `getLocalNDIndex`, and `getHostLocalDomains` to define local domains (`nd`) and ghost cell ranges (`gnd`). Furthermore, the `addNeighbors` method manages neighbor relationships by identifying intersection regions between these segments across different ranks.\n\nEvidence:\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : FieldLayout — manages field distribution and domain information.\n- data/raw/ippl/src/FieldLayout/FieldLayout.hpp : getBounds, getLocalNDIndex, getHostLocalDomains — methods used to manage dimensions and local domains within the `FieldLayout<Dim>` class.\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : addNeighbors — manages multi-dimensional index spaces (`NDIndex_t`) to handle neighbor relationships and determine intersection regions between different ranks.",
+      "latency_seconds": 42.794198201969266,
+      "error": null
+    },
+    {
+      "id": "flow_006",
+      "category": "data_flow",
+      "question": "How is a ParameterList used to configure the FFT and solver classes?",
+      "answer": "Answer:\nThe `ParameterList` class manages a collection of named parameters (supporting types such as `double`, `float`, and `bool`) to define configurations like \"tolerance in case of iterative solvers.\" In the `FFT` class, a `ParameterList` is passed into the constructor and subsequently provided to the `setup()` method to configure the internal state for Fourier transforms. For solver classes (specifically those inheriting from `ParticleInteractionBase`), an internal `ParameterList params_m` member stores parameters; these are populated via the `merge()` or `update()` methods during construction or through specific utility functions like `updateParameters()` and `mergeParameters()`.\n\nEvidence:\n- data/raw/ippl/src/Utility/ParameterList.h : ParameterList — manages a collection of named parameters used for configuration, such as tolerances in iterative solvers.\n- data/raw/ippl/src/FFT/FFT.hpp : FFT constructor — accepts a `ParameterList` to configure the system's `setup()` method.\n- data/raw/ippl/src/Interaction/ParticleInteractionBase.h : ParticleInteractionBase — utilizes an internal `ParameterList params_m` and methods like `mergeParameters()` and `updateParameters()` to manage solver parameters.",
+      "latency_seconds": 29.55372516810894,
+      "error": null
+    },
+    {
+      "id": "flow_007",
+      "category": "data_flow",
+      "question": "How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?",
+      "answer": "Answer:\nThe provided context is insufficient to describe how data flows through the `pre_step`, `advance`, and `post_step` hooks. The retrieved chunks cover:\n- The definition of `BaseManager` methods (`run`, `pre_run`, `pre_step`, `post_step`, and `advance`) as a framework for managing simulation workflows.\n- The role of `FDTDSolverBase::step` in executing individual time steps within an FDTD solver.\n- Performance monitoring via `IpplTimings::getTimer` and `IpplTimings::stopTimer`.\n\nEvidence:\n- data/raw/ippl/src/Manager/BaseManager.h : BaseManager — provides a framework for simulation management using methods like run, pre_step, post_step, and advance.\n- data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.h : step — represents an individual time step update in FDTD simulations, called by the solve method.\n- data/raw/ippl/src/Utility/IpplTimings.h : stopTimer / getTimer — provides utility functions for timing measurement across various computational tasks.",
+      "latency_seconds": 74.7497670140583,
+      "error": null
+    },
+    {
+      "id": "flow_008",
+      "category": "data_flow",
+      "question": "How does the FEM solver move data between fields and FEMVector representations?",
+      "answer": "Answer:\nThe provided context does not describe how the FEM solver moves data between fields and FEMVector representations; however, it details how `FEMVector` handles internal data movement across distributed domains and notes that fields are used as inputs for assembling stiffness matrices and load vectors.\n\nEvidence:\n- data/raw/ippl/src/FEM/FEMVector.hpp : accumulateHalo — manages halo exchange operations to ensure shared boundary information between processes using pack and unpack functions.\n- data/raw/ippl/src/FEM/NedelecSpace.h : NedelecSpace — mentions assembling stiffness matrices and load vectors using provided fields or functors.",
+      "latency_seconds": 49.388244167901576,
+      "error": null
+    },
+    {
+      "id": "flow_009",
+      "category": "data_flow",
+      "question": "How does OrthogonalRecursiveBisection redistribute particles after rebalancing?",
+      "answer": "Answer:\nThe `OrthogonalRecursiveBisection::binaryRepartition` method manages particle distribution across different ranks by performing a binary recursive bisection of the computational domain. If it is not the first iteration of the process (where analytical expressions are used), the method calls `scatterR(R)` to perform the \"scat[tering] of particle positions in field.\" The redistribution process iteratively identifies cut axes via `findCutAxis`, performs a `perpendicularReduction` to aggregate weights or counts across those axes, and utilizes `allreduce` to share these values across all ranks. Finally, it determines the split points for the partitions by calling `findMedian` on the reduced data.\n\nEvidence:\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.hpp : binaryRepartition — handles particle distribution across different ranks and calls `scatterR(R)` to scatter particle positions in field (except during first repartition).\n- data/raw/ippl/src/Decomposition/OrthogonalRecursiveBisection.hpp : findCutAxis, perpendicularReduction, findMedian — used within the iterative bisection loop to identify cut axes, perform weight reductions across them, and determine median split points.",
+      "latency_seconds": 39.412940754787996,
+      "error": null
+    },
+    {
+      "id": "api_001",
+      "category": "api_usage",
+      "question": "How do I create a 3D Field of doubles in IPPL?",
+      "answer": "Answer:\nTo create a 3D field of doubles, use the `ippl::Field` class, which inherits from `BareField<T, Dim, ViewArgs...>`. In this context, $T$ represents the data type (e.g., double) and $Dim$ represents the dimensionality (e.g., 3). The field can be instantiated using a constructor or by calling the `initialize` method; both of these accept a `Mesh_t&` (type `Mesh`) and a `Layout_t&` (type `FieldLayout<Dim>`).\n\nEvidence:\n- data/raw/ippl/src/Field/Field.h : Field — class inheriting from BareField that includes mesh and boundary condition handling.\n- data/raw/ippl/src/Field/Field.h : Mesh_t, Layout_t — internal typedefs for the Mesh and FieldLayout types used in field construction.\n- data/raw/ippl/src/Field/Field.h : initialize — method to initialize a field using mesh and layout parameters.\n- data/raw/ippl/src/Field/Field.h : Field(Mesh_t&, Layout_t&, int nghost = 1) — constructor used for creating a new field with the specified mesh and layout.",
+      "latency_seconds": 59.90249840402976,
+      "error": null
+    },
+    {
+      "id": "api_002",
+      "category": "api_usage",
+      "question": "How do I construct a UniformCartesian mesh with custom spacing and origin?",
+      "answer": "Answer:\nTo construct a `UniformCartesian` mesh with specific spacing and origin, use the `ippl::UniformCartesian` constructor located in `src/Meshes/UniformCartesian.h`. This constructor accepts three parameters for initialization: an `NDIndex<Dim>` (represented as `ndi`) specifying the number of grid points along each dimension, a `vector_type` (labeled `hx`) representing the spacing between grid points, and a `vector_type` (labeled `origin`) defining the starting point of the mesh.\n\nEvidence:\n- data/raw/ippl/src/Meshes/UniformCartesian.h : UniformCartesian — The constructor takes an `NDIndex<Dim>`, a `vector_type` for spacing (`hx`), and a `vector_type` for the origin to initialize the mesh.\n- data/raw/ippl/src/Meshes/UniformCartesian.hpp : UniformCartesian — This file defines the `UniformCartesian<T, Dim>` class template used to manage uniform Cartesian mesh properties.",
+      "latency_seconds": 23.415157683892176,
+      "error": null
+    },
+    {
+      "id": "api_003",
+      "category": "api_usage",
+      "question": "How do I attach a boundary condition (e.g. periodic) to a Field?",
+      "answer": "Answer:\nTo attach a boundary condition to a field, you use the `setFieldBC()` method on the field object. Specifically, for periodic boundary conditions, the `setPeriodicBoundaryConditions` method in the `FDTDSolverBase` class template creates a vector of shared pointers to `PeriodicFace` objects (e.g., `vector_bcs`) and assigns this collection to fields like `A_n`, `A_np1`, and `A_nm1` via calls such as `A_n.setFieldBC(vector_bcs)`.\n\nEvidence:\n- data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.hpp : setPeriodicBoundaryConditions — uses `setFieldBC` to assign a vector of shared pointers to `PeriodicFace` objects to fields `A_n`, `A_np1`, and `A_nm1`.\n- data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.hpp : applyBCs — applies the boundary conditions (periodic or non-periodic) to the field variables during simulation updates.",
+      "latency_seconds": 21.10964992106892,
+      "error": null
+    },
+    {
+      "id": "api_004",
+      "category": "api_usage",
+      "question": "How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?",
+      "answer": "Answer:\nTo include additional properties in the particle data structure, you can utilize the `addAttribute` method within the `ParticleBase<PLayout, IP...>` template. This method takes a reference to an object of type `detail::ParticleAttribBase<MemorySpace>`, appends it to an internal container, and sets its count using the value of `localNum_m`. The constructor for `ParticleBase` demonstrates this by calling `addAttribute(ID)` and `addAttribute(R)`, where `R` is used as the name for position.\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleBase.hpp : addAttribute — appends a `detail::ParticleAttribBase<MemorySpace>` object to a container and sets its count using `localNum_m`.\n- data/raw/ippl/src/Particle/ParticleBase.hpp : ParticleBase Constructor — utilizes `addAttribute` for initial attributes like `ID` and `R` (position).\n- data/raw/ippl/src/Particle/ParticleBase.h : ParticleBase — primary base class for managing particle properties, including attributes, layout, and counts.",
+      "latency_seconds": 44.24521041382104,
+      "error": null
+    },
+    {
+      "id": "api_005",
+      "category": "api_usage",
+      "question": "How do I call ippl::initialize and ippl::finalize in a main program?",
+      "answer": "Answer:\nTo call `ippl::initialize` in a main program, you must provide three parameters: an integer reference to the argument count (`int& argc`), a command-line argument array (`char* argv[]`), and an MPI communicator (`MPI_Comm comm`). This function is defined in `Ippl.cpp` (and declared in `Ippl.h`) and is used to initialize the environment, communicators, and `Inform` objects while parsing options like log levels and timer settings. To shut down the program, call `ippl::finalize()`, which takes no parameters and performs cleanup by calling `Comm->deleteAllBuffers()`, `Kokkos::finalize()`, and resetting the `Comm` and `Env` pointers to `nullptr`.\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : ippl::initialize — defined as initialize(int& argc, char* argv[], MPI_Comm comm) to set up environment and parse options.\n- data/raw/ippl/src/Ippl.cpp : ippl::finalize — used for resource cleanup including buffer deletion and calling Kokkos::finalize().",
+      "latency_seconds": 24.867799615021795,
+      "error": null
+    },
+    {
+      "id": "api_006",
+      "category": "api_usage",
+      "question": "How do I set up and run a forward FFT on an IPPL Field?",
+      "answer": "Answer:\nTo set up and run an FFT on a field, you instantiate an `iqppl::FFT` class template (such as `iqppl::FFT<RCTransform, RealField>` or `iqppl::FFT<CCTransform, ComplexField>`). The setup is performed during construction by providing input and output `Layout_t` objects and a `ParameterList`. These are used to derive 3D `heffte::box3d` structures (`inbox` and `outbox`) for the Heffte library. This is followed by a call to the `setup` method, which configures Heffte plan options (such as communication strategies like all-to-all or p2p) and manages workspace allocation based on the provided parameters. To run the transformation, you call the `transform` method on the instantiated object.\n\nEvidence:\n- data/raw/ippl/src/FFT/FFT.hpp : ippl::FFT<RCTransform, RealField>::FFT — constructor uses Layout_t and ParameterList to create heffte box3d structures and call setup.\n- data/raw/ippl/src/FFT/FFT.hpp : ippl::FFTBase::setup — configures Heffte plan options, communication strategies (e.g., all-to-all), and workspace allocation.\n- data/raw/ippl/src/FFT/FFT.hpp : ippl::FFTBase::FFTBase — constructor uses Layout_t to define domain bounds for FFT operations.\n- data/raw/ippl/src/FFT/FFT.hpp : ippl::FFT<RCTransform, RealField>::transform — provides the method to execute transformations on specific field types.",
+      "latency_seconds": 67.51238053315319,
+      "error": null
+    },
+    {
+      "id": "api_007",
+      "category": "api_usage",
+      "question": "How do I construct an FFTPeriodicPoissonSolver and solve for the potential?",
+      "answer": "Answer:\nTo construct an `ippl::FFTPeriodicPoissonSolver`, instantiate the class defined in `FFTPeriodicPoissonSolver.h` or `FFTPeriodicPoissonSolver.hpp`. The constructor for this class automatically initializes the base class and invokes the `setDefaultParameters()` method to ensure a valid state for solving periodic Poisson equations via Fast Fourier Transforms (FFT). To solve for the potential, you use the `setRhs()` method to define the right-hand side of the equation (the charge density field) and then call the `solve()` method. The `solve()` method performs an FFT-based calculation—transforming data into Fourier space, convolving with a Green's function, and performing an inverse transformation—to compute the electrostatic potential from the provided source field.\n\nEvidence:\n- data/raw/ippl/src/PoissonSolvers/FFTPeriodicPoissonSolver.h : FFTPeriodicPoissonSolver — contains the class definition and methods `setDefaultParameters`, `initialize`, `setRhs`, and `solve`.\n- data/raw/ippl/src/PoissonSolvers/FFTPeriodicPoissonSolver.h : FFTPeriodicPoissonSolver (constructor) — initializes the base class and calls `setDefaultParameters()` to prepare the solver.\n- data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.hpp : solve — explains that the `solve` method computes the electrostatic potential from a charge density field using Fourier transforms and Green's functions.\n- data/raw/ippl/src/PoissonSolvers/FFTTruncatedGreenPeriodicPoissonSolver.hpp : solve — describes solving the Poisson equation $\\nabla^2 \\phi = \\rho$ to find the potential via FFT and a truncated Green's function.",
+      "latency_seconds": 33.021650264039636,
+      "error": null
+    },
+    {
+      "id": "api_008",
+      "category": "api_usage",
+      "question": "How do I invoke the conjugate gradient Poisson solver on a Field?",
+      "answer": "Answer:\nTo invoke the conjugate gradient Poisson solver on a Field, use the `ippl::PoissonCG` class. This class can be instantiated through a constructor that accepts left-hand side (`lhs_type& lhs`) and right-hand side (`rhs_type& rhs`) fields (representing `FieldLHS` and `FieldRHS`), or by using the `setLhs(lhs_type& lhs)` method. These methods invoke `setSolver`, which configures the solver type, preconditioner settings, and necessary operators. The final step is to call the `solve()` method, which applies the configured solver to the system defined by the left-hand side (`lhs_mp`) and right-hand side (`rhs_mp`).\n\nEvidence:\n- data/raw/ippl/src/PoissonSolvers/PoissonCG.h : PoissonCG — A class that solves the Poisson equation using the Conjugate Gradient (CG) method with optional preconditioning.\n- data/raw/ippl/src/PoissonSolvers/PoissonCG.h : setLhs — Sets the left-hand side field and configures solver types, preconditioner settings, and prepares operators via `setSolver`.\n- data/raw/ippl/src/PoissonSolvers/PoissonCG.h : solve — Applies the configured solver to the system defined by `lhs_mp` and `rhs_mp`.",
+      "latency_seconds": 56.62068210495636,
+      "error": null
+    },
+    {
+      "id": "api_009",
+      "category": "api_usage",
+      "question": "How do I sample particles from a normal distribution using IPPL Random utilities?",
+      "answer": "Answer:\nTo sample from a normal distribution, use the `ippl::random::NormalDistribution` class. This class is specifically designed for sampling from a normal distribution on a bounded domain using inverse transform sampling and inherits from the `ippl::random::Distribution` base class. The constructor for `NormalDistribution` accepts an array of parameters representing the mean and standard deviation of the distribution. \n\nThe actual sampling process is facilitated by the `InverseTransformSampling` class, which uses the `fill_random` struct (a functor) to populate samples. This process involves generating a uniform random number $u$, providing an initial guess using `getEstimate`, and then employing an `ippl::random::detail::NewtonRaphson` solver to find the sample value by evaluating the objective function `getObjFunc` (which calculates $cdf(x) - u$).\n\nEvidence:\n- data/raw/ippl/src/Random/NormalDistribution.h : NormalDistribution — class for sampling normal distribution on a bounded domain using inverse transform sampling.\n- data/raw/ippl/src/Random/InverseTransformSampling.h : InverseTransformSampling — class used to generate samples of a given distribution function by inverting its cumulative distribution.\n- data/raw/ippl/src/Random/InverseTransformSampling.h : fill_random — functor that uses a Newton-Raphson solver to find sample values.\n- data/raw/ippl/src/Random/Distribution.h : getObjFunc — calculates the objective function $cdf(x) - u$ used in inverse transform sampling.",
+      "latency_seconds": 30.021440806798637,
+      "error": null
+    },
+    {
+      "id": "api_010",
+      "category": "api_usage",
+      "question": "How do I register particle attributes with ParticleBase so that they are communicated on migration?",
+      "answer": "Answer:\nTo register particle attributes with `ParticleBase` so that they are managed and communicated during migration, you must define a custom class derived from `ippl::ParticleBase` (found in `ParticleBase.h`). Each attribute within this derived class must be an instance of the `ParticleAttribute<T>` type. These attributes are registered by calling the `addAttribute()` method for each instance inside the constructor of your derived class. Once registered, these attributes are managed by `ParticleBase` and integrated with a `ParticleLayout` mechanism; specifically, the `pack` method (defined in `ParticleBase.hpp`) is utilized by `sendToRank` to prepare this data for transmission across processors.\n\nEvidence:\n- data/raw/ippl/src/Particle/ParticleBase.h : ParticleBase — defines a class that requires a derived class where attributes are instances of ParticleAttribute<T> registered via addAttribute().\n- data/raw/ippl/src/Particle/ParticleBase.hpp : addAttribute — a method within the ParticleBase class template used to register attributes in a constructor.\n- data/raw/ippl/src/Particle/ParticleBase.hpp : pack — a method used by sendToRank to prepare particle attribute data for communication between ranks.",
+      "latency_seconds": 40.41182992211543,
+      "error": null
+    },
+    {
+      "id": "api_011",
+      "category": "api_usage",
+      "question": "How do I access the MPI rank and size through the IPPL Communicator?",
+      "answer": "Answer:\nTo access the rank and size of the current MPI communicator, use the `rank()` and `size()` member functions of the `ippl::mpi::Communicator` class. The `size()` method specifically retrieves the number of processes (or rank count) within the current communicator.\n\nEvidence:\n- data/raw/ippl/src/Communicate/Communicator.h : ippl::mpi::Communicator::size — Method used to retrieve the number of processes or rank count in a communicator.\n- data/raw/ippl/src/Communicate/Communicator.h : ippl::mpi::Communicator — Class that encapsulates MPI communication functionality, including rank retrieval and size determination.",
+      "latency_seconds": 20.245286685880274,
+      "error": null
+    },
+    {
+      "id": "api_012",
+      "category": "api_usage",
+      "question": "How do I use IpplTimings to measure a region of code?",
+      "answer": "Answer:\nTo measure a region of code using the `IpplTimings` class (located in `data/raw/ippl/src/Utility/IpplTimings.h`), follow these steps:\n1. Create or retrieve a timer reference for your specific code section by calling `IpplTimings::getTimer(\"timer name\")`, which returns an `IpplTimings::TimerRef`.\n2. Start the measurement before the target block of code using `IpplTimings::startTimer(val)`.\n3. Stop the measurement after the target block finishes using `IpplTimings::stopTimer(val)`, which adds the elapsed duration to the accumulated time for that specific timer.\n4. Display all results at the end of the program by calling `IpplTimings::print()`.\n\nEvidence:\n- data/raw/ippl/src/Utility/IpplTimings.h : IpplTimings — a singleton class used to create, start, stop, and print timing information for various code sections.\n- data/raw/ippl/src/Utility/IpplTimings.h : getTimer — retrieves or creates a new timer reference based on the provided name.\n- data/raw/ippl/src/Utility/IpplTimings.h : startTimer — starts the referenced timer running, doing nothing if it is already active.\n- data/raw/ippl/src/Utility/IpplTimings.h : stopTimer — stops the timer and adds the elapsed time to its accumulated total.\n- data/raw/ippl/src/Utility/IpplTimings.h : print — prints all accumulated timing results to standard output.",
+      "latency_seconds": 37.46884282096289,
+      "error": null
+    },
+    {
+      "id": "par_001",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL achieve performance portability across CPUs and GPUs?",
+      "answer": "Answer:\nIPPL achieves performance portability by utilizing the **Kokkos** library, which provides abstraction layers for multiple execution spaces. Specifically, it uses **Kokkos views** (`Kokos::View`) to manage data across different execution spaces (such as CPUs and GPUs) and employs `Kokkos::deep_copy` for memory management between these environments. Furthermore, the `ippl::getRangePolicy` function in `ParallelDispatch.h` constructs a range policy based on a view's **execution_space** to facilitate parallel dispatch over multi-dimensional data structures.\n\nEvidence:\n- data/raw/ippl/src/FEM/FEMVector.hpp : Kokkos::View — performance-portable abstractions over arrays used on different execution spaces.\n- data/raw/ippl/src/Utility/ParallelDispatch.h : getRangePolicy — generates a range policy based on the view's execution_space for parallel execution.\n- data/raw/ippl/src/Ippl.cpp : initialize — initializes Kokkos with command-line arguments during system setup.",
+      "latency_seconds": 29.185317481169477,
+      "error": null
+    },
+    {
+      "id": "par_002",
+      "category": "parallelism_and_kokkos",
+      "question": "Why does IPPL use Kokkos::View for field storage?",
+      "answer": "Answer:\nIPPL utilizes `Kokkos::View` through the `view_type` defined within the `BareField` class to represent the actual storage for field data, which leverages Kokkos for memory management.\n\nEvidence:\n- data/raw/ippl/src/Field/BareField.h : BareField — The `view_type` represents the actual storage for the field data, using Kokkos for memory management.",
+      "latency_seconds": 26.98576801107265,
+      "error": null
+    },
+    {
+      "id": "par_003",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL parallelize loops over field indices using Kokkos RangePolicy?",
+      "answer": "Answer:\nIPPL uses a `RangePolicy` struct defined in the `ParallelDispatch.h` file to manage multi-dimensional range indices for parallel execution. This struct provides a `policy_type` that wraps Kokkos' `MDRangePolicy`, which utilizes `Kokkos::Rank<Dim>` to handle multidimensional ranges. These policies are instantiated via the `createRangePolicy` function, which takes `begin` and `end` arrays of type `Kokkos::Array`. If the dimensionality (`Dim`) is 1, it constructs a policy using the first element of the arrays; otherwise, it uses the full arrays to construct a multi-dimensional policy. For field data specifically, the `BareField` class provides the `getFieldRangePolicy` method, which generates a range policy for iterating over fields while adjusting for ghost layers by calculating a shift based on the difference between total available ghost layers and the desired inclusion count.\n\nEvidence:\n- data/raw/ippl/src/Utility/ParallelDispatch.h : RangePolicy — defines `policy_type` using Kokkos' `MDRangePolicy` for multi-dimensional range management.\n- data/raw/ippl/src/Field/BareField.h : getFieldRangePolicy — generates a range policy for iterating over fields by calculating a shift to exclude or include ghost layers.\n- data/raw/ippl/src/Utility/ParallelDispatch.h : createRangePolicy — instantiates a policy from `begin` and `end` arrays, handling 1D vs multi-dimensional logic based on the `Dim` variable.",
+      "latency_seconds": 24.535840198863298,
+      "error": null
+    },
+    {
+      "id": "par_004",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL support mixed precision (float vs double) for fields?",
+      "answer": "Answer:\nThe provided context does not contain information regarding how IPPL specifically supports mixed precision (float vs double) for fields. The retrieved chunks cover: system initialization and configuration options (`Ippl.h`, `Ippl.cpp`), multi-type parameter management including float and double values (`ParameterList.h`), particle boundary calculations using a generic `value_type` (`ParticleBC.h`), buffer management and serialization (`Archive.h`), and parallel execution dispatching via Kokkos (`ParallelDispatch.h`).\n\nEvidence:\n- Ippl.h : Ippl.h — provides essential functions for managing application initialization, termination, and configuration options.\n- ParameterList.h : ParameterList — a class to manage collections of named parameters supporting various types including float and double.\n- ParticleBC.h : ReflectiveBC/ParticleBC — defines particle boundary conditions using a generic value_type.\n- Archive.h : Archive — provides methods for managing data buffers, resizing, and position tracking.\n- ParallelDispatch.h : parallel_for/getRangePolicy --- manages the dispatching of functors across various ranges and execution policies.",
+      "latency_seconds": 61.059285684954375,
+      "error": null
+    },
+    {
+      "id": "par_005",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?",
+      "answer": "Answer:\nThe retrieved context is insufficient to answer how IPPL handles multiple execution spaces like OpenMP and CUDA in the same build. The chunks cover the initialization of MPI environments, Inform objects for logging, and Kokkos; first-order grid interpolation (CIC); and domain partitioning logic using `FieldLayout` and `SubFieldLayout`.\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : ippl::initialize — Initialises MPI environment, Inform objects, and Kokkos with remaining command-line arguments.\n- data/raw/ippl/src/Interpolation/CIC.h : ippl::ippl — Implements first-order grid interpolation as global functions.\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : ippl::FieldLayout — Manages the distribution of multi-dimensional index spaces across MPI ranks.\n- data/raw/ippl/src/FieldLayout/SubFieldLayout.h : ippl::SubFieldLayout — Provides layout for sub-regions while maintaining consistent partitioning and neighbor relationships.",
+      "latency_seconds": 53.57116909814067,
+      "error": null
+    },
+    {
+      "id": "par_006",
+      "category": "parallelism_and_kokkos",
+      "question": "What is the purpose of ParallelDispatch.h and what helpers does it expose?",
+      "answer": "Answer:\nThe purpose of `ParallelDispatch.h` is to provide abstractions and utilities for parallel execution within the IPPL framework, specifically facilitating the dispatching and management of parallel tasks. It exposes several helpers including:\n- **ippl::detail::Coords**: A struct used for coordinate representation.\n- **ippl::detail::ExtractRank**: A struct used to extract rank from a type for template metaprogramming.\n- **ippl::detail::ExtractReducerReturnType**: A utility structure for deducing the return types of reducers.\n- **ippl::detail::FunctorWrapper**: A template struct that wraps functors to enable parallel execution.\n- **ippl::RangePolicy**: A templated struct defining policies for range-based operations.\n- **ippl::detail::functorize**: A function used to convert functions into functor objects.\n- **ippl::getRangePolicy**: A function that generates a range policy object based on specified dimensions and arguments.\n- **ippl::Kokkos::createRangePolicy**: A method that constructs and returns a range policy object for 1D or higher-dimensional loops using Kokkos arrays.\n- **ippl::parallel_for**: A function that dispatches the execution of a functor based on an `ExecPolicy` and name, wrapping the functionality of `Kokkos::parallel_for`.\n\nEvidence:\n- data/raw/ippl/src/Utility/ParallelDispatch.h : ParallelDispatch.h — provides abstractions for parallel execution including structs like `Coords`, `ExtractRank`, and `FunctorWrapper`.\n- data/raw/ippl/src/Utility/ParallelDispatch.h : parallel_for — dispatches execution of a functor based on an `ExecPolicy` and name, wrapping `Kokkos::parallel_for`.\n- data/raw/ippl/src/Utility/ParallelDispatch.h : createRangePolicy — constructs range policy objects for 1D or multi-dimensional loops using Kokkos arrays.",
+      "latency_seconds": 33.72869912395254,
+      "error": null
+    },
+    {
+      "id": "par_007",
+      "category": "parallelism_and_kokkos",
+      "question": "How does the Archive class serialize/deserialize Kokkos views for MPI transfer?",
+      "answer": "Answer:\nThe retrieved context is insufficient to answer how the Archive class serializes or deserializes Kokkos views for MPI transfer; the provided snippets cover communicator logging, environment settings, request handling, memory buffers, and collective operations.\n\nEvidence:\n- data/raw/ippl/src/Communicate/CommunicatorLogging.cpp : ippl::mpi — defines the namespace for communication logging.\n- data/raw/ippl/src/Communicate/Environment.cpp : mpi — handles MPI environment settings.\n- data/raw/ippl/src/Communicate/Request.cpp : ippl::mpi — manages MPI request handling.\n- data/raw/ippl/src/Communicate/Buffers.hpp : ippl::mpi — defines memory buffers for communication.\n- data/raw/ippl/src/Communicate/Collectives.hpp : ippl::mpi — contains definitions for MPI collective operations.",
+      "latency_seconds": 36.531976828118786,
+      "error": null
+    },
+    {
+      "id": "par_008",
+      "category": "parallelism_and_kokkos",
+      "question": "How are MPI tags managed in IPPL to avoid collisions across subsystems?",
+      "answer": "Answer:\nMPI tags are managed through a `Tag` enumeration within the `ippl::mpi::tag` namespace, which defines a set of integer constants used to differentiate between types of messages in the MPI framework. This tagging system allows for efficient message handling and avoids conflicts across various communication channels by providing distinct identifiers for different operations: boundary conditions (e.g., `BC_PARALLEL_PERIODIC`), halo cells (`HALO_SEND`, `HALO_RECV`), particle-related communications (`PARTICLE_RECV`), and solver components (e.g., `SOLVER_RECV`, `VICO_SEND`).\n\nEvidence:\n- data/raw/ippl/src/Communicate/Tags.h : Tag — enumeration of integer constants used to distinguish message types like boundary conditions, halo cells, and solver components to ensure correct data reaches its destination.",
+      "latency_seconds": 58.68164104199968,
+      "error": null
+    },
+    {
+      "id": "par_009",
+      "category": "parallelism_and_kokkos",
+      "question": "What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?",
+      "answer": "Answer:\nThe retrieved context is insufficient to answer the question because it does not provide information on what `Kokkos::fence` specifically does. The chunks cover the role of `ippl::fence` as a synchronization point or barrier used during data packing and unpacking (in `FEMVector`, `HaloCells`, and `ParticleAttrib`), initialization routines, boundary condition handling (`BConds`), and RMA serialization (`Window::fence`).\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : ippl::fence — describes the role of fence as a synchronization point for various operations including data packing, unpacking, and initialization.\n- data/raw/ippl/src/Communicate/Window.h : ippl::mpi::rma::Window::fence — defines its use in ensuring consistency during serialization and deserialization within RMA.",
+      "latency_seconds": 112.39334971318021,
+      "error": null
+    },
+    {
+      "id": "bc_001",
+      "category": "boundary_and_halo",
+      "question": "What boundary condition types are provided in BcTypes.h?",
+      "answer": "Answer:\nThe `BcTypes.h` file defines a family of boundary condition classes based on the abstract base class `ippl::detail::BCondBase`. The specific types provided are `ippl::PeriodicFace`, `ippl::ZeroFace`, `ippl::ConstantFace`, `ippl::NoBcFace` (the default option), and `ippl::ExtrapolateFace` (used for constant extrapolation).\n\nEvidence:\n- data/raw/ippl/src/Field/BcTypes.h : BcTypes.h — defines a family of boundary condition classes including ConstantFace, ExtrapolateFace, NoBcFace, PeriodicFace, and ZeroFace.\n- data/raw/ippl/src/Field/BcTypes.h : BCondBase — lists supported field BCs as Periodic, Zero, constant, No (default), and Constant extrapolation.",
+      "latency_seconds": 24.620195158058777,
+      "error": null
+    },
+    {
+      "id": "bc_002",
+      "category": "boundary_and_halo",
+      "question": "How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?",
+      "answer": "Answer:\nThe retrieved context does not mention or define Neumann boundary conditions. The provided chunks cover periodic boundary conditions (implemented via `PeriodicFace` and `PeriodicBC`) and non-periodic options such as `second_order_mur_boundary_conditions`.\n\nEvidence:\n- data/raw/ippl/src/Field/BcTypes.h : PeriodicFace — describes how data wraps around at edges for periodic fields.\n- data/raw/ippl/src/Particle/ParticleBC.h : PeriodicBC — implements periodicity for particle position values.\n- data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.hpp : applyBCs — differentiates between \"periodic\" conditions and non-periodic \"second_order_mur_boundary_conditions\".",
+      "latency_seconds": 57.92740622209385,
+      "error": null
+    },
+    {
+      "id": "bc_003",
+      "category": "boundary_and_halo",
+      "question": "How are ghost cells populated during a halo exchange?",
+      "answer": "Answer:\nGhost cells are populated during a halo exchange via the `exchangeBoundaries` method in the `HaloCells` class. This process involves several steps: first, the specific data ranges for each neighbor are identified using `FieldLayout::getNeighborsSendRange` and `FieldLayout::getNeighborsRecvRange`. These ranges are then processed by the `pack` method to prepare them for communication; this step includes creating subviews via `makeSubview`, querying sizes with `BareField::size`, and utilizing `std::parallel_for` with a `KOKKOS_LAMBDA` for concurrent execution. The packed data is transferred using non-blocking MPI operations (`comm.isend()` and `comm.recv()`) assigned to specific tags (e.g., `mpi::tag::HALO + index`). Finally, the received data from the buffer is moved into the local view through an `unpack` operation after all communications are finalized with `MPI_Waitall`.\n\nEvidence:\n- data/raw/ippl/src/FieldLayout/FieldLayout.h : FieldLayout::getNeighborsSendRange — identifies indices of neighbor cells that need to be sent during boundary exchange.\n- data/raw/ippl/src/Field/HaloCells.hpp : HaloCells::pack — prepares data for communication by creating subviews, using `std::parallel_for`, and ensuring synchronization before transfer.\n- data/raw/ippl/src/Field/HaloCells.hpp : exchangeBoundaries — facilitates the exchange of boundary data (halo cells) using non-blocking MPI operations and pack/unpack functions.",
+      "latency_seconds": 47.65260584605858,
+      "error": null
+    },
+    {
+      "id": "bc_004",
+      "category": "boundary_and_halo",
+      "question": "How are physical-cell values copied into ghost cells for periodic boundary conditions?",
+      "answer": "Answer:\nFor electromagnetic fields such as `A_n`, `A_nm1`, and `A_np1`, the `applyBCs` method in `FDTDSolverBase` handles periodic boundary conditions by calling `getFieldBC().apply()` on each field when the `boundary_conditions` type is set to periodic. The specific logic for these cases is handled by the `PeriodicFace` class, which manages data transfer across boundaries to ensure values at the edges are mapped to opposite sides of the grid and utilizes a `haloData_m` buffer (of type `Field::halo_type::databuffer_type`) to manage ghost cell data.\n\nEvidence:\n- src/MaxwellSolvers/FDTDSolverBase.hpp : applyBCs — for periodic boundary conditions, this method calls `.apply()` on the current (`A_n`), previous (`A_nm1`), and next (`A_np1`) fields.\n- src/Field/BcTypes.h : PeriodicFace — manages data transfer across boundaries and ensures field values at edges are mapped to opposite sides while using `haloData_m` for ghost cell data.",
+      "latency_seconds": 44.61928584706038,
+      "error": null
+    },
+    {
+      "id": "bc_005",
+      "category": "boundary_and_halo",
+      "question": "How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?",
+      "answer": "Answer:\nThe absorbing boundary condition in the MaxwellSolvers module is implemented using \"second-order Mur absorbing boundary conditions\" (ABC) to minimize reflections for electromagnetic field solvers. These are managed by the `second_order_mur_boundary_conditions` struct, which differentiates between faces, edges, and corners of a 3D computational domain. The `apply()` method determines the specific type of boundary for each point and applies the corresponding second-order ABC using precomputed weights derived from mesh spacing and time step.\n\nEvidence:\n- data/raw/ippl/src/MaxwellSolvers/AbsorbingBC.h : second_order_mur_boundary_conditions — coordinates the application of second-order Mur ABCs on faces, edges, and corners using precomputed weights based on mesh spacing and time step.\n- source:MaxwellSolvers : AbsorbingBC.h — defines structs and methods related to second-order absorbing boundary conditions for electromagnetic wave propagation scenarios.",
+      "latency_seconds": 22.241932364180684,
+      "error": null
+    },
+    {
+      "id": "num_001",
+      "category": "numerical_meaning",
+      "question": "What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?",
+      "answer": "Answer:\nThe FFT-based Poisson solvers, including `ippl::FFTOpenPoissonSolver`, `ippl::FFTPeriodicPoissonSolver`, and `ippl::FFTTruncatedGreenPeriodicPoissonSolver`, compute the electrostatic potential (and optionally its gradient and Hessian) based on a charge density field provided by `FieldRHS`. The process involves transforming the charge density into Fourier space, convolving it with a Green's function in the frequency domain—where convolution becomes multiplication—and then performing an inverse transform to obtain results in physical space.\n\nEvidence:\n- data/raw/ippl/src/PoissonSolvers/FFTOpenPoissonSolver.hpp : solve — describes computing electrostatic potential and its derivatives from a charge density field using Fourier transforms, Green's functions, and inverse transforms.\n- source:PoissonSolvers : FFTOpenPoissonSolver, FFTPeriodicPoissonSolver, etc. — identifies the various classes used to solve Poisson equations in domains such as electrostatics.",
+      "latency_seconds": 52.427090463927016,
+      "error": null
+    },
+    {
+      "id": "num_002",
+      "category": "numerical_meaning",
+      "question": "What is the physical meaning of the fields advanced by the FDTD solver?",
+      "answer": "Answer:\nThe FDTD solver advances **electromagnetic fields** (represented by the `EMField` type), which include **electric (E)** and **magnetic (B)** components. The solver also incorporates a **source term** (`SourceField`), which represents the **current density** in Maxwell's equations, to update these fields during each time step.\n\nEvidence:\n- data/raw/ippl/src/MaxwellSolvers/NonStandardFDTDSolver.hpp : step — updates the electromagnetic field using data from previous and current fields and a source term.\n- data/raw/ippl/src/MaxwellSolvers/FDTDSolverBase.hpp : evaluate_EB — responsible for evaluating the electric (E) and magnetic (B) components as part of a time step update.\n- data/raw/ippl/src/MaxwellSolvers/StandardFDTDSolver.hpp : step — updates electromagnetic fields based on current and previous values, and source terms (`SourceField`) representing current density in Maxwell's equations.",
+      "latency_seconds": 28.58331158896908,
+      "error": null
+    },
+    {
+      "id": "num_007",
+      "category": "numerical_meaning",
+      "question": "What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?",
+      "answer": "Answer:\nThe retrieved context is insufficient to answer the question regarding numerical trade-offs between FFT and CG Poisson solvers. The provided chunks cover the implementation details of the Conjugate Gradient (CG) method for sparse systems and the multi-backend framework for Fast Fourier Transforms (FFT).\n\nEvidence:\n- data/raw/ippl/src/LinearSolvers/PCG.h : CG — describes the implementation of the Conjugate Gradient method for solving linear systems where matrix-vector multiplication is inexpensive.\n- data/raw/ippl/src/FFT/FFT.h : FFT — defines a family of Fourier Transform classes with various transform types and backend configurations.",
+      "latency_seconds": 45.45134919299744,
+      "error": null
+    },
+    {
+      "id": "build_001",
+      "category": "build_and_install",
+      "question": "Which third-party libraries does IPPL depend on, and what are they used for?",
+      "answer": "Answer:\nIPPL depends on **MPI** to initialize its environment and communicators (specifically the `mpi::Environment` and `mpi::Communicator` types). It also relies on **Kokkos** via the `Kokkos_Core.hpp` header to manage the runtime environment necessary for parallel scientific computations.\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : ippl::initialize — used to initialize MPI components, including the environment and communicators.\n- data/raw/ippl/src/Ippl.cpp : Kokkos_Core.hpp — a dependency used for managing runtime environments in parallel scientific computations.",
+      "latency_seconds": 27.53445176500827,
+      "error": null
+    },
+    {
+      "id": "build_002",
+      "category": "build_and_install",
+      "question": "What C++ standard does IPPL require, and why?",
+      "answer": "Answer:\nThe provided context does not specify which C++ standard IPPL requires.\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : initialize — describes the initialization of MPI environments, log levels, and timer settings.\n- data/raw/ippl/src/Manager/PicManager.h : addParticleContainer & getParticleContainer — details management of particle containers in a multi-process context.\n- data/raw/ippl/src/Utility/ParameterList.h : ParameterList — explains a class for managing configuration parameters using `std::variant` and `std::map`.\n- data/raw/ippl/src/Particle/ParticleSpatialOverlapLayout.hpp : locateParticles — provides logic for finding neighbor particles in spatial layouts.",
+      "latency_seconds": 30.95456245006062,
+      "error": null
+    },
+    {
+      "id": "build_003",
+      "category": "build_and_install",
+      "question": "How is IPPL configured with CMake to enable a GPU build?",
+      "answer": "Answer:\nThe retrieved context does not contain information regarding CMake configurations for enabling a GPU build. The available content covers the `ippl::initialize` function for system initialization, the `FFTBase` class and various Fourier transform implementations, the `BoundaryInfo` struct for MPI communication in FEM, the `Element` class for finite element shapes, and the `BareField` class for managing field data using Kokkos.\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : initialize — provides system initialization including MPI environment and Kokkos setup.\n- data/raw/ippl/src/FFT/FFT.h : FFTBase — defines the base class for Fourier transform operations using various backends.\n- data/raw/ippl/src/FEM/FEMVector.h : BoundaryInfo — holds information for MPI communication and halo exchanges in FEM.\n- data/raw/ippl/src/FEM/Elements/Element.h : Element — provides a base class for finite element shapes and dimensions.\n- data/raw/ippl/src/Field/BareField.h : BareField — manages field data, memory access patterns, and Kokkos integration.",
+      "latency_seconds": 57.92302078008652,
+      "error": null
+    },
+    {
+      "id": "build_004",
+      "category": "build_and_install",
+      "question": "What options does INSTALLATION.md describe for configuring Kokkos for IPPL?",
+      "answer": "Answer:\nThe `INSTALLATION.md` file specifies the `Kokkos_VERSION` option for configuring Kokkos, which has a default value of `4.5.00`. It describes that this variable can be overridden by setting it to any git tag or SHA (for example, `git.4.7.01`) to select specific versions, noting that CMake's `find_package` will otherwise accept any system version equal to or higher than the requested one.\n\nEvidence:\n- data/raw/ippl/INSTALLATION.md : INSTALLATION.md — defines the `Kokkos_VERSION` option (default 4.5.00) and explains how to override it using git tags or SHAs.",
+      "latency_seconds": 30.41272835386917,
+      "error": null
+    },
+    {
+      "id": "build_005",
+      "category": "build_and_install",
+      "question": "How do I install IPPL on the EULER cluster according to the documentation?",
+      "answer": "Answer:\nThe provided context is insufficient to answer how to install IPPL on the EULER cluster. The retrieved chunks cover internal library components including system initialization (`ippl::initialize`), finite element data structures and types (`Element`, `FEMVector`), particle management systems (`ParticleBase`, `PicManager`), and MPI communication protocols (`Communicator`).\n\nEvidence:\n- data/raw/ippl/src/Ippl.cpp : initialize — manages environment initialization, command-line parsing, and Kokkos configuration.\n- data/raw/ippl/src/FEM/Element.h : Element — defines base properties for finite element shapes such as dimension and vertex count.\n- data/raw/ippl/src/FEM/FEMVector.h : BoundaryInfo — holds MPI neighbor and boundary information for finite elements.\n- data/raw/ippl/src/Particle/ParticleBase.h : ParticleBase — provides a base class for managing particle attributes, positions, and layouts.\n- data/raw/ippl/src/Manager/PicManager.h : addParticleContainer — handles the registration and management of particle containers within the system.\n- data/raw/ippl/src/Communicate/Communicator.h : Communicator — provides a class for handling MPI communication logic.",
+      "latency_seconds": 57.56799189699814,
+      "error": null
+    },
+    {
+      "id": "test_002",
+      "category": "testing_and_workflow",
+      "question": "What naming conventions does WORKFLOW.md require for variables, constants, and member variables?",
+      "answer": "Answer:\nWORKFLOW.md specifies that variables must use camel casing (e.g., `myVariable`), compile-time constants should use capital casing (e.g., `MY_CONSTANT`), and member variables must be suffixed with `_m` (e.g., `memberVar_m`).\n\nEvidence:\n- data/raw/ippl/WORKFLOW.md : WORKFLOW.md — specifies camel casing for variables, capital casing for compile-time constants, and a `_m` suffix for member variables.",
+      "latency_seconds": 10.67863072711043,
+      "error": null
+    },
+    {
+      "id": "test_003",
+      "category": "testing_and_workflow",
+      "question": "When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?",
+      "answer": "Answer:\nCode should use `std::sqrt` for host-only code. It should use `Kokkos::sqrt` for device-code or any code that might be run on a device, such as functions marked with `KOKKOS_INLINE_FUNCTION`, to ensure performance and portability on GPUs.\n\nEvidence:\n- data/raw/ippl/WORKFLOW.md : Math — Specify using standard library symbols (e.g., std::sqrt) for host-only code and Kokkos symbols (e.g., Kokkos::sqrt) for device-code or potential device-executed code to ensure GPU performance and portability.\n- data/raw/ippl/WORKFLOW.md : Math — States that mathematical functions in host-only code should use standard library symbols, while those in device-code or marked with KOKKOS_INLINE_FUNCTION should use Kokkos symbols.",
+      "latency_seconds": 18.65256510209292,
+      "error": null
+    },
+    {
+      "id": "test_004",
+      "category": "testing_and_workflow",
+      "question": "How does IPPL profile MPI calls using mpiP?",
+      "answer": "Answer:\nThe provided context does not contain information regarding how IPPL profiles MPI calls using mpiP. The retrieved chunks cover core utility functions like initialization and error handling (Ippl.cpp, Ippl.h), communication management classes such as `Communicator`, `Status`, and `Request` (Communicator.h, Status.h, Request.h), MPI operation selection logic (Operations.h), and parallel dispatch utilities (ParallelDispatch.h).\n\nEvidence:\n- Ippl.cpp : initialization, error handling functions (abort, checkOption)\n- Ippl.h : core utility declarations for the IPPL framework\n- Communicator.h : `Communicator` class for managing rank, size, and barriers\n- Status.h : `Status` class for tracking MPI operation information\n- Operations.h : `get_mpi_op` logic for determining MPI operation types\n- Request.h : `Request` wrapper for non-blocking communication requests",
+      "latency_seconds": 53.588707281975076,
+      "error": null
+    },
+    {
+      "id": "test_005",
+      "category": "testing_and_workflow",
+      "question": "What does the SLURM job template for Gwendolen in the README look like?",
+      "answer": "Answer:\nThe provided context does not contain information regarding a SLURM job template for Gwendolen. The retrieved chunks cover example SLURM scripts available for the PSI computing cluster, the logic and Python-based architecture used to process test results during the `generate` stage of the CI system, and the specific directory structures required for storing test artifacts.\n\nEvidence:\n- data/raw/ippl/README.md : SLURM Job scripts — mentions example job scripts available for use on the local PSI computing cluster.\n- data/raw/ippl/ci/TestSystem.md : How the `generate` Stage Handles Results — describes a pluggable architecture and Python scripts used to process test artifacts into standard formats.\n- data/raw/ippl/ci/TestSystem.md : Output Directory Structure — details the specific directory paths (e.g., `gcc-xml`) required for result parsing.",
+      "latency_seconds": 64.45418444788083,
+      "error": null
+    }
+  ]
+}

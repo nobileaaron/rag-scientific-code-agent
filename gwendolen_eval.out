@@ -3,99 +3,24 @@ Starting Ollama server...
 Waiting for Ollama to become ready...
 Ollama is ready.
 Checking configured Ollama models...
+Evaluation answer model override: qwen3.5:9b
+Effective runtime settings: /psi/home/ext-nobile_a/rag-scientific-code-agent/.eval_runtime_settings.aB33d1.json
 Model already available: nomic-embed-text
+Model already available: qwen3.5:9b
+Model already available: qwen2.5-coder:32b
 Model already available: qwen2.5-coder:32b-instruct-q4_K_M
-Model already available: qwen2.5-coder:14b
 Running evaluation over /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/eval_questions_v2.json...
 Loaded 100 evaluation questions from /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/eval_questions_v2.json.
-Loaded runtime settings from config/runtime_settings.json
+Loaded runtime settings from /psi/home/ext-nobile_a/rag-scientific-code-agent/.eval_runtime_settings.aB33d1.json
 loading source files...
 Loaded 172 source files.
 loading documentation files...
 Loaded 66 documentation files.
-Stored manifest:
-{
-  "raw_data_path": "data/raw/ippl",
-  "parser_type": "tree_sitter",
-  "max_chunk_size": 400,
-  "chunker_version": "2.0-leading-comment-prepended",
-  "embedding_backend": "ollama",
-  "embedding_model": "nomic-embed-text",
-  "chunk_explanation_prompt_mode": "general",
-  "chunk_explanation_prompt_signature": "0f74488b34c09ab440b4c4a693bd37f566a56a2bd1cf4053b67c30bc32f566ca",
-  "chunk_explanation_model": "qwen2.5-coder:14b",
-  "chunk_explanation_allowed_types": [
-    "function_definition",
-    "method_definition",
-    "class",
-    "struct",
-    "section",
-    "paragraph",
-    "code_block"
-  ],
-  "chunk_explanation_min_content_length": 120,
-  "chunk_explanation_pilot_limit": null,
-  "file_level_prompt_mode": "file_level",
-  "file_level_prompt_signature": "cd5ccd556d68f11d9d32e6f584925ae266abfb47be3ddcc413f4be068baee954",
-  "file_level_fallback_prompt_mode": "file_level_fallback",
-  "file_level_fallback_prompt_signature": "2c092659a7f3b84b20cd8451185e3781ee44df1bf7d0c55ab0b94c1e69d155c0",
-  "file_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
-  "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",
-  "module_level_prompt_mode": "module_level",
-  "module_level_prompt_signature": "5cefd25eef7f8b09d17f4e74b93f6d392de6577794718629f2b8cf708be50ff7",
-  "module_level_model": "qwen2.5-coder:32b-instruct-q4_K_M",
-  "module_level_entity_strategy": "module_entities_from_descendant_files_v1",
-  "call_chain_prompt_mode": "call_chain",
-  "call_chain_prompt_signature": "5208fb296e181c7d05cb62730176efdc642b23e6d1776b60664cfcbeb4a4d400",
-  "call_chain_model": "qwen2.5-coder:32b-instruct-q4_K_M",
-  "call_chain_entity_strategy": "direct_call_neighborhood_v1",
-  "dimension": 768,
-  "metadata_count": 8013,
-  "vector_count": 8013
-}
-Expected manifest:
-{
-  "raw_data_path": "data/raw/ippl",
-  "parser_type": "tree_sitter",
-  "max_chunk_size": 400,
-  "chunker_version": "2.0-leading-comment-prepended",
-  "embedding_backend": "ollama",
-  "embedding_model": "nomic-embed-text",
-  "chunk_explanation_prompt_mode": "general",
-  "chunk_explanation_prompt_signature": "0f74488b34c09ab440b4c4a693bd37f566a56a2bd1cf4053b67c30bc32f566ca",
-  "chunk_explanation_model": "ollama:qwen2.5-coder:14b",
-  "chunk_explanation_allowed_types": [
-    "function_definition",
-    "method_definition",
-    "class",
-    "struct",
-    "section",
-    "paragraph",
-    "code_block"
-  ],
-  "chunk_explanation_min_content_length": 120,
-  "chunk_explanation_pilot_limit": null,
-  "file_level_prompt_mode": "file_level",
-  "file_level_prompt_signature": "cd5ccd556d68f11d9d32e6f584925ae266abfb47be3ddcc413f4be068baee954",
-  "file_level_fallback_prompt_mode": "file_level_fallback",
-  "file_level_fallback_prompt_signature": "2c092659a7f3b84b20cd8451185e3781ee44df1bf7d0c55ab0b94c1e69d155c0",
-  "file_level_model": "ollama:qwen2.5-coder:32b-instruct-q4_K_M",
-  "file_level_entity_strategy": "unified_whole_file_with_fallback_v1",
-  "module_level_prompt_mode": "module_level",
-  "module_level_prompt_signature": "5cefd25eef7f8b09d17f4e74b93f6d392de6577794718629f2b8cf708be50ff7",
-  "module_level_model": "ollama:qwen2.5-coder:32b-instruct-q4_K_M",
-  "module_level_entity_strategy": "module_entities_from_descendant_files_v1",
-  "call_chain_prompt_mode": "call_chain",
-  "call_chain_prompt_signature": "5208fb296e181c7d05cb62730176efdc642b23e6d1776b60664cfcbeb4a4d400",
-  "call_chain_model": "ollama:qwen2.5-coder:32b-instruct-q4_K_M",
-  "call_chain_entity_strategy": "direct_call_neighborhood_v1"
-}
-Persisted vector store manifest does not match current settings, but rebuilding is only enabled when running via `sbatch job.sh`. Reusing the persisted store as-is.
 Loaded persisted vector store from embeddings/vector_store.
-Using persisted vector store with 8013 chunks from embeddings/vector_store.
+Using persisted vector store with 4441 chunks from embeddings/vector_store.
 Configured models for this run:
-  answer_model: ollama:qwen2.5-coder:32b-instruct-q4_K_M
-  chunk_explanation_model: ollama:qwen2.5-coder:14b
+  answer_model: ollama:qwen3.5:9b
+  chunk_explanation_model: ollama:qwen2.5-coder:32b
   file_level_model: ollama:qwen2.5-coder:32b-instruct-q4_K_M
   module_level_model: ollama:qwen2.5-coder:32b-instruct-q4_K_M
   call_chain_model: ollama:qwen2.5-coder:32b-instruct-q4_K_M
@@ -114,9 +39,7 @@ Configured models for this run:
 [13/100] file_013 (file_purpose)
 [14/100] loc_001 (definition_location)
 [15/100] loc_002 (definition_location)
-  -> FAILED: name 'exact_symbols' is not defined
 [16/100] loc_003 (definition_location)
-  -> FAILED: name 'exact_symbols' is not defined
 [17/100] loc_004 (definition_location)
 [18/100] loc_005 (definition_location)
 [19/100] loc_006 (definition_location)
@@ -168,9 +91,7 @@ Configured models for this run:
 [65/100] api_003 (api_usage)
 [66/100] api_004 (api_usage)
 [67/100] api_005 (api_usage)
-  -> FAILED: name 'exact_symbols' is not defined
 [68/100] api_006 (api_usage)
-  -> FAILED: name 'exact_symbols' is not defined
 [69/100] api_007 (api_usage)
 [70/100] api_008 (api_usage)
 [71/100] api_009 (api_usage)
@@ -204,4 +125,4 @@ Configured models for this run:
 [99/100] test_004 (testing_and_workflow)
 [100/100] test_005 (testing_and_workflow)
 
-Wrote 100 answers (4 failures) to /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/answers/eval_v2_20260424T140027Z.json.
+Wrote 100 answers (0 failures) to /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/answers/eval_v2_20260618T101603Z.json.

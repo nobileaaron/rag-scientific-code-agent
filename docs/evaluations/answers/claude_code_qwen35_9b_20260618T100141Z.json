@@ -1,0 +1,809 @@
+{
+  "schema": "claude-code-model-matrix/v1",
+  "model": "claude-qwen35-9b",
+  "label": "qwen35_9b",
+  "questions_source": "docs/evaluations/eval_questions_v2.json",
+  "run_complete": true,
+  "answers": [
+    {
+      "id": "file_001",
+      "category": "file_purpose",
+      "question": "What does Ippl.h do?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9068611301481724
+    },
+    {
+      "id": "file_002",
+      "category": "file_purpose",
+      "question": "What is the purpose of Ippl.cpp?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9200145080685616
+    },
+    {
+      "id": "file_003",
+      "category": "file_purpose",
+      "question": "What does FFT.hpp implement?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9100754009559751
+    },
+    {
+      "id": "file_004",
+      "category": "file_purpose",
+      "question": "What is BareField.h responsible for?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.919551600003615
+    },
+    {
+      "id": "file_005",
+      "category": "file_purpose",
+      "question": "What does Field.h add on top of BareField?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9010978490114212
+    },
+    {
+      "id": "file_006",
+      "category": "file_purpose",
+      "question": "What role does HaloCells.h play in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8974004581104964
+    },
+    {
+      "id": "file_007",
+      "category": "file_purpose",
+      "question": "What is the purpose of FieldLayout.h?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8811923281755298
+    },
+    {
+      "id": "file_008",
+      "category": "file_purpose",
+      "question": "What does ParticleBase.h define?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9606895321048796
+    },
+    {
+      "id": "file_009",
+      "category": "file_purpose",
+      "question": "What is the purpose of ParticleSpatialLayout.h?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9368734110612422
+    },
+    {
+      "id": "file_010",
+      "category": "file_purpose",
+      "question": "What does ParticleAttrib.h implement?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9305648289155215
+    },
+    {
+      "id": "file_011",
+      "category": "file_purpose",
+      "question": "What is UniformCartesian.h for?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9059286899864674
+    },
+    {
+      "id": "file_012",
+      "category": "file_purpose",
+      "question": "What does OrthogonalRecursiveBisection.h do?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9432266999501735
+    },
+    {
+      "id": "file_013",
+      "category": "file_purpose",
+      "question": "What is the purpose of CIC.h in the Interpolation subsystem?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8741308690514416
+    },
+    {
+      "id": "loc_001",
+      "category": "definition_location",
+      "question": "Where is FFT initialization implemented in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9011386421043426
+    },
+    {
+      "id": "loc_002",
+      "category": "definition_location",
+      "question": "Where does IPPL set up the MPI environment?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9632797171361744
+    },
+    {
+      "id": "loc_003",
+      "category": "definition_location",
+      "question": "Where is Kokkos initialized and finalized inside IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9736441660206765
+    },
+    {
+      "id": "loc_004",
+      "category": "definition_location",
+      "question": "Where is the orthogonal recursive bisection load balancer implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9198809680528939
+    },
+    {
+      "id": "loc_005",
+      "category": "definition_location",
+      "question": "Where are boundary conditions applied to a Field?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9282656931318343
+    },
+    {
+      "id": "loc_006",
+      "category": "definition_location",
+      "question": "Where is the CIC (cloud-in-cell) scatter implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9193254481069744
+    },
+    {
+      "id": "loc_007",
+      "category": "definition_location",
+      "question": "Where is the CIC gather implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8754887611139566
+    },
+    {
+      "id": "loc_008",
+      "category": "definition_location",
+      "question": "Where is halo exchange for BareField implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.905833292985335
+    },
+    {
+      "id": "loc_009",
+      "category": "definition_location",
+      "question": "Where are the FFT-based open-boundary Poisson solver routines defined?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.904522298136726
+    },
+    {
+      "id": "loc_010",
+      "category": "definition_location",
+      "question": "Where is the conjugate gradient solver algorithm implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.2491310590412468
+    },
+    {
+      "id": "loc_011",
+      "category": "definition_location",
+      "question": "Where is the FEM Poisson solver implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8915501821320504
+    },
+    {
+      "id": "loc_012",
+      "category": "definition_location",
+      "question": "Where is the FDTD Maxwell solver base class defined?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8808420898858458
+    },
+    {
+      "id": "loc_013",
+      "category": "definition_location",
+      "question": "Where is the LagrangeSpace class defined?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8996617880184203
+    },
+    {
+      "id": "loc_014",
+      "category": "definition_location",
+      "question": "Where is the particle update routine (that moves particles across ranks) implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9655120261013508
+    },
+    {
+      "id": "loc_015",
+      "category": "definition_location",
+      "question": "Where are IPPL timers defined?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9044175650924444
+    },
+    {
+      "id": "cls_001",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the BareField class?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9254270668607205
+    },
+    {
+      "id": "cls_002",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the Field class compared to BareField?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.0096505680121481
+    },
+    {
+      "id": "cls_003",
+      "category": "class_responsibility",
+      "question": "What does the FieldLayout class do and what are its main template parameters?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9264422229025513
+    },
+    {
+      "id": "cls_004",
+      "category": "class_responsibility",
+      "question": "What is the purpose of the ParticleBase class and how is it meant to be used?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.915852929931134
+    },
+    {
+      "id": "cls_005",
+      "category": "class_responsibility",
+      "question": "What does the ParticleSpatialLayout class do?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9044228990096599
+    },
+    {
+      "id": "cls_006",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of UniformCartesian?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9113055858761072
+    },
+    {
+      "id": "cls_007",
+      "category": "class_responsibility",
+      "question": "What does the Mesh base class define?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9033852079883218
+    },
+    {
+      "id": "cls_008",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of the Communicator class in ippl::mpi?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8870713768992573
+    },
+    {
+      "id": "cls_009",
+      "category": "class_responsibility",
+      "question": "What is the role of the Environment class in ippl::mpi?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9824668481014669
+    },
+    {
+      "id": "cls_010",
+      "category": "class_responsibility",
+      "question": "What does the Archive class do in the Communicate module?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9229042299557477
+    },
+    {
+      "id": "cls_011",
+      "category": "class_responsibility",
+      "question": "What is the role of the BConds class?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9062702739611268
+    },
+    {
+      "id": "cls_012",
+      "category": "class_responsibility",
+      "question": "What is the role of the BaseManager class?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9094484590459615
+    },
+    {
+      "id": "cls_013",
+      "category": "class_responsibility",
+      "question": "What does the Index class represent and what operations does it support?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.894976566080004
+    },
+    {
+      "id": "alg_001",
+      "category": "algorithm",
+      "question": "How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8856263740453869
+    },
+    {
+      "id": "alg_002",
+      "category": "algorithm",
+      "question": "How does the FFT-based periodic Poisson solver work in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9052480650134385
+    },
+    {
+      "id": "alg_003",
+      "category": "algorithm",
+      "question": "How does the truncated Green periodic Poisson solver differ from the standard periodic one?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9253620458766818
+    },
+    {
+      "id": "alg_004",
+      "category": "algorithm",
+      "question": "How does IPPL's CG solver iterate in the PCG.h implementation?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9118981210049242
+    },
+    {
+      "id": "alg_005",
+      "category": "algorithm",
+      "question": "How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8872100878506899
+    },
+    {
+      "id": "alg_006",
+      "category": "algorithm",
+      "question": "How does the standard FDTD solver advance the electromagnetic field in time?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9078833661042154
+    },
+    {
+      "id": "alg_007",
+      "category": "algorithm",
+      "question": "How does the LagrangeSpace class evaluate degrees of freedom per element?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.0059058461338282
+    },
+    {
+      "id": "alg_008",
+      "category": "algorithm",
+      "question": "How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9551693280227482
+    },
+    {
+      "id": "alg_009",
+      "category": "algorithm",
+      "question": "How does the orthogonal recursive bisection decide where to cut the domain?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9107650639489293
+    },
+    {
+      "id": "alg_010",
+      "category": "algorithm",
+      "question": "How does inverse transform sampling generate particles from a given distribution in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.884016830008477
+    },
+    {
+      "id": "alg_011",
+      "category": "algorithm",
+      "question": "How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9062156621366739
+    },
+    {
+      "id": "alg_012",
+      "category": "algorithm",
+      "question": "How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8947911839932203
+    },
+    {
+      "id": "flow_001",
+      "category": "data_flow",
+      "question": "How does charge density flow from particles to the grid in a typical PIC step in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9289469909854233
+    },
+    {
+      "id": "flow_002",
+      "category": "data_flow",
+      "question": "How does the electric field flow from the grid back to particles after a Poisson solve?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9128469540737569
+    },
+    {
+      "id": "flow_003",
+      "category": "data_flow",
+      "question": "How are halo cells exchanged between neighboring MPI ranks for a BareField?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9137323549948633
+    },
+    {
+      "id": "flow_004",
+      "category": "data_flow",
+      "question": "How are particles migrated between MPI ranks by ParticleSpatialLayout?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.0688897480722517
+    },
+    {
+      "id": "flow_005",
+      "category": "data_flow",
+      "question": "How does FieldLayout decide which index ranges live on which rank?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8783289028797299
+    },
+    {
+      "id": "flow_006",
+      "category": "data_flow",
+      "question": "How is a ParameterList used to configure the FFT and solver classes?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.910943073919043
+    },
+    {
+      "id": "flow_007",
+      "category": "data_flow",
+      "question": "How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8968554090242833
+    },
+    {
+      "id": "flow_008",
+      "category": "data_flow",
+      "question": "How does the FEM solver move data between fields and FEMVector representations?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8814658478368074
+    },
+    {
+      "id": "flow_009",
+      "category": "data_flow",
+      "question": "How does OrthogonalRecursiveBisection redistribute particles after rebalancing?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9140347929205745
+    },
+    {
+      "id": "api_001",
+      "category": "api_usage",
+      "question": "How do I create a 3D Field of doubles in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9233383191749454
+    },
+    {
+      "id": "api_002",
+      "category": "api_usage",
+      "question": "How do I construct a UniformCartesian mesh with custom spacing and origin?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9066099650226533
+    },
+    {
+      "id": "api_003",
+      "category": "api_usage",
+      "question": "How do I attach a boundary condition (e.g. periodic) to a Field?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8561460541095585
+    },
+    {
+      "id": "api_004",
+      "category": "api_usage",
+      "question": "How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8636671069543809
+    },
+    {
+      "id": "api_005",
+      "category": "api_usage",
+      "question": "How do I call ippl::initialize and ippl::finalize in a main program?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8704542920459062
+    },
+    {
+      "id": "api_006",
+      "category": "api_usage",
+      "question": "How do I set up and run a forward FFT on an IPPL Field?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9264187498483807
+    },
+    {
+      "id": "api_007",
+      "category": "api_usage",
+      "question": "How do I construct an FFTPeriodicPoissonSolver and solve for the potential?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8647928221616894
+    },
+    {
+      "id": "api_008",
+      "category": "api_usage",
+      "question": "How do I invoke the conjugate gradient Poisson solver on a Field?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9777411730028689
+    },
+    {
+      "id": "api_009",
+      "category": "api_usage",
+      "question": "How do I sample particles from a normal distribution using IPPL Random utilities?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8873985181562603
+    },
+    {
+      "id": "api_010",
+      "category": "api_usage",
+      "question": "How do I register particle attributes with ParticleBase so that they are communicated on migration?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9053714561741799
+    },
+    {
+      "id": "api_011",
+      "category": "api_usage",
+      "question": "How do I access the MPI rank and size through the IPPL Communicator?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.91979098203592
+    },
+    {
+      "id": "api_012",
+      "category": "api_usage",
+      "question": "How do I use IpplTimings to measure a region of code?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9101841079536825
+    },
+    {
+      "id": "par_001",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL achieve performance portability across CPUs and GPUs?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.998299258062616
+    },
+    {
+      "id": "par_002",
+      "category": "parallelism_and_kokkos",
+      "question": "Why does IPPL use Kokkos::View for field storage?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9006787620019168
+    },
+    {
+      "id": "par_003",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL parallelize loops over field indices using Kokkos RangePolicy?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9180829420220107
+    },
+    {
+      "id": "par_004",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL support mixed precision (float vs double) for fields?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9545678559225053
+    },
+    {
+      "id": "par_005",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.112687875982374
+    },
+    {
+      "id": "par_006",
+      "category": "parallelism_and_kokkos",
+      "question": "What is the purpose of ParallelDispatch.h and what helpers does it expose?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8993035161402076
+    },
+    {
+      "id": "par_007",
+      "category": "parallelism_and_kokkos",
+      "question": "How does the Archive class serialize/deserialize Kokkos views for MPI transfer?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9243646441027522
+    },
+    {
+      "id": "par_008",
+      "category": "parallelism_and_kokkos",
+      "question": "How are MPI tags managed in IPPL to avoid collisions across subsystems?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9092148719355464
+    },
+    {
+      "id": "par_009",
+      "category": "parallelism_and_kokkos",
+      "question": "What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8840914531610906
+    },
+    {
+      "id": "bc_001",
+      "category": "boundary_and_halo",
+      "question": "What boundary condition types are provided in BcTypes.h?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9235968040302396
+    },
+    {
+      "id": "bc_002",
+      "category": "boundary_and_halo",
+      "question": "How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8755022219847888
+    },
+    {
+      "id": "bc_003",
+      "category": "boundary_and_halo",
+      "question": "How are ghost cells populated during a halo exchange?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9466041850391775
+    },
+    {
+      "id": "bc_004",
+      "category": "boundary_and_halo",
+      "question": "How are physical-cell values copied into ghost cells for periodic boundary conditions?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9162199201527983
+    },
+    {
+      "id": "bc_005",
+      "category": "boundary_and_halo",
+      "question": "How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.933934671105817
+    },
+    {
+      "id": "num_001",
+      "category": "numerical_meaning",
+      "question": "What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8813469239976257
+    },
+    {
+      "id": "num_002",
+      "category": "numerical_meaning",
+      "question": "What is the physical meaning of the fields advanced by the FDTD solver?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8814960911404341
+    },
+    {
+      "id": "num_007",
+      "category": "numerical_meaning",
+      "question": "What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.883567436831072
+    },
+    {
+      "id": "build_001",
+      "category": "build_and_install",
+      "question": "Which third-party libraries does IPPL depend on, and what are they used for?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8929894200991839
+    },
+    {
+      "id": "build_002",
+      "category": "build_and_install",
+      "question": "What C++ standard does IPPL require, and why?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8750987260136753
+    },
+    {
+      "id": "build_003",
+      "category": "build_and_install",
+      "question": "How is IPPL configured with CMake to enable a GPU build?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9034291750285774
+    },
+    {
+      "id": "build_004",
+      "category": "build_and_install",
+      "question": "What options does INSTALLATION.md describe for configuring Kokkos for IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8903284440748394
+    },
+    {
+      "id": "build_005",
+      "category": "build_and_install",
+      "question": "How do I install IPPL on the EULER cluster according to the documentation?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9259154228493571
+    },
+    {
+      "id": "test_002",
+      "category": "testing_and_workflow",
+      "question": "What naming conventions does WORKFLOW.md require for variables, constants, and member variables?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9120793370530009
+    },
+    {
+      "id": "test_003",
+      "category": "testing_and_workflow",
+      "question": "When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9282360530924052
+    },
+    {
+      "id": "test_004",
+      "category": "testing_and_workflow",
+      "question": "How does IPPL profile MPI calls using mpiP?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9170451280660927
+    },
+    {
+      "id": "test_005",
+      "category": "testing_and_workflow",
+      "question": "What does the SLURM job template for Gwendolen in the README look like?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-qwen35-9b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9213064829818904
+    }
+  ]
+}

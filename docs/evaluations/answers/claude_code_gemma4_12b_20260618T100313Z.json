@@ -1,0 +1,809 @@
+{
+  "schema": "claude-code-model-matrix/v1",
+  "model": "claude-gemma4-12b",
+  "label": "gemma4_12b",
+  "questions_source": "docs/evaluations/eval_questions_v2.json",
+  "run_complete": true,
+  "answers": [
+    {
+      "id": "file_001",
+      "category": "file_purpose",
+      "question": "What does Ippl.h do?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9102046620100737
+    },
+    {
+      "id": "file_002",
+      "category": "file_purpose",
+      "question": "What is the purpose of Ippl.cpp?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.024008983047679
+    },
+    {
+      "id": "file_003",
+      "category": "file_purpose",
+      "question": "What does FFT.hpp implement?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.0659602319356054
+    },
+    {
+      "id": "file_004",
+      "category": "file_purpose",
+      "question": "What is BareField.h responsible for?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.200507584027946
+    },
+    {
+      "id": "file_005",
+      "category": "file_purpose",
+      "question": "What does Field.h add on top of BareField?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8994205810595304
+    },
+    {
+      "id": "file_006",
+      "category": "file_purpose",
+      "question": "What role does HaloCells.h play in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9245357920881361
+    },
+    {
+      "id": "file_007",
+      "category": "file_purpose",
+      "question": "What is the purpose of FieldLayout.h?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8741480868775398
+    },
+    {
+      "id": "file_008",
+      "category": "file_purpose",
+      "question": "What does ParticleBase.h define?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9778737549204379
+    },
+    {
+      "id": "file_009",
+      "category": "file_purpose",
+      "question": "What is the purpose of ParticleSpatialLayout.h?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8999151249881834
+    },
+    {
+      "id": "file_010",
+      "category": "file_purpose",
+      "question": "What does ParticleAttrib.h implement?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.0492949520703405
+    },
+    {
+      "id": "file_011",
+      "category": "file_purpose",
+      "question": "What is UniformCartesian.h for?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9044488070067018
+    },
+    {
+      "id": "file_012",
+      "category": "file_purpose",
+      "question": "What does OrthogonalRecursiveBisection.h do?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9386001790408045
+    },
+    {
+      "id": "file_013",
+      "category": "file_purpose",
+      "question": "What is the purpose of CIC.h in the Interpolation subsystem?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8970528941135854
+    },
+    {
+      "id": "loc_001",
+      "category": "definition_location",
+      "question": "Where is FFT initialization implemented in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8716190999839455
+    },
+    {
+      "id": "loc_002",
+      "category": "definition_location",
+      "question": "Where does IPPL set up the MPI environment?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8888203708920628
+    },
+    {
+      "id": "loc_003",
+      "category": "definition_location",
+      "question": "Where is Kokkos initialized and finalized inside IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9217159401159734
+    },
+    {
+      "id": "loc_004",
+      "category": "definition_location",
+      "question": "Where is the orthogonal recursive bisection load balancer implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9034691939596087
+    },
+    {
+      "id": "loc_005",
+      "category": "definition_location",
+      "question": "Where are boundary conditions applied to a Field?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.031510717002675
+    },
+    {
+      "id": "loc_006",
+      "category": "definition_location",
+      "question": "Where is the CIC (cloud-in-cell) scatter implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.921087757917121
+    },
+    {
+      "id": "loc_007",
+      "category": "definition_location",
+      "question": "Where is the CIC gather implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9431353718973696
+    },
+    {
+      "id": "loc_008",
+      "category": "definition_location",
+      "question": "Where is halo exchange for BareField implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.906131009105593
+    },
+    {
+      "id": "loc_009",
+      "category": "definition_location",
+      "question": "Where are the FFT-based open-boundary Poisson solver routines defined?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9686610950157046
+    },
+    {
+      "id": "loc_010",
+      "category": "definition_location",
+      "question": "Where is the conjugate gradient solver algorithm implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8842793591320515
+    },
+    {
+      "id": "loc_011",
+      "category": "definition_location",
+      "question": "Where is the FEM Poisson solver implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9131881559733301
+    },
+    {
+      "id": "loc_012",
+      "category": "definition_location",
+      "question": "Where is the FDTD Maxwell solver base class defined?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9056383511051536
+    },
+    {
+      "id": "loc_013",
+      "category": "definition_location",
+      "question": "Where is the LagrangeSpace class defined?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.900188592961058
+    },
+    {
+      "id": "loc_014",
+      "category": "definition_location",
+      "question": "Where is the particle update routine (that moves particles across ranks) implemented?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9244302541483194
+    },
+    {
+      "id": "loc_015",
+      "category": "definition_location",
+      "question": "Where are IPPL timers defined?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.874448420945555
+    },
+    {
+      "id": "cls_001",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the BareField class?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8959483390208334
+    },
+    {
+      "id": "cls_002",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the Field class compared to BareField?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.89154890505597
+    },
+    {
+      "id": "cls_003",
+      "category": "class_responsibility",
+      "question": "What does the FieldLayout class do and what are its main template parameters?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8673995179124177
+    },
+    {
+      "id": "cls_004",
+      "category": "class_responsibility",
+      "question": "What is the purpose of the ParticleBase class and how is it meant to be used?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8831156401429325
+    },
+    {
+      "id": "cls_005",
+      "category": "class_responsibility",
+      "question": "What does the ParticleSpatialLayout class do?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8898237708490342
+    },
+    {
+      "id": "cls_006",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of UniformCartesian?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9238016419112682
+    },
+    {
+      "id": "cls_007",
+      "category": "class_responsibility",
+      "question": "What does the Mesh base class define?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8691997998394072
+    },
+    {
+      "id": "cls_008",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of the Communicator class in ippl::mpi?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8968267519958317
+    },
+    {
+      "id": "cls_009",
+      "category": "class_responsibility",
+      "question": "What is the role of the Environment class in ippl::mpi?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.877575377933681
+    },
+    {
+      "id": "cls_010",
+      "category": "class_responsibility",
+      "question": "What does the Archive class do in the Communicate module?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9158830549567938
+    },
+    {
+      "id": "cls_011",
+      "category": "class_responsibility",
+      "question": "What is the role of the BConds class?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8651636571157724
+    },
+    {
+      "id": "cls_012",
+      "category": "class_responsibility",
+      "question": "What is the role of the BaseManager class?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8701668768189847
+    },
+    {
+      "id": "cls_013",
+      "category": "class_responsibility",
+      "question": "What does the Index class represent and what operations does it support?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8687142180278897
+    },
+    {
+      "id": "alg_001",
+      "category": "algorithm",
+      "question": "How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9257227620109916
+    },
+    {
+      "id": "alg_002",
+      "category": "algorithm",
+      "question": "How does the FFT-based periodic Poisson solver work in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8914550971239805
+    },
+    {
+      "id": "alg_003",
+      "category": "algorithm",
+      "question": "How does the truncated Green periodic Poisson solver differ from the standard periodic one?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.877744949888438
+    },
+    {
+      "id": "alg_004",
+      "category": "algorithm",
+      "question": "How does IPPL's CG solver iterate in the PCG.h implementation?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8625789431389421
+    },
+    {
+      "id": "alg_005",
+      "category": "algorithm",
+      "question": "How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8665043727960438
+    },
+    {
+      "id": "alg_006",
+      "category": "algorithm",
+      "question": "How does the standard FDTD solver advance the electromagnetic field in time?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.0083855970297009
+    },
+    {
+      "id": "alg_007",
+      "category": "algorithm",
+      "question": "How does the LagrangeSpace class evaluate degrees of freedom per element?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8776672650128603
+    },
+    {
+      "id": "alg_008",
+      "category": "algorithm",
+      "question": "How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8931208809372038
+    },
+    {
+      "id": "alg_009",
+      "category": "algorithm",
+      "question": "How does the orthogonal recursive bisection decide where to cut the domain?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8905723430216312
+    },
+    {
+      "id": "alg_010",
+      "category": "algorithm",
+      "question": "How does inverse transform sampling generate particles from a given distribution in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9236214330885559
+    },
+    {
+      "id": "alg_011",
+      "category": "algorithm",
+      "question": "How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9131558360531926
+    },
+    {
+      "id": "alg_012",
+      "category": "algorithm",
+      "question": "How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9062727438285947
+    },
+    {
+      "id": "flow_001",
+      "category": "data_flow",
+      "question": "How does charge density flow from particles to the grid in a typical PIC step in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.0198312911670655
+    },
+    {
+      "id": "flow_002",
+      "category": "data_flow",
+      "question": "How does the electric field flow from the grid back to particles after a Poisson solve?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9422470710705966
+    },
+    {
+      "id": "flow_003",
+      "category": "data_flow",
+      "question": "How are halo cells exchanged between neighboring MPI ranks for a BareField?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8893589130602777
+    },
+    {
+      "id": "flow_004",
+      "category": "data_flow",
+      "question": "How are particles migrated between MPI ranks by ParticleSpatialLayout?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9537227409891784
+    },
+    {
+      "id": "flow_005",
+      "category": "data_flow",
+      "question": "How does FieldLayout decide which index ranges live on which rank?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9298568670637906
+    },
+    {
+      "id": "flow_006",
+      "category": "data_flow",
+      "question": "How is a ParameterList used to configure the FFT and solver classes?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9039708480704576
+    },
+    {
+      "id": "flow_007",
+      "category": "data_flow",
+      "question": "How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.988893342204392
+    },
+    {
+      "id": "flow_008",
+      "category": "data_flow",
+      "question": "How does the FEM solver move data between fields and FEMVector representations?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 1.0151656318921596
+    },
+    {
+      "id": "flow_009",
+      "category": "data_flow",
+      "question": "How does OrthogonalRecursiveBisection redistribute particles after rebalancing?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8958110949024558
+    },
+    {
+      "id": "api_001",
+      "category": "api_usage",
+      "question": "How do I create a 3D Field of doubles in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9030126989819109
+    },
+    {
+      "id": "api_002",
+      "category": "api_usage",
+      "question": "How do I construct a UniformCartesian mesh with custom spacing and origin?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9091349861118942
+    },
+    {
+      "id": "api_003",
+      "category": "api_usage",
+      "question": "How do I attach a boundary condition (e.g. periodic) to a Field?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8848516009747982
+    },
+    {
+      "id": "api_004",
+      "category": "api_usage",
+      "question": "How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8892703959718347
+    },
+    {
+      "id": "api_005",
+      "category": "api_usage",
+      "question": "How do I call ippl::initialize and ippl::finalize in a main program?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9268219138029963
+    },
+    {
+      "id": "api_006",
+      "category": "api_usage",
+      "question": "How do I set up and run a forward FFT on an IPPL Field?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.893823480932042
+    },
+    {
+      "id": "api_007",
+      "category": "api_usage",
+      "question": "How do I construct an FFTPeriodicPoissonSolver and solve for the potential?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9215774540789425
+    },
+    {
+      "id": "api_008",
+      "category": "api_usage",
+      "question": "How do I invoke the conjugate gradient Poisson solver on a Field?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9043875329662114
+    },
+    {
+      "id": "api_009",
+      "category": "api_usage",
+      "question": "How do I sample particles from a normal distribution using IPPL Random utilities?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9341782750561833
+    },
+    {
+      "id": "api_010",
+      "category": "api_usage",
+      "question": "How do I register particle attributes with ParticleBase so that they are communicated on migration?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8747103579808027
+    },
+    {
+      "id": "api_011",
+      "category": "api_usage",
+      "question": "How do I access the MPI rank and size through the IPPL Communicator?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9565044711343944
+    },
+    {
+      "id": "api_012",
+      "category": "api_usage",
+      "question": "How do I use IpplTimings to measure a region of code?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.892379478784278
+    },
+    {
+      "id": "par_001",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL achieve performance portability across CPUs and GPUs?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9075603520032018
+    },
+    {
+      "id": "par_002",
+      "category": "parallelism_and_kokkos",
+      "question": "Why does IPPL use Kokkos::View for field storage?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9508819510228932
+    },
+    {
+      "id": "par_003",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL parallelize loops over field indices using Kokkos RangePolicy?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8768262220546603
+    },
+    {
+      "id": "par_004",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL support mixed precision (float vs double) for fields?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8938942609820515
+    },
+    {
+      "id": "par_005",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.917187477927655
+    },
+    {
+      "id": "par_006",
+      "category": "parallelism_and_kokkos",
+      "question": "What is the purpose of ParallelDispatch.h and what helpers does it expose?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9209085160400718
+    },
+    {
+      "id": "par_007",
+      "category": "parallelism_and_kokkos",
+      "question": "How does the Archive class serialize/deserialize Kokkos views for MPI transfer?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8655672119930387
+    },
+    {
+      "id": "par_008",
+      "category": "parallelism_and_kokkos",
+      "question": "How are MPI tags managed in IPPL to avoid collisions across subsystems?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8828260009177029
+    },
+    {
+      "id": "par_009",
+      "category": "parallelism_and_kokkos",
+      "question": "What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8718649081420153
+    },
+    {
+      "id": "bc_001",
+      "category": "boundary_and_halo",
+      "question": "What boundary condition types are provided in BcTypes.h?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9156593861989677
+    },
+    {
+      "id": "bc_002",
+      "category": "boundary_and_halo",
+      "question": "How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.924458117922768
+    },
+    {
+      "id": "bc_003",
+      "category": "boundary_and_halo",
+      "question": "How are ghost cells populated during a halo exchange?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8990308500360698
+    },
+    {
+      "id": "bc_004",
+      "category": "boundary_and_halo",
+      "question": "How are physical-cell values copied into ghost cells for periodic boundary conditions?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8638639559503645
+    },
+    {
+      "id": "bc_005",
+      "category": "boundary_and_halo",
+      "question": "How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9248573400545865
+    },
+    {
+      "id": "num_001",
+      "category": "numerical_meaning",
+      "question": "What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9141163150779903
+    },
+    {
+      "id": "num_002",
+      "category": "numerical_meaning",
+      "question": "What is the physical meaning of the fields advanced by the FDTD solver?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9309013350866735
+    },
+    {
+      "id": "num_007",
+      "category": "numerical_meaning",
+      "question": "What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9348329771310091
+    },
+    {
+      "id": "build_001",
+      "category": "build_and_install",
+      "question": "Which third-party libraries does IPPL depend on, and what are they used for?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9346920361276716
+    },
+    {
+      "id": "build_002",
+      "category": "build_and_install",
+      "question": "What C++ standard does IPPL require, and why?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.910622876137495
+    },
+    {
+      "id": "build_003",
+      "category": "build_and_install",
+      "question": "How is IPPL configured with CMake to enable a GPU build?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9125171499326825
+    },
+    {
+      "id": "build_004",
+      "category": "build_and_install",
+      "question": "What options does INSTALLATION.md describe for configuring Kokkos for IPPL?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9020900439936668
+    },
+    {
+      "id": "build_005",
+      "category": "build_and_install",
+      "question": "How do I install IPPL on the EULER cluster according to the documentation?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9121225678827614
+    },
+    {
+      "id": "test_002",
+      "category": "testing_and_workflow",
+      "question": "What naming conventions does WORKFLOW.md require for variables, constants, and member variables?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8887868218589574
+    },
+    {
+      "id": "test_003",
+      "category": "testing_and_workflow",
+      "question": "When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.9036835101433098
+    },
+    {
+      "id": "test_004",
+      "category": "testing_and_workflow",
+      "question": "How does IPPL profile MPI calls using mpiP?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8884133440442383
+    },
+    {
+      "id": "test_005",
+      "category": "testing_and_workflow",
+      "question": "What does the SLURM job template for Gwendolen in the README look like?",
+      "answer": "API Error: 400 400: {'error': 'anthropic_messages: Invalid model name passed in model=claude-gemma4-12b. Call `/v1/models` to view available models for your key.'}",
+      "error": "",
+      "latency_seconds": 0.8861089621204883
+    }
+  ]
+}
