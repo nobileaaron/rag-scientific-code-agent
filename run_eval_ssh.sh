@@ -36,12 +36,26 @@ LITELLM_MASTER_KEY="${LITELLM_MASTER_KEY:-sk-local}"
 OLLAMA_PORT="${OLLAMA_PORT:-11434}"
 RAW_DATA_PATH="${RAW_DATA_PATH:-$SCRIPT_DIR/data/raw/ippl}"
 
+# Tool-call translation shim. Local models emit tool calls as plain JSON text
+# instead of Anthropic tool_use blocks, so Claude Code never runs any tool and
+# every answer is ungrounded. The shim (scripts/toolcall_shim.py) sits between
+# Claude Code and LiteLLM and rewrites those into real tool_use blocks.
+# Set USE_TOOLCALL_SHIM=0 to bypass it (Claude Code -> LiteLLM directly).
+USE_TOOLCALL_SHIM="${USE_TOOLCALL_SHIM:-1}"
+SHIM_PORT="${SHIM_PORT:-4001}"
+SHIM_LOG="${SHIM_LOG:-$SCRIPT_DIR/toolcall_shim.log}"
+
 # Ollama tags to make sure are present before the run. Must match the
 # `model:` tags referenced in $LITELLM_CONFIG. Override with a space-separated
-# string, e.g.  OLLAMA_MODELS="qwen2.5-coder:7b-instruct-q4_K_M gemma4:12b"
-DEFAULT_OLLAMA_MODELS="qwen2.5-coder:7b-instruct-q4_K_M qwen2.5-coder:32b-instruct-q4_K_M qwen3.5:9b gemma4:12b"
+# string, e.g.  OLLAMA_MODEL_TAGS="qwen2.5-coder:7b-instruct-q4_K_M gemma4:12b"
+#
+# NOTE: do NOT name this OLLAMA_MODELS — that is Ollama's own reserved env var
+# for the model-storage directory (set by eval_claude_code_job.sh / job.sh).
+# Reusing it makes this loop try to `ollama pull <storage-dir>`, which 400s
+# with "invalid model name".
+DEFAULT_OLLAMA_MODEL_TAGS="qwen2.5-coder:7b-instruct-q4_K_M qwen2.5-coder:32b-instruct-q4_K_M qwen3.5:9b gemma4:12b"
 # shellcheck disable=SC2206
-OLLAMA_MODELS_TO_PULL=( ${OLLAMA_MODELS:-$DEFAULT_OLLAMA_MODELS} )
+OLLAMA_MODELS_TO_PULL=( ${OLLAMA_MODEL_TAGS:-$DEFAULT_OLLAMA_MODEL_TAGS} )
 
 # Optional: restrict which model labels to run, e.g.
 #   EVAL_MODELS="qwen25_7b_q4km gemma4_12b" ./run_eval_ssh.sh
@@ -72,9 +86,11 @@ fi
 # --------------------------------------------------------------------------
 OLLAMA_PID=""
 LITELLM_PID=""
+SHIM_PID=""
 STARTED_OLLAMA=0
 
 cleanup() {
+    [ -n "$SHIM_PID" ] && kill "$SHIM_PID" 2>/dev/null || true
     [ -n "$LITELLM_PID" ] && kill "$LITELLM_PID" 2>/dev/null || true
     if [ "$STARTED_OLLAMA" = "1" ] && [ -n "$OLLAMA_PID" ]; then
         kill "$OLLAMA_PID" 2>/dev/null || true
@@ -141,13 +157,47 @@ curl -s -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
     | "$PYTHON_BIN" -c "import json,sys;[print('  -',m['id']) for m in json.load(sys.stdin).get('data',[])]" 2>/dev/null || true
 
 # --------------------------------------------------------------------------
-# 3. Point Claude Code at the proxy and run the eval
+# 2b. Tool-call translation shim (Claude Code -> shim -> LiteLLM)
 # --------------------------------------------------------------------------
-export ANTHROPIC_BASE_URL="http://127.0.0.1:${LITELLM_PORT}"
+CLAUDE_TARGET_PORT="$LITELLM_PORT"
+if [ "$USE_TOOLCALL_SHIM" = "1" ]; then
+    echo "Starting tool-call shim on :${SHIM_PORT} -> LiteLLM :${LITELLM_PORT} (log: $SHIM_LOG)..."
+    "$PYTHON_BIN" "$SCRIPT_DIR/scripts/toolcall_shim.py" \
+        --host 127.0.0.1 --port "$SHIM_PORT" \
+        --upstream "http://127.0.0.1:${LITELLM_PORT}" \
+        >>"$SHIM_LOG" 2>&1 &
+    SHIM_PID=$!
+    shim_ready=0
+    for _ in $(seq 1 30); do
+        if curl -sf "http://127.0.0.1:${SHIM_PORT}/healthz" >/dev/null 2>&1; then shim_ready=1; break; fi
+        if ! kill -0 "$SHIM_PID" 2>/dev/null; then
+            echo "ERROR: tool-call shim exited early. Last log lines:" >&2
+            tail -n 30 "$SHIM_LOG" >&2 || true
+            exit 1
+        fi
+        sleep 1
+    done
+    [ "$shim_ready" = "1" ] || { echo "ERROR: shim never became ready." >&2; tail -n 30 "$SHIM_LOG" >&2 || true; exit 1; }
+    echo "Tool-call shim is ready."
+    CLAUDE_TARGET_PORT="$SHIM_PORT"
+else
+    echo "USE_TOOLCALL_SHIM=0 -> Claude Code will talk to LiteLLM directly (no tool-call rewriting)."
+fi
+
+# --------------------------------------------------------------------------
+# 3. Point Claude Code at the proxy (or shim) and run the eval
+# --------------------------------------------------------------------------
+export ANTHROPIC_BASE_URL="http://127.0.0.1:${CLAUDE_TARGET_PORT}"
 export ANTHROPIC_AUTH_TOKEN="${LITELLM_MASTER_KEY}"
 export ANTHROPIC_API_KEY="${LITELLM_MASTER_KEY}"
 # Skip the interactive first-run / API-key helper in headless mode.
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+# Local Ollama models (qwen2.5-coder, etc.) do not support extended thinking.
+# Stop Claude Code from requesting it so the `thinking` field never reaches
+# the proxy/Ollama — otherwise every request 500s with
+# "<model> does not support thinking" and burns minutes in retry backoff.
+export MAX_THINKING_TOKENS=0
+export DISABLE_INTERLEAVED_THINKING=1
 
 echo "Running the model matrix..."
 RUN_ARGS=(--timeout "$PER_QUESTION_TIMEOUT" --allowed-tools "$ALLOWED_TOOLS")

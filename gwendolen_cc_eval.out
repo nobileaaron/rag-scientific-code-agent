@@ -1,0 +1,562 @@
+Launching run_eval_ssh.sh ...
+Ollama already running on :11434.
+Ensuring required Ollama models are present...
+  present: qwen2.5-coder:7b-instruct-q4_K_M
+  present: qwen2.5-coder:32b-instruct-q4_K_M
+  present: qwen3.5:9b
+  present: gemma4:12b
+Starting LiteLLM proxy on :4000 (log: /psi/home/ext-nobile_a/rag-scientific-code-agent/litellm.log)...
+Waiting for the proxy to serve /v1/models...
+LiteLLM proxy is ready. Models exposed:
+  - claude-qwen25-7b-q4km
+  - claude-qwen25-32b-q4km
+  - claude-qwen35-9b
+  - claude-gemma4-12b
+Starting tool-call shim on :4001 -> LiteLLM :4000 (log: /psi/home/ext-nobile_a/rag-scientific-code-agent/toolcall_shim.log)...
+Tool-call shim is ready.
+Running the model matrix...
+
+=== Running claude-qwen25-7b-q4km (100 questions) -> claude_code_qwen25_7b_q4km_20260619T111009Z.json ===
+[1/100] claude-qwen25-7b-q4km file_001: What does Ippl.h do?
+[73/100] claude-qwen35-9b api_011: How do I access the MPI rank and size through the IPPL Communicator?
+[74/100] claude-qwen35-9b api_012: How do I use IpplTimings to measure a region of code?
+[2/100] claude-qwen25-7b-q4km file_002: What is the purpose of Ippl.cpp?
+[3/100] claude-qwen25-7b-q4km file_003: What does FFT.hpp implement?
+[75/100] claude-qwen35-9b par_001: How does IPPL achieve performance portability across CPUs and GPUs?
+[4/100] claude-qwen25-7b-q4km file_004: What is BareField.h responsible for?
+[5/100] claude-qwen25-7b-q4km file_005: What does Field.h add on top of BareField?
+[6/100] claude-qwen25-7b-q4km file_006: What role does HaloCells.h play in IPPL?
+[7/100] claude-qwen25-7b-q4km file_007: What is the purpose of FieldLayout.h?
+[8/100] claude-qwen25-7b-q4km file_008: What does ParticleBase.h define?
+[9/100] claude-qwen25-7b-q4km file_009: What is the purpose of ParticleSpatialLayout.h?
+[10/100] claude-qwen25-7b-q4km file_010: What does ParticleAttrib.h implement?
+[11/100] claude-qwen25-7b-q4km file_011: What is UniformCartesian.h for?
+[12/100] claude-qwen25-7b-q4km file_012: What does OrthogonalRecursiveBisection.h do?
+[13/100] claude-qwen25-7b-q4km file_013: What is the purpose of CIC.h in the Interpolation subsystem?
+[14/100] claude-qwen25-7b-q4km loc_001: Where is FFT initialization implemented in IPPL?
+[15/100] claude-qwen25-7b-q4km loc_002: Where does IPPL set up the MPI environment?
+[16/100] claude-qwen25-7b-q4km loc_003: Where is Kokkos initialized and finalized inside IPPL?
+[17/100] claude-qwen25-7b-q4km loc_004: Where is the orthogonal recursive bisection load balancer implemented?
+[18/100] claude-qwen25-7b-q4km loc_005: Where are boundary conditions applied to a Field?
+[19/100] claude-qwen25-7b-q4km loc_006: Where is the CIC (cloud-in-cell) scatter implemented?
+[20/100] claude-qwen25-7b-q4km loc_007: Where is the CIC gather implemented?
+[21/100] claude-qwen25-7b-q4km loc_008: Where is halo exchange for BareField implemented?
+[22/100] claude-qwen25-7b-q4km loc_009: Where are the FFT-based open-boundary Poisson solver routines defined?
+[23/100] claude-qwen25-7b-q4km loc_010: Where is the conjugate gradient solver algorithm implemented?
+[24/100] claude-qwen25-7b-q4km loc_011: Where is the FEM Poisson solver implemented?
+[25/100] claude-qwen25-7b-q4km loc_012: Where is the FDTD Maxwell solver base class defined?
+[26/100] claude-qwen25-7b-q4km loc_013: Where is the LagrangeSpace class defined?
+[27/100] claude-qwen25-7b-q4km loc_014: Where is the particle update routine (that moves particles across ranks) implemented?
+[28/100] claude-qwen25-7b-q4km loc_015: Where are IPPL timers defined?
+[29/100] claude-qwen25-7b-q4km cls_001: What is the main responsibility of the BareField class?
+[30/100] claude-qwen25-7b-q4km cls_002: What is the main responsibility of the Field class compared to BareField?
+[31/100] claude-qwen25-7b-q4km cls_003: What does the FieldLayout class do and what are its main template parameters?
+[32/100] claude-qwen25-7b-q4km cls_004: What is the purpose of the ParticleBase class and how is it meant to be used?
+[33/100] claude-qwen25-7b-q4km cls_005: What does the ParticleSpatialLayout class do?
+[34/100] claude-qwen25-7b-q4km cls_006: What is the responsibility of UniformCartesian?
+[35/100] claude-qwen25-7b-q4km cls_007: What does the Mesh base class define?
+[36/100] claude-qwen25-7b-q4km cls_008: What is the responsibility of the Communicator class in ippl::mpi?
+[37/100] claude-qwen25-7b-q4km cls_009: What is the role of the Environment class in ippl::mpi?
+[38/100] claude-qwen25-7b-q4km cls_010: What does the Archive class do in the Communicate module?
+[39/100] claude-qwen25-7b-q4km cls_011: What is the role of the BConds class?
+[40/100] claude-qwen25-7b-q4km cls_012: What is the role of the BaseManager class?
+[41/100] claude-qwen25-7b-q4km cls_013: What does the Index class represent and what operations does it support?
+[42/100] claude-qwen25-7b-q4km alg_001: How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?
+[43/100] claude-qwen25-7b-q4km alg_002: How does the FFT-based periodic Poisson solver work in IPPL?
+[44/100] claude-qwen25-7b-q4km alg_003: How does the truncated Green periodic Poisson solver differ from the standard periodic one?
+[45/100] claude-qwen25-7b-q4km alg_004: How does IPPL's CG solver iterate in the PCG.h implementation?
+[46/100] claude-qwen25-7b-q4km alg_005: How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?
+[47/100] claude-qwen25-7b-q4km alg_006: How does the standard FDTD solver advance the electromagnetic field in time?
+[48/100] claude-qwen25-7b-q4km alg_007: How does the LagrangeSpace class evaluate degrees of freedom per element?
+[49/100] claude-qwen25-7b-q4km alg_008: How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?
+[50/100] claude-qwen25-7b-q4km alg_009: How does the orthogonal recursive bisection decide where to cut the domain?
+[51/100] claude-qwen25-7b-q4km alg_010: How does inverse transform sampling generate particles from a given distribution in IPPL?
+[52/100] claude-qwen25-7b-q4km alg_011: How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?
+[53/100] claude-qwen25-7b-q4km alg_012: How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?
+[54/100] claude-qwen25-7b-q4km flow_001: How does charge density flow from particles to the grid in a typical PIC step in IPPL?
+[55/100] claude-qwen25-7b-q4km flow_002: How does the electric field flow from the grid back to particles after a Poisson solve?
+[56/100] claude-qwen25-7b-q4km flow_003: How are halo cells exchanged between neighboring MPI ranks for a BareField?
+[57/100] claude-qwen25-7b-q4km flow_004: How are particles migrated between MPI ranks by ParticleSpatialLayout?
+[58/100] claude-qwen25-7b-q4km flow_005: How does FieldLayout decide which index ranges live on which rank?
+[59/100] claude-qwen25-7b-q4km flow_006: How is a ParameterList used to configure the FFT and solver classes?
+[60/100] claude-qwen25-7b-q4km flow_007: How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?
+[61/100] claude-qwen25-7b-q4km flow_008: How does the FEM solver move data between fields and FEMVector representations?
+[62/100] claude-qwen25-7b-q4km flow_009: How does OrthogonalRecursiveBisection redistribute particles after rebalancing?
+[63/100] claude-qwen25-7b-q4km api_001: How do I create a 3D Field of doubles in IPPL?
+[64/100] claude-qwen25-7b-q4km api_002: How do I construct a UniformCartesian mesh with custom spacing and origin?
+[65/100] claude-qwen25-7b-q4km api_003: How do I attach a boundary condition (e.g. periodic) to a Field?
+[66/100] claude-qwen25-7b-q4km api_004: How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?
+[67/100] claude-qwen25-7b-q4km api_005: How do I call ippl::initialize and ippl::finalize in a main program?
+[68/100] claude-qwen25-7b-q4km api_006: How do I set up and run a forward FFT on an IPPL Field?
+[69/100] claude-qwen25-7b-q4km api_007: How do I construct an FFTPeriodicPoissonSolver and solve for the potential?
+[70/100] claude-qwen25-7b-q4km api_008: How do I invoke the conjugate gradient Poisson solver on a Field?
+[71/100] claude-qwen25-7b-q4km api_009: How do I sample particles from a normal distribution using IPPL Random utilities?
+[72/100] claude-qwen25-7b-q4km api_010: How do I register particle attributes with ParticleBase so that they are communicated on migration?
+[73/100] claude-qwen25-7b-q4km api_011: How do I access the MPI rank and size through the IPPL Communicator?
+[74/100] claude-qwen25-7b-q4km api_012: How do I use IpplTimings to measure a region of code?
+[75/100] claude-qwen25-7b-q4km par_001: How does IPPL achieve performance portability across CPUs and GPUs?
+[76/100] claude-qwen25-7b-q4km par_002: Why does IPPL use Kokkos::View for field storage?
+[77/100] claude-qwen25-7b-q4km par_003: How does IPPL parallelize loops over field indices using Kokkos RangePolicy?
+[78/100] claude-qwen25-7b-q4km par_004: How does IPPL support mixed precision (float vs double) for fields?
+[79/100] claude-qwen25-7b-q4km par_005: How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?
+[80/100] claude-qwen25-7b-q4km par_006: What is the purpose of ParallelDispatch.h and what helpers does it expose?
+[81/100] claude-qwen25-7b-q4km par_007: How does the Archive class serialize/deserialize Kokkos views for MPI transfer?
+[82/100] claude-qwen25-7b-q4km par_008: How are MPI tags managed in IPPL to avoid collisions across subsystems?
+[83/100] claude-qwen25-7b-q4km par_009: What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?
+[84/100] claude-qwen25-7b-q4km bc_001: What boundary condition types are provided in BcTypes.h?
+[85/100] claude-qwen25-7b-q4km bc_002: How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?
+[86/100] claude-qwen25-7b-q4km bc_003: How are ghost cells populated during a halo exchange?
+[87/100] claude-qwen25-7b-q4km bc_004: How are physical-cell values copied into ghost cells for periodic boundary conditions?
+[88/100] claude-qwen25-7b-q4km bc_005: How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?
+[89/100] claude-qwen25-7b-q4km num_001: What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?
+[90/100] claude-qwen25-7b-q4km num_002: What is the physical meaning of the fields advanced by the FDTD solver?
+[91/100] claude-qwen25-7b-q4km num_007: What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?
+[92/100] claude-qwen25-7b-q4km build_001: Which third-party libraries does IPPL depend on, and what are they used for?
+[93/100] claude-qwen25-7b-q4km build_002: What C++ standard does IPPL require, and why?
+[94/100] claude-qwen25-7b-q4km build_003: How is IPPL configured with CMake to enable a GPU build?
+[95/100] claude-qwen25-7b-q4km build_004: What options does INSTALLATION.md describe for configuring Kokkos for IPPL?
+[96/100] claude-qwen25-7b-q4km build_005: How do I install IPPL on the EULER cluster according to the documentation?
+[97/100] claude-qwen25-7b-q4km test_002: What naming conventions does WORKFLOW.md require for variables, constants, and member variables?
+[98/100] claude-qwen25-7b-q4km test_003: When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?
+[99/100] claude-qwen25-7b-q4km test_004: How does IPPL profile MPI calls using mpiP?
+[100/100] claude-qwen25-7b-q4km test_005: What does the SLURM job template for Gwendolen in the README look like?
+Wrote 100 answers (0 failures) to /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/answers/claude_code_qwen25_7b_q4km_20260619T111009Z.json
+
+=== Running claude-qwen25-32b-q4km (100 questions) -> claude_code_qwen25_32b_q4km_20260619T112026Z.json ===
+[1/100] claude-qwen25-32b-q4km file_001: What does Ippl.h do?
+[2/100] claude-qwen25-32b-q4km file_002: What is the purpose of Ippl.cpp?
+[3/100] claude-qwen25-32b-q4km file_003: What does FFT.hpp implement?
+[4/100] claude-qwen25-32b-q4km file_004: What is BareField.h responsible for?
+[5/100] claude-qwen25-32b-q4km file_005: What does Field.h add on top of BareField?
+[76/100] claude-qwen35-9b par_002: Why does IPPL use Kokkos::View for field storage?
+[6/100] claude-qwen25-32b-q4km file_006: What role does HaloCells.h play in IPPL?
+[7/100] claude-qwen25-32b-q4km file_007: What is the purpose of FieldLayout.h?
+[8/100] claude-qwen25-32b-q4km file_008: What does ParticleBase.h define?
+[9/100] claude-qwen25-32b-q4km file_009: What is the purpose of ParticleSpatialLayout.h?
+[77/100] claude-qwen35-9b par_003: How does IPPL parallelize loops over field indices using Kokkos RangePolicy?
+[78/100] claude-qwen35-9b par_004: How does IPPL support mixed precision (float vs double) for fields?
+[10/100] claude-qwen25-32b-q4km file_010: What does ParticleAttrib.h implement?
+[11/100] claude-qwen25-32b-q4km file_011: What is UniformCartesian.h for?
+[12/100] claude-qwen25-32b-q4km file_012: What does OrthogonalRecursiveBisection.h do?
+[13/100] claude-qwen25-32b-q4km file_013: What is the purpose of CIC.h in the Interpolation subsystem?
+[14/100] claude-qwen25-32b-q4km loc_001: Where is FFT initialization implemented in IPPL?
+[15/100] claude-qwen25-32b-q4km loc_002: Where does IPPL set up the MPI environment?
+[16/100] claude-qwen25-32b-q4km loc_003: Where is Kokkos initialized and finalized inside IPPL?
+[79/100] claude-qwen35-9b par_005: How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?
+[80/100] claude-qwen35-9b par_006: What is the purpose of ParallelDispatch.h and what helpers does it expose?
+[17/100] claude-qwen25-32b-q4km loc_004: Where is the orthogonal recursive bisection load balancer implemented?
+[81/100] claude-qwen35-9b par_007: How does the Archive class serialize/deserialize Kokkos views for MPI transfer?
+[18/100] claude-qwen25-32b-q4km loc_005: Where are boundary conditions applied to a Field?
+[19/100] claude-qwen25-32b-q4km loc_006: Where is the CIC (cloud-in-cell) scatter implemented?
+[20/100] claude-qwen25-32b-q4km loc_007: Where is the CIC gather implemented?
+[82/100] claude-qwen35-9b par_008: How are MPI tags managed in IPPL to avoid collisions across subsystems?
+[21/100] claude-qwen25-32b-q4km loc_008: Where is halo exchange for BareField implemented?
+[83/100] claude-qwen35-9b par_009: What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?
+[22/100] claude-qwen25-32b-q4km loc_009: Where are the FFT-based open-boundary Poisson solver routines defined?
+[84/100] claude-qwen35-9b bc_001: What boundary condition types are provided in BcTypes.h?
+[23/100] claude-qwen25-32b-q4km loc_010: Where is the conjugate gradient solver algorithm implemented?
+[85/100] claude-qwen35-9b bc_002: How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?
+[24/100] claude-qwen25-32b-q4km loc_011: Where is the FEM Poisson solver implemented?
+[25/100] claude-qwen25-32b-q4km loc_012: Where is the FDTD Maxwell solver base class defined?
+[26/100] claude-qwen25-32b-q4km loc_013: Where is the LagrangeSpace class defined?
+[27/100] claude-qwen25-32b-q4km loc_014: Where is the particle update routine (that moves particles across ranks) implemented?
+[86/100] claude-qwen35-9b bc_003: How are ghost cells populated during a halo exchange?
+[87/100] claude-qwen35-9b bc_004: How are physical-cell values copied into ghost cells for periodic boundary conditions?
+[28/100] claude-qwen25-32b-q4km loc_015: Where are IPPL timers defined?
+[88/100] claude-qwen35-9b bc_005: How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?
+[29/100] claude-qwen25-32b-q4km cls_001: What is the main responsibility of the BareField class?
+[30/100] claude-qwen25-32b-q4km cls_002: What is the main responsibility of the Field class compared to BareField?
+[31/100] claude-qwen25-32b-q4km cls_003: What does the FieldLayout class do and what are its main template parameters?
+[32/100] claude-qwen25-32b-q4km cls_004: What is the purpose of the ParticleBase class and how is it meant to be used?
+[33/100] claude-qwen25-32b-q4km cls_005: What does the ParticleSpatialLayout class do?
+[34/100] claude-qwen25-32b-q4km cls_006: What is the responsibility of UniformCartesian?
+[35/100] claude-qwen25-32b-q4km cls_007: What does the Mesh base class define?
+[36/100] claude-qwen25-32b-q4km cls_008: What is the responsibility of the Communicator class in ippl::mpi?
+[37/100] claude-qwen25-32b-q4km cls_009: What is the role of the Environment class in ippl::mpi?
+[38/100] claude-qwen25-32b-q4km cls_010: What does the Archive class do in the Communicate module?
+[89/100] claude-qwen35-9b num_001: What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?
+[39/100] claude-qwen25-32b-q4km cls_011: What is the role of the BConds class?
+[40/100] claude-qwen25-32b-q4km cls_012: What is the role of the BaseManager class?
+[41/100] claude-qwen25-32b-q4km cls_013: What does the Index class represent and what operations does it support?
+[90/100] claude-qwen35-9b num_002: What is the physical meaning of the fields advanced by the FDTD solver?
+[91/100] claude-qwen35-9b num_007: What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?
+[42/100] claude-qwen25-32b-q4km alg_001: How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?
+[43/100] claude-qwen25-32b-q4km alg_002: How does the FFT-based periodic Poisson solver work in IPPL?
+[92/100] claude-qwen35-9b build_001: Which third-party libraries does IPPL depend on, and what are they used for?
+[44/100] claude-qwen25-32b-q4km alg_003: How does the truncated Green periodic Poisson solver differ from the standard periodic one?
+[45/100] claude-qwen25-32b-q4km alg_004: How does IPPL's CG solver iterate in the PCG.h implementation?
+[93/100] claude-qwen35-9b build_002: What C++ standard does IPPL require, and why?
+[94/100] claude-qwen35-9b build_003: How is IPPL configured with CMake to enable a GPU build?
+[95/100] claude-qwen35-9b build_004: What options does INSTALLATION.md describe for configuring Kokkos for IPPL?
+[46/100] claude-qwen25-32b-q4km alg_005: How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?
+[47/100] claude-qwen25-32b-q4km alg_006: How does the standard FDTD solver advance the electromagnetic field in time?
+[48/100] claude-qwen25-32b-q4km alg_007: How does the LagrangeSpace class evaluate degrees of freedom per element?
+[49/100] claude-qwen25-32b-q4km alg_008: How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?
+[50/100] claude-qwen25-32b-q4km alg_009: How does the orthogonal recursive bisection decide where to cut the domain?
+[51/100] claude-qwen25-32b-q4km alg_010: How does inverse transform sampling generate particles from a given distribution in IPPL?
+[96/100] claude-qwen35-9b build_005: How do I install IPPL on the EULER cluster according to the documentation?
+[97/100] claude-qwen35-9b test_002: What naming conventions does WORKFLOW.md require for variables, constants, and member variables?
+[98/100] claude-qwen35-9b test_003: When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?
+[99/100] claude-qwen35-9b test_004: How does IPPL profile MPI calls using mpiP?
+[52/100] claude-qwen25-32b-q4km alg_011: How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?
+[100/100] claude-qwen35-9b test_005: What does the SLURM job template for Gwendolen in the README look like?
+[53/100] claude-qwen25-32b-q4km alg_012: How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?
+[54/100] claude-qwen25-32b-q4km flow_001: How does charge density flow from particles to the grid in a typical PIC step in IPPL?
+Wrote 100 answers (56 failures) to /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/answers/claude_code_qwen35_9b_20260619T102436Z.json
+
+=== Running claude-gemma4-12b (100 questions) -> claude_code_gemma4_12b_20260619T120051Z.json ===
+[1/100] claude-gemma4-12b file_001: What does Ippl.h do?
+[55/100] claude-qwen25-32b-q4km flow_002: How does the electric field flow from the grid back to particles after a Poisson solve?
+[2/100] claude-gemma4-12b file_002: What is the purpose of Ippl.cpp?
+[56/100] claude-qwen25-32b-q4km flow_003: How are halo cells exchanged between neighboring MPI ranks for a BareField?
+[57/100] claude-qwen25-32b-q4km flow_004: How are particles migrated between MPI ranks by ParticleSpatialLayout?
+[3/100] claude-gemma4-12b file_003: What does FFT.hpp implement?
+[58/100] claude-qwen25-32b-q4km flow_005: How does FieldLayout decide which index ranges live on which rank?
+[4/100] claude-gemma4-12b file_004: What is BareField.h responsible for?
+[59/100] claude-qwen25-32b-q4km flow_006: How is a ParameterList used to configure the FFT and solver classes?
+[5/100] claude-gemma4-12b file_005: What does Field.h add on top of BareField?
+[60/100] claude-qwen25-32b-q4km flow_007: How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?
+[6/100] claude-gemma4-12b file_006: What role does HaloCells.h play in IPPL?
+[61/100] claude-qwen25-32b-q4km flow_008: How does the FEM solver move data between fields and FEMVector representations?
+[7/100] claude-gemma4-12b file_007: What is the purpose of FieldLayout.h?
+[62/100] claude-qwen25-32b-q4km flow_009: How does OrthogonalRecursiveBisection redistribute particles after rebalancing?
+[63/100] claude-qwen25-32b-q4km api_001: How do I create a 3D Field of doubles in IPPL?
+[8/100] claude-gemma4-12b file_008: What does ParticleBase.h define?
+[64/100] claude-qwen25-32b-q4km api_002: How do I construct a UniformCartesian mesh with custom spacing and origin?
+[9/100] claude-gemma4-12b file_009: What is the purpose of ParticleSpatialLayout.h?
+[65/100] claude-qwen25-32b-q4km api_003: How do I attach a boundary condition (e.g. periodic) to a Field?
+[10/100] claude-gemma4-12b file_010: What does ParticleAttrib.h implement?
+[66/100] claude-qwen25-32b-q4km api_004: How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?
+[67/100] claude-qwen25-32b-q4km api_005: How do I call ippl::initialize and ippl::finalize in a main program?
+[11/100] claude-gemma4-12b file_011: What is UniformCartesian.h for?
+[68/100] claude-qwen25-32b-q4km api_006: How do I set up and run a forward FFT on an IPPL Field?
+[12/100] claude-gemma4-12b file_012: What does OrthogonalRecursiveBisection.h do?
+[69/100] claude-qwen25-32b-q4km api_007: How do I construct an FFTPeriodicPoissonSolver and solve for the potential?
+[13/100] claude-gemma4-12b file_013: What is the purpose of CIC.h in the Interpolation subsystem?
+[70/100] claude-qwen25-32b-q4km api_008: How do I invoke the conjugate gradient Poisson solver on a Field?
+[14/100] claude-gemma4-12b loc_001: Where is FFT initialization implemented in IPPL?
+[71/100] claude-qwen25-32b-q4km api_009: How do I sample particles from a normal distribution using IPPL Random utilities?
+[15/100] claude-gemma4-12b loc_002: Where does IPPL set up the MPI environment?
+[72/100] claude-qwen25-32b-q4km api_010: How do I register particle attributes with ParticleBase so that they are communicated on migration?
+[16/100] claude-gemma4-12b loc_003: Where is Kokkos initialized and finalized inside IPPL?
+[73/100] claude-qwen25-32b-q4km api_011: How do I access the MPI rank and size through the IPPL Communicator?
+[74/100] claude-qwen25-32b-q4km api_012: How do I use IpplTimings to measure a region of code?
+[75/100] claude-qwen25-32b-q4km par_001: How does IPPL achieve performance portability across CPUs and GPUs?
+[76/100] claude-qwen25-32b-q4km par_002: Why does IPPL use Kokkos::View for field storage?
+[17/100] claude-gemma4-12b loc_004: Where is the orthogonal recursive bisection load balancer implemented?
+[77/100] claude-qwen25-32b-q4km par_003: How does IPPL parallelize loops over field indices using Kokkos RangePolicy?
+[78/100] claude-qwen25-32b-q4km par_004: How does IPPL support mixed precision (float vs double) for fields?
+[79/100] claude-qwen25-32b-q4km par_005: How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?
+[80/100] claude-qwen25-32b-q4km par_006: What is the purpose of ParallelDispatch.h and what helpers does it expose?
+[81/100] claude-qwen25-32b-q4km par_007: How does the Archive class serialize/deserialize Kokkos views for MPI transfer?
+[82/100] claude-qwen25-32b-q4km par_008: How are MPI tags managed in IPPL to avoid collisions across subsystems?
+[83/100] claude-qwen25-32b-q4km par_009: What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?
+[84/100] claude-qwen25-32b-q4km bc_001: What boundary condition types are provided in BcTypes.h?
+[85/100] claude-qwen25-32b-q4km bc_002: How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?
+[86/100] claude-qwen25-32b-q4km bc_003: How are ghost cells populated during a halo exchange?
+[18/100] claude-gemma4-12b loc_005: Where are boundary conditions applied to a Field?
+[87/100] claude-qwen25-32b-q4km bc_004: How are physical-cell values copied into ghost cells for periodic boundary conditions?
+[88/100] claude-qwen25-32b-q4km bc_005: How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?
+[19/100] claude-gemma4-12b loc_006: Where is the CIC (cloud-in-cell) scatter implemented?
+[89/100] claude-qwen25-32b-q4km num_001: What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?
+[90/100] claude-qwen25-32b-q4km num_002: What is the physical meaning of the fields advanced by the FDTD solver?
+[20/100] claude-gemma4-12b loc_007: Where is the CIC gather implemented?
+[91/100] claude-qwen25-32b-q4km num_007: What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?
+[21/100] claude-gemma4-12b loc_008: Where is halo exchange for BareField implemented?
+[92/100] claude-qwen25-32b-q4km build_001: Which third-party libraries does IPPL depend on, and what are they used for?
+[93/100] claude-qwen25-32b-q4km build_002: What C++ standard does IPPL require, and why?
+[22/100] claude-gemma4-12b loc_009: Where are the FFT-based open-boundary Poisson solver routines defined?
+[94/100] claude-qwen25-32b-q4km build_003: How is IPPL configured with CMake to enable a GPU build?
+[95/100] claude-qwen25-32b-q4km build_004: What options does INSTALLATION.md describe for configuring Kokkos for IPPL?
+[23/100] claude-gemma4-12b loc_010: Where is the conjugate gradient solver algorithm implemented?
+[96/100] claude-qwen25-32b-q4km build_005: How do I install IPPL on the EULER cluster according to the documentation?
+[24/100] claude-gemma4-12b loc_011: Where is the FEM Poisson solver implemented?
+[97/100] claude-qwen25-32b-q4km test_002: What naming conventions does WORKFLOW.md require for variables, constants, and member variables?
+[98/100] claude-qwen25-32b-q4km test_003: When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?
+[99/100] claude-qwen25-32b-q4km test_004: How does IPPL profile MPI calls using mpiP?
+[25/100] claude-gemma4-12b loc_012: Where is the FDTD Maxwell solver base class defined?
+[100/100] claude-qwen25-32b-q4km test_005: What does the SLURM job template for Gwendolen in the README look like?
+[26/100] claude-gemma4-12b loc_013: Where is the LagrangeSpace class defined?
+Wrote 100 answers (0 failures) to /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/answers/claude_code_qwen25_32b_q4km_20260619T112026Z.json
+
+=== Running claude-qwen35-9b (100 questions) -> claude_code_qwen35_9b_20260619T122825Z.json ===
+[1/100] claude-qwen35-9b file_001: What does Ippl.h do?
+[2/100] claude-qwen35-9b file_002: What is the purpose of Ippl.cpp?
+[3/100] claude-qwen35-9b file_003: What does FFT.hpp implement?
+[4/100] claude-qwen35-9b file_004: What is BareField.h responsible for?
+[5/100] claude-qwen35-9b file_005: What does Field.h add on top of BareField?
+[6/100] claude-qwen35-9b file_006: What role does HaloCells.h play in IPPL?
+[7/100] claude-qwen35-9b file_007: What is the purpose of FieldLayout.h?
+[8/100] claude-qwen35-9b file_008: What does ParticleBase.h define?
+[9/100] claude-qwen35-9b file_009: What is the purpose of ParticleSpatialLayout.h?
+[10/100] claude-qwen35-9b file_010: What does ParticleAttrib.h implement?
+[11/100] claude-qwen35-9b file_011: What is UniformCartesian.h for?
+[12/100] claude-qwen35-9b file_012: What does OrthogonalRecursiveBisection.h do?
+[27/100] claude-gemma4-12b loc_014: Where is the particle update routine (that moves particles across ranks) implemented?
+[13/100] claude-qwen35-9b file_013: What is the purpose of CIC.h in the Interpolation subsystem?
+[14/100] claude-qwen35-9b loc_001: Where is FFT initialization implemented in IPPL?
+[15/100] claude-qwen35-9b loc_002: Where does IPPL set up the MPI environment?
+[16/100] claude-qwen35-9b loc_003: Where is Kokkos initialized and finalized inside IPPL?
+[17/100] claude-qwen35-9b loc_004: Where is the orthogonal recursive bisection load balancer implemented?
+[18/100] claude-qwen35-9b loc_005: Where are boundary conditions applied to a Field?
+[19/100] claude-qwen35-9b loc_006: Where is the CIC (cloud-in-cell) scatter implemented?
+[20/100] claude-qwen35-9b loc_007: Where is the CIC gather implemented?
+[21/100] claude-qwen35-9b loc_008: Where is halo exchange for BareField implemented?
+[22/100] claude-qwen35-9b loc_009: Where are the FFT-based open-boundary Poisson solver routines defined?
+[23/100] claude-qwen35-9b loc_010: Where is the conjugate gradient solver algorithm implemented?
+[24/100] claude-qwen35-9b loc_011: Where is the FEM Poisson solver implemented?
+[25/100] claude-qwen35-9b loc_012: Where is the FDTD Maxwell solver base class defined?
+[26/100] claude-qwen35-9b loc_013: Where is the LagrangeSpace class defined?
+[27/100] claude-qwen35-9b loc_014: Where is the particle update routine (that moves particles across ranks) implemented?
+[28/100] claude-qwen35-9b loc_015: Where are IPPL timers defined?
+[29/100] claude-qwen35-9b cls_001: What is the main responsibility of the BareField class?
+[30/100] claude-qwen35-9b cls_002: What is the main responsibility of the Field class compared to BareField?
+[31/100] claude-qwen35-9b cls_003: What does the FieldLayout class do and what are its main template parameters?
+[32/100] claude-qwen35-9b cls_004: What is the purpose of the ParticleBase class and how is it meant to be used?
+[33/100] claude-qwen35-9b cls_005: What does the ParticleSpatialLayout class do?
+[34/100] claude-qwen35-9b cls_006: What is the responsibility of UniformCartesian?
+[35/100] claude-qwen35-9b cls_007: What does the Mesh base class define?
+[36/100] claude-qwen35-9b cls_008: What is the responsibility of the Communicator class in ippl::mpi?
+[37/100] claude-qwen35-9b cls_009: What is the role of the Environment class in ippl::mpi?
+[38/100] claude-qwen35-9b cls_010: What does the Archive class do in the Communicate module?
+[39/100] claude-qwen35-9b cls_011: What is the role of the BConds class?
+[40/100] claude-qwen35-9b cls_012: What is the role of the BaseManager class?
+[41/100] claude-qwen35-9b cls_013: What does the Index class represent and what operations does it support?
+[42/100] claude-qwen35-9b alg_001: How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?
+[43/100] claude-qwen35-9b alg_002: How does the FFT-based periodic Poisson solver work in IPPL?
+[44/100] claude-qwen35-9b alg_003: How does the truncated Green periodic Poisson solver differ from the standard periodic one?
+[45/100] claude-qwen35-9b alg_004: How does IPPL's CG solver iterate in the PCG.h implementation?
+[46/100] claude-qwen35-9b alg_005: How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?
+[47/100] claude-qwen35-9b alg_006: How does the standard FDTD solver advance the electromagnetic field in time?
+[48/100] claude-qwen35-9b alg_007: How does the LagrangeSpace class evaluate degrees of freedom per element?
+[49/100] claude-qwen35-9b alg_008: How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?
+[50/100] claude-qwen35-9b alg_009: How does the orthogonal recursive bisection decide where to cut the domain?
+[51/100] claude-qwen35-9b alg_010: How does inverse transform sampling generate particles from a given distribution in IPPL?
+[52/100] claude-qwen35-9b alg_011: How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?
+[53/100] claude-qwen35-9b alg_012: How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?
+[54/100] claude-qwen35-9b flow_001: How does charge density flow from particles to the grid in a typical PIC step in IPPL?
+[55/100] claude-qwen35-9b flow_002: How does the electric field flow from the grid back to particles after a Poisson solve?
+[56/100] claude-qwen35-9b flow_003: How are halo cells exchanged between neighboring MPI ranks for a BareField?
+[57/100] claude-qwen35-9b flow_004: How are particles migrated between MPI ranks by ParticleSpatialLayout?
+[58/100] claude-qwen35-9b flow_005: How does FieldLayout decide which index ranges live on which rank?
+[59/100] claude-qwen35-9b flow_006: How is a ParameterList used to configure the FFT and solver classes?
+[60/100] claude-qwen35-9b flow_007: How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?
+[61/100] claude-qwen35-9b flow_008: How does the FEM solver move data between fields and FEMVector representations?
+[62/100] claude-qwen35-9b flow_009: How does OrthogonalRecursiveBisection redistribute particles after rebalancing?
+[63/100] claude-qwen35-9b api_001: How do I create a 3D Field of doubles in IPPL?
+[64/100] claude-qwen35-9b api_002: How do I construct a UniformCartesian mesh with custom spacing and origin?
+[65/100] claude-qwen35-9b api_003: How do I attach a boundary condition (e.g. periodic) to a Field?
+[28/100] claude-gemma4-12b loc_015: Where are IPPL timers defined?
+[66/100] claude-qwen35-9b api_004: How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?
+[67/100] claude-qwen35-9b api_005: How do I call ippl::initialize and ippl::finalize in a main program?
+[68/100] claude-qwen35-9b api_006: How do I set up and run a forward FFT on an IPPL Field?
+[69/100] claude-qwen35-9b api_007: How do I construct an FFTPeriodicPoissonSolver and solve for the potential?
+[29/100] claude-gemma4-12b cls_001: What is the main responsibility of the BareField class?
+[70/100] claude-qwen35-9b api_008: How do I invoke the conjugate gradient Poisson solver on a Field?
+[71/100] claude-qwen35-9b api_009: How do I sample particles from a normal distribution using IPPL Random utilities?
+[72/100] claude-qwen35-9b api_010: How do I register particle attributes with ParticleBase so that they are communicated on migration?
+[73/100] claude-qwen35-9b api_011: How do I access the MPI rank and size through the IPPL Communicator?
+[74/100] claude-qwen35-9b api_012: How do I use IpplTimings to measure a region of code?
+[75/100] claude-qwen35-9b par_001: How does IPPL achieve performance portability across CPUs and GPUs?
+[76/100] claude-qwen35-9b par_002: Why does IPPL use Kokkos::View for field storage?
+[77/100] claude-qwen35-9b par_003: How does IPPL parallelize loops over field indices using Kokkos RangePolicy?
+[78/100] claude-qwen35-9b par_004: How does IPPL support mixed precision (float vs double) for fields?
+[79/100] claude-qwen35-9b par_005: How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?
+[80/100] claude-qwen35-9b par_006: What is the purpose of ParallelDispatch.h and what helpers does it expose?
+[30/100] claude-gemma4-12b cls_002: What is the main responsibility of the Field class compared to BareField?
+[81/100] claude-qwen35-9b par_007: How does the Archive class serialize/deserialize Kokkos views for MPI transfer?
+[82/100] claude-qwen35-9b par_008: How are MPI tags managed in IPPL to avoid collisions across subsystems?
+[83/100] claude-qwen35-9b par_009: What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?
+[84/100] claude-qwen35-9b bc_001: What boundary condition types are provided in BcTypes.h?
+[85/100] claude-qwen35-9b bc_002: How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?
+[86/100] claude-qwen35-9b bc_003: How are ghost cells populated during a halo exchange?
+[87/100] claude-qwen35-9b bc_004: How are physical-cell values copied into ghost cells for periodic boundary conditions?
+[88/100] claude-qwen35-9b bc_005: How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?
+[89/100] claude-qwen35-9b num_001: What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?
+[90/100] claude-qwen35-9b num_002: What is the physical meaning of the fields advanced by the FDTD solver?
+[91/100] claude-qwen35-9b num_007: What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?
+[92/100] claude-qwen35-9b build_001: Which third-party libraries does IPPL depend on, and what are they used for?
+[31/100] claude-gemma4-12b cls_003: What does the FieldLayout class do and what are its main template parameters?
+[93/100] claude-qwen35-9b build_002: What C++ standard does IPPL require, and why?
+[94/100] claude-qwen35-9b build_003: How is IPPL configured with CMake to enable a GPU build?
+[95/100] claude-qwen35-9b build_004: What options does INSTALLATION.md describe for configuring Kokkos for IPPL?
+[96/100] claude-qwen35-9b build_005: How do I install IPPL on the EULER cluster according to the documentation?
+[97/100] claude-qwen35-9b test_002: What naming conventions does WORKFLOW.md require for variables, constants, and member variables?
+[98/100] claude-qwen35-9b test_003: When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?
+[32/100] claude-gemma4-12b cls_004: What is the purpose of the ParticleBase class and how is it meant to be used?
+[99/100] claude-qwen35-9b test_004: How does IPPL profile MPI calls using mpiP?
+[100/100] claude-qwen35-9b test_005: What does the SLURM job template for Gwendolen in the README look like?
+Wrote 100 answers (0 failures) to /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/answers/claude_code_qwen35_9b_20260619T122825Z.json
+
+=== Running claude-gemma4-12b (100 questions) -> claude_code_gemma4_12b_20260619T123649Z.json ===
+[1/100] claude-gemma4-12b file_001: What does Ippl.h do?
+[2/100] claude-gemma4-12b file_002: What is the purpose of Ippl.cpp?
+[33/100] claude-gemma4-12b cls_005: What does the ParticleSpatialLayout class do?
+[3/100] claude-gemma4-12b file_003: What does FFT.hpp implement?
+[4/100] claude-gemma4-12b file_004: What is BareField.h responsible for?
+[5/100] claude-gemma4-12b file_005: What does Field.h add on top of BareField?
+[6/100] claude-gemma4-12b file_006: What role does HaloCells.h play in IPPL?
+[34/100] claude-gemma4-12b cls_006: What is the responsibility of UniformCartesian?
+[7/100] claude-gemma4-12b file_007: What is the purpose of FieldLayout.h?
+[8/100] claude-gemma4-12b file_008: What does ParticleBase.h define?
+[9/100] claude-gemma4-12b file_009: What is the purpose of ParticleSpatialLayout.h?
+[10/100] claude-gemma4-12b file_010: What does ParticleAttrib.h implement?
+[11/100] claude-gemma4-12b file_011: What is UniformCartesian.h for?
+[35/100] claude-gemma4-12b cls_007: What does the Mesh base class define?
+[12/100] claude-gemma4-12b file_012: What does OrthogonalRecursiveBisection.h do?
+[13/100] claude-gemma4-12b file_013: What is the purpose of CIC.h in the Interpolation subsystem?
+[14/100] claude-gemma4-12b loc_001: Where is FFT initialization implemented in IPPL?
+[15/100] claude-gemma4-12b loc_002: Where does IPPL set up the MPI environment?
+[36/100] claude-gemma4-12b cls_008: What is the responsibility of the Communicator class in ippl::mpi?
+[16/100] claude-gemma4-12b loc_003: Where is Kokkos initialized and finalized inside IPPL?
+[17/100] claude-gemma4-12b loc_004: Where is the orthogonal recursive bisection load balancer implemented?
+[18/100] claude-gemma4-12b loc_005: Where are boundary conditions applied to a Field?
+[19/100] claude-gemma4-12b loc_006: Where is the CIC (cloud-in-cell) scatter implemented?
+[20/100] claude-gemma4-12b loc_007: Where is the CIC gather implemented?
+[37/100] claude-gemma4-12b cls_009: What is the role of the Environment class in ippl::mpi?
+[21/100] claude-gemma4-12b loc_008: Where is halo exchange for BareField implemented?
+[22/100] claude-gemma4-12b loc_009: Where are the FFT-based open-boundary Poisson solver routines defined?
+[23/100] claude-gemma4-12b loc_010: Where is the conjugate gradient solver algorithm implemented?
+[24/100] claude-gemma4-12b loc_011: Where is the FEM Poisson solver implemented?
+[38/100] claude-gemma4-12b cls_010: What does the Archive class do in the Communicate module?
+[25/100] claude-gemma4-12b loc_012: Where is the FDTD Maxwell solver base class defined?
+[26/100] claude-gemma4-12b loc_013: Where is the LagrangeSpace class defined?
+[27/100] claude-gemma4-12b loc_014: Where is the particle update routine (that moves particles across ranks) implemented?
+[28/100] claude-gemma4-12b loc_015: Where are IPPL timers defined?
+[39/100] claude-gemma4-12b cls_011: What is the role of the BConds class?
+[29/100] claude-gemma4-12b cls_001: What is the main responsibility of the BareField class?
+[30/100] claude-gemma4-12b cls_002: What is the main responsibility of the Field class compared to BareField?
+[31/100] claude-gemma4-12b cls_003: What does the FieldLayout class do and what are its main template parameters?
+[32/100] claude-gemma4-12b cls_004: What is the purpose of the ParticleBase class and how is it meant to be used?
+[40/100] claude-gemma4-12b cls_012: What is the role of the BaseManager class?
+[33/100] claude-gemma4-12b cls_005: What does the ParticleSpatialLayout class do?
+[34/100] claude-gemma4-12b cls_006: What is the responsibility of UniformCartesian?
+[35/100] claude-gemma4-12b cls_007: What does the Mesh base class define?
+[36/100] claude-gemma4-12b cls_008: What is the responsibility of the Communicator class in ippl::mpi?
+[37/100] claude-gemma4-12b cls_009: What is the role of the Environment class in ippl::mpi?
+[41/100] claude-gemma4-12b cls_013: What does the Index class represent and what operations does it support?
+[38/100] claude-gemma4-12b cls_010: What does the Archive class do in the Communicate module?
+[39/100] claude-gemma4-12b cls_011: What is the role of the BConds class?
+[40/100] claude-gemma4-12b cls_012: What is the role of the BaseManager class?
+[41/100] claude-gemma4-12b cls_013: What does the Index class represent and what operations does it support?
+[42/100] claude-gemma4-12b alg_001: How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?
+[42/100] claude-gemma4-12b alg_001: How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?
+[43/100] claude-gemma4-12b alg_002: How does the FFT-based periodic Poisson solver work in IPPL?
+[44/100] claude-gemma4-12b alg_003: How does the truncated Green periodic Poisson solver differ from the standard periodic one?
+[45/100] claude-gemma4-12b alg_004: How does IPPL's CG solver iterate in the PCG.h implementation?
+[46/100] claude-gemma4-12b alg_005: How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?
+[47/100] claude-gemma4-12b alg_006: How does the standard FDTD solver advance the electromagnetic field in time?
+[48/100] claude-gemma4-12b alg_007: How does the LagrangeSpace class evaluate degrees of freedom per element?
+[49/100] claude-gemma4-12b alg_008: How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?
+[50/100] claude-gemma4-12b alg_009: How does the orthogonal recursive bisection decide where to cut the domain?
+[51/100] claude-gemma4-12b alg_010: How does inverse transform sampling generate particles from a given distribution in IPPL?
+[52/100] claude-gemma4-12b alg_011: How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?
+[53/100] claude-gemma4-12b alg_012: How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?
+[54/100] claude-gemma4-12b flow_001: How does charge density flow from particles to the grid in a typical PIC step in IPPL?
+[55/100] claude-gemma4-12b flow_002: How does the electric field flow from the grid back to particles after a Poisson solve?
+[56/100] claude-gemma4-12b flow_003: How are halo cells exchanged between neighboring MPI ranks for a BareField?
+[57/100] claude-gemma4-12b flow_004: How are particles migrated between MPI ranks by ParticleSpatialLayout?
+[58/100] claude-gemma4-12b flow_005: How does FieldLayout decide which index ranges live on which rank?
+[43/100] claude-gemma4-12b alg_002: How does the FFT-based periodic Poisson solver work in IPPL?
+[59/100] claude-gemma4-12b flow_006: How is a ParameterList used to configure the FFT and solver classes?
+[60/100] claude-gemma4-12b flow_007: How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?
+[61/100] claude-gemma4-12b flow_008: How does the FEM solver move data between fields and FEMVector representations?
+[62/100] claude-gemma4-12b flow_009: How does OrthogonalRecursiveBisection redistribute particles after rebalancing?
+[63/100] claude-gemma4-12b api_001: How do I create a 3D Field of doubles in IPPL?
+[64/100] claude-gemma4-12b api_002: How do I construct a UniformCartesian mesh with custom spacing and origin?
+[44/100] claude-gemma4-12b alg_003: How does the truncated Green periodic Poisson solver differ from the standard periodic one?
+[65/100] claude-gemma4-12b api_003: How do I attach a boundary condition (e.g. periodic) to a Field?
+[66/100] claude-gemma4-12b api_004: How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?
+[67/100] claude-gemma4-12b api_005: How do I call ippl::initialize and ippl::finalize in a main program?
+[68/100] claude-gemma4-12b api_006: How do I set up and run a forward FFT on an IPPL Field?
+[69/100] claude-gemma4-12b api_007: How do I construct an FFTPeriodicPoissonSolver and solve for the potential?
+[70/100] claude-gemma4-12b api_008: How do I invoke the conjugate gradient Poisson solver on a Field?
+[71/100] claude-gemma4-12b api_009: How do I sample particles from a normal distribution using IPPL Random utilities?
+[45/100] claude-gemma4-12b alg_004: How does IPPL's CG solver iterate in the PCG.h implementation?
+[72/100] claude-gemma4-12b api_010: How do I register particle attributes with ParticleBase so that they are communicated on migration?
+[73/100] claude-gemma4-12b api_011: How do I access the MPI rank and size through the IPPL Communicator?
+[74/100] claude-gemma4-12b api_012: How do I use IpplTimings to measure a region of code?
+[46/100] claude-gemma4-12b alg_005: How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?
+[75/100] claude-gemma4-12b par_001: How does IPPL achieve performance portability across CPUs and GPUs?
+[76/100] claude-gemma4-12b par_002: Why does IPPL use Kokkos::View for field storage?
+[77/100] claude-gemma4-12b par_003: How does IPPL parallelize loops over field indices using Kokkos RangePolicy?
+[78/100] claude-gemma4-12b par_004: How does IPPL support mixed precision (float vs double) for fields?
+[79/100] claude-gemma4-12b par_005: How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?
+[80/100] claude-gemma4-12b par_006: What is the purpose of ParallelDispatch.h and what helpers does it expose?
+[81/100] claude-gemma4-12b par_007: How does the Archive class serialize/deserialize Kokkos views for MPI transfer?
+[82/100] claude-gemma4-12b par_008: How are MPI tags managed in IPPL to avoid collisions across subsystems?
+[83/100] claude-gemma4-12b par_009: What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?
+[84/100] claude-gemma4-12b bc_001: What boundary condition types are provided in BcTypes.h?
+[85/100] claude-gemma4-12b bc_002: How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?
+[86/100] claude-gemma4-12b bc_003: How are ghost cells populated during a halo exchange?
+[47/100] claude-gemma4-12b alg_006: How does the standard FDTD solver advance the electromagnetic field in time?
+[87/100] claude-gemma4-12b bc_004: How are physical-cell values copied into ghost cells for periodic boundary conditions?
+[88/100] claude-gemma4-12b bc_005: How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?
+[89/100] claude-gemma4-12b num_001: What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?
+[90/100] claude-gemma4-12b num_002: What is the physical meaning of the fields advanced by the FDTD solver?
+[91/100] claude-gemma4-12b num_007: What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?
+[92/100] claude-gemma4-12b build_001: Which third-party libraries does IPPL depend on, and what are they used for?
+[93/100] claude-gemma4-12b build_002: What C++ standard does IPPL require, and why?
+[48/100] claude-gemma4-12b alg_007: How does the LagrangeSpace class evaluate degrees of freedom per element?
+[94/100] claude-gemma4-12b build_003: How is IPPL configured with CMake to enable a GPU build?
+[95/100] claude-gemma4-12b build_004: What options does INSTALLATION.md describe for configuring Kokkos for IPPL?
+[96/100] claude-gemma4-12b build_005: How do I install IPPL on the EULER cluster according to the documentation?
+[97/100] claude-gemma4-12b test_002: What naming conventions does WORKFLOW.md require for variables, constants, and member variables?
+[98/100] claude-gemma4-12b test_003: When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?
+[99/100] claude-gemma4-12b test_004: How does IPPL profile MPI calls using mpiP?
+[100/100] claude-gemma4-12b test_005: What does the SLURM job template for Gwendolen in the README look like?
+[49/100] claude-gemma4-12b alg_008: How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?
+Wrote 100 answers (77 failures) to /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/answers/claude_code_gemma4_12b_20260619T123649Z.json
+Done. Answers are in docs/evaluations/answers/ (claude_code_*.json).
+[50/100] claude-gemma4-12b alg_009: How does the orthogonal recursive bisection decide where to cut the domain?
+[51/100] claude-gemma4-12b alg_010: How does inverse transform sampling generate particles from a given distribution in IPPL?
+[52/100] claude-gemma4-12b alg_011: How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?
+[53/100] claude-gemma4-12b alg_012: How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?
+[54/100] claude-gemma4-12b flow_001: How does charge density flow from particles to the grid in a typical PIC step in IPPL?
+[55/100] claude-gemma4-12b flow_002: How does the electric field flow from the grid back to particles after a Poisson solve?
+[56/100] claude-gemma4-12b flow_003: How are halo cells exchanged between neighboring MPI ranks for a BareField?
+[57/100] claude-gemma4-12b flow_004: How are particles migrated between MPI ranks by ParticleSpatialLayout?
+[58/100] claude-gemma4-12b flow_005: How does FieldLayout decide which index ranges live on which rank?
+[59/100] claude-gemma4-12b flow_006: How is a ParameterList used to configure the FFT and solver classes?
+[60/100] claude-gemma4-12b flow_007: How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?
+[61/100] claude-gemma4-12b flow_008: How does the FEM solver move data between fields and FEMVector representations?
+[62/100] claude-gemma4-12b flow_009: How does OrthogonalRecursiveBisection redistribute particles after rebalancing?
+[63/100] claude-gemma4-12b api_001: How do I create a 3D Field of doubles in IPPL?
+[64/100] claude-gemma4-12b api_002: How do I construct a UniformCartesian mesh with custom spacing and origin?
+[65/100] claude-gemma4-12b api_003: How do I attach a boundary condition (e.g. periodic) to a Field?
+[66/100] claude-gemma4-12b api_004: How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?
+[67/100] claude-gemma4-12b api_005: How do I call ippl::initialize and ippl::finalize in a main program?
+[68/100] claude-gemma4-12b api_006: How do I set up and run a forward FFT on an IPPL Field?
+[69/100] claude-gemma4-12b api_007: How do I construct an FFTPeriodicPoissonSolver and solve for the potential?
+[70/100] claude-gemma4-12b api_008: How do I invoke the conjugate gradient Poisson solver on a Field?
+[71/100] claude-gemma4-12b api_009: How do I sample particles from a normal distribution using IPPL Random utilities?
+[72/100] claude-gemma4-12b api_010: How do I register particle attributes with ParticleBase so that they are communicated on migration?
+[73/100] claude-gemma4-12b api_011: How do I access the MPI rank and size through the IPPL Communicator?
+[74/100] claude-gemma4-12b api_012: How do I use IpplTimings to measure a region of code?
+[75/100] claude-gemma4-12b par_001: How does IPPL achieve performance portability across CPUs and GPUs?
+[76/100] claude-gemma4-12b par_002: Why does IPPL use Kokkos::View for field storage?
+[77/100] claude-gemma4-12b par_003: How does IPPL parallelize loops over field indices using Kokkos RangePolicy?
+[78/100] claude-gemma4-12b par_004: How does IPPL support mixed precision (float vs double) for fields?
+[79/100] claude-gemma4-12b par_005: How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?
+[80/100] claude-gemma4-12b par_006: What is the purpose of ParallelDispatch.h and what helpers does it expose?
+[81/100] claude-gemma4-12b par_007: How does the Archive class serialize/deserialize Kokkos views for MPI transfer?
+[82/100] claude-gemma4-12b par_008: How are MPI tags managed in IPPL to avoid collisions across subsystems?
+[83/100] claude-gemma4-12b par_009: What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?
+[84/100] claude-gemma4-12b bc_001: What boundary condition types are provided in BcTypes.h?
+[85/100] claude-gemma4-12b bc_002: How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?
+[86/100] claude-gemma4-12b bc_003: How are ghost cells populated during a halo exchange?
+[87/100] claude-gemma4-12b bc_004: How are physical-cell values copied into ghost cells for periodic boundary conditions?
+[88/100] claude-gemma4-12b bc_005: How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?
+[89/100] claude-gemma4-12b num_001: What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?
+[90/100] claude-gemma4-12b num_002: What is the physical meaning of the fields advanced by the FDTD solver?
+[91/100] claude-gemma4-12b num_007: What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?
+[92/100] claude-gemma4-12b build_001: Which third-party libraries does IPPL depend on, and what are they used for?
+[93/100] claude-gemma4-12b build_002: What C++ standard does IPPL require, and why?
+[94/100] claude-gemma4-12b build_003: How is IPPL configured with CMake to enable a GPU build?
+[95/100] claude-gemma4-12b build_004: What options does INSTALLATION.md describe for configuring Kokkos for IPPL?
+[96/100] claude-gemma4-12b build_005: How do I install IPPL on the EULER cluster according to the documentation?
+[97/100] claude-gemma4-12b test_002: What naming conventions does WORKFLOW.md require for variables, constants, and member variables?
+[98/100] claude-gemma4-12b test_003: When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?
+[99/100] claude-gemma4-12b test_004: How does IPPL profile MPI calls using mpiP?
+[100/100] claude-gemma4-12b test_005: What does the SLURM job template for Gwendolen in the README look like?
+Wrote 100 answers (6 failures) to /psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/answers/claude_code_gemma4_12b_20260619T120051Z.json

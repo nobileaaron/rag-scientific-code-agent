@@ -94,7 +94,7 @@ LITELLM_PORT=4100 OLLAMA_PORT=11500 ./run_eval_ssh.sh
 PER_QUESTION_TIMEOUT=2400 ./run_eval_ssh.sh
 
 # Different Ollama tags to ensure present:
-OLLAMA_MODELS="qwen2.5-coder:7b-instruct-q4_K_M gemma4:12b" ./run_eval_ssh.sh
+OLLAMA_MODEL_TAGS="qwen2.5-coder:7b-instruct-q4_K_M gemma4:12b" ./run_eval_ssh.sh
 
 # Specific Python interpreter (e.g. the project venv):
 PYTHON_BIN=/Users/aaron/semester_project/.venv/bin/python ./run_eval_ssh.sh

@@ -78,13 +78,17 @@ def build_env(model_name: str) -> dict:
 def run_one(model_name: str, prompt: str, args, env: dict):
     # --allowedTools is variadic; pass each tool as its own token.
     tool_tokens = [t.strip() for t in args.allowed_tools.split(",") if t.strip()]
+    # The prompt is fed via stdin rather than as a trailing positional: both
+    # --allowedTools and --add-dir take variadic values (<tools...>/<directories...>),
+    # so a positional prompt placed after them gets swallowed as an extra value,
+    # leaving claude --print with no input ("Input must be provided either through
+    # stdin or as a prompt argument when using --print").
     cmd = [
         "claude",
         "-p",
         "--model", model_name,
         "--allowedTools", *tool_tokens,
         "--add-dir", str(REPO_ROOT / "data" / "raw" / "ippl"),
-        prompt,
     ]
     start = time.monotonic()
     try:
@@ -92,6 +96,7 @@ def run_one(model_name: str, prompt: str, args, env: dict):
             cmd,
             cwd=str(REPO_ROOT),
             text=True,
+            input=prompt,
             capture_output=True,
             timeout=args.timeout,
             check=False,

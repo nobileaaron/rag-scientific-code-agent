@@ -1,0 +1,824 @@
+{
+  "schema": "claude-code-model-matrix/v1",
+  "model": "claude-qwen35-9b",
+  "label": "qwen35_9b",
+  "run_complete": true,
+  "run_metadata": {
+    "run_label": "qwen35_9b",
+    "claude_model": "claude-qwen35-9b",
+    "ollama_tag": "qwen3.5:9b",
+    "run_started_at_utc": "2026-06-19T12:28:25.576782+00:00",
+    "run_finished_at_utc": "2026-06-19T12:36:49.219926+00:00",
+    "hostname": "merlin-g-100.psi.ch",
+    "anthropic_base_url": "http://127.0.0.1:4001",
+    "questions_source": "/psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/eval_questions_v2.json",
+    "questions_version": "v2",
+    "per_question_timeout_seconds": 1800,
+    "allowed_tools": "Read,Grep,Glob",
+    "answer_count": 100,
+    "failure_count": 0
+  },
+  "questions_source": "/psi/home/ext-nobile_a/rag-scientific-code-agent/docs/evaluations/eval_questions_v2.json",
+  "answers": [
+    {
+      "id": "file_001",
+      "category": "file_purpose",
+      "question": "What does Ippl.h do?",
+      "answer": "I'll examine `Ippl.h` directly by reading its contents to understand what it does in the IPPL benchmark codebase.",
+      "error": "",
+      "latency_seconds": 24.680582469096407
+    },
+    {
+      "id": "file_002",
+      "category": "file_purpose",
+      "question": "What is the purpose of Ippl.cpp?",
+      "answer": "I'll explore the Ippl.cpp file to determine its purpose by examining its structure, function signatures, and comments.",
+      "error": "",
+      "latency_seconds": 22.74501196993515
+    },
+    {
+      "id": "file_003",
+      "category": "file_purpose",
+      "question": "What does FFT.hpp implement?",
+      "answer": "I'll explore the IPPL repository to understand what `FFT.hpp` implements. Let me start by examining this header file in `data/raw/ippl`.",
+      "error": "",
+      "latency_seconds": 2.921325656818226
+    },
+    {
+      "id": "file_004",
+      "category": "file_purpose",
+      "question": "What is BareField.h responsible for?",
+      "answer": "I'll explore the repository to find information about `BareField.h`. Let me search for it in the IPPL data directory.",
+      "error": "",
+      "latency_seconds": 8.411984448088333
+    },
+    {
+      "id": "file_005",
+      "category": "file_purpose",
+      "question": "What does Field.h add on top of BareField?",
+      "answer": "I'll explore the repository to understand what Field.h adds on top of BareField by examining both header files and their implementations.\n\n```bash\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data/raw -name \"BareField*\" -o -name \"Field*h\" 2>/dev/null | head -20\n```",
+      "error": "",
+      "latency_seconds": 4.618270098930225
+    },
+    {
+      "id": "file_006",
+      "category": "file_purpose",
+      "question": "What role does HaloCells.h play in IPPL?",
+      "answer": "I'll search through the IPPL repository to understand what role `HaloCells.h` plays in the codebase.\n\n```bash\nfind data/raw/ippl -name \"HaloCells*\" 2>/dev/null | head -20\n```",
+      "error": "",
+      "latency_seconds": 4.693198210094124
+    },
+    {
+      "id": "file_007",
+      "category": "file_purpose",
+      "question": "What is the purpose of FieldLayout.h?",
+      "answer": "I'll explore the IPPL repository to understand the purpose of `FieldLayout.h`. Let me first locate and examine this file.\n\n```bash\nfind data/raw/ippl -name \"FieldLayout.h\" 2>/dev/null | head -10 && cat $(find data/raw/ippl -name \"ForwardDeclare*.h\" 2>/dev/null) 2>/dev/null\n```",
+      "error": "",
+      "latency_seconds": 4.3462767279706895
+    },
+    {
+      "id": "file_008",
+      "category": "file_purpose",
+      "question": "What does ParticleBase.h define?",
+      "answer": "I'll explore the repository to find what `ParticleBase.h` defines. Let me search for this header file in the IPPL source code.\n\n```shell\nfind data/raw/ippl -name \"ParticleBase.h\" -type f 2>/dev/null | head -5\n```",
+      "error": "",
+      "latency_seconds": 4.54814273910597
+    },
+    {
+      "id": "file_009",
+      "category": "file_purpose",
+      "question": "What is the purpose of ParticleSpatialLayout.h?",
+      "answer": "I'll explore the repository to understand the purpose of `ParticleSpatialLayout.h`.",
+      "error": "",
+      "latency_seconds": 3.6887141331098974
+    },
+    {
+      "id": "file_010",
+      "category": "file_purpose",
+      "question": "What does ParticleAttrib.h implement?",
+      "answer": "I'll examine `ParticleAttrib.h` to determine what it implements.",
+      "error": "",
+      "latency_seconds": 3.8194069319870323
+    },
+    {
+      "id": "file_011",
+      "category": "file_purpose",
+      "question": "What is UniformCartesian.h for?",
+      "answer": "I'll search for `UniformCartesian.h` in the codebase to understand its purpose. Let me first check what's available in `data/raw/ippl`.\n\n```shell\nfind data/raw -name \"UniformCartesian*\" 2>/dev/null || echo \"Not found yet\"\n```",
+      "error": "",
+      "latency_seconds": 4.30387123208493
+    },
+    {
+      "id": "file_012",
+      "category": "file_purpose",
+      "question": "What does OrthogonalRecursiveBisection.h do?",
+      "answer": "I'll search for `OrthogonalRecursiveBisection.h` in the IPPL source tree to determine its purpose.\n\n```bash\nfind /psi/home/ext-nobile_a/data/raw/ippl -name \"OrthogonalRecursiveBisection*\" 2>/dev/null | head -50\n```",
+      "error": "",
+      "latency_seconds": 3.3612884629983455
+    },
+    {
+      "id": "file_013",
+      "category": "file_purpose",
+      "question": "What is the purpose of CIC.h in the Interpolation subsystem?",
+      "answer": "I'll explore the repository to understand the purpose of `CIC.h` in the Interpolation subsystem. Let me start by locating this file and examining it along with its usage context.\n\n```bash\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data/raw/ippl -name \"CIC.h\" 2>/dev/null | head -5\n```",
+      "error": "",
+      "latency_seconds": 3.9066978790797293
+    },
+    {
+      "id": "loc_001",
+      "category": "definition_location",
+      "question": "Where is FFT initialization implemented in IPPL?",
+      "answer": "I'll explore the IPPL source to locate where FFT initialization is implemented. Let me search through the repository.\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | xargs grep -l \"FFT\\|fftinit\" 2>/dev/null || true\n```",
+      "error": "",
+      "latency_seconds": 7.619031962007284
+    },
+    {
+      "id": "loc_002",
+      "category": "definition_location",
+      "question": "Where does IPPL set up the MPI environment?",
+      "answer": "I'll search through the IPPL codebase to find where the MPI (Message Passing Interface) environment is set up. Let me explore the source files in `data/raw/ippl`.\n\n```shell\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | head -30\n```",
+      "error": "",
+      "latency_seconds": 4.959880144102499
+    },
+    {
+      "id": "loc_003",
+      "category": "definition_location",
+      "question": "Where is Kokkos initialized and finalized inside IPPL?",
+      "answer": "I'll explore the IPPL repository to find where Kokkos is initialized and finalized. Let me search through the source files.\n\n```bash\ngrep -r \"Kokkos::\" data/raw/ippl/src --include=\"*.cpp\" --include=\"*.hpp\" | grep -E \"(initialize|finalize)\" \n```",
+      "error": "",
+      "latency_seconds": 3.539634102024138
+    },
+    {
+      "id": "loc_004",
+      "category": "definition_location",
+      "question": "Where is the orthogonal recursive bisection load balancer implemented?",
+      "answer": "I'll search for where the orthogonal recursive bisection (ORB) load balancer is implemented in this codebase.\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | head -30 && grep -rl \"OrthogonalRecursiveBisection\\|orb.*balance\\|OR B*load.bal*\" . 2>/dev/null || true\n```",
+      "error": "",
+      "latency_seconds": 5.026957000838593
+    },
+    {
+      "id": "loc_005",
+      "category": "definition_location",
+      "question": "Where are boundary conditions applied to a Field?",
+      "answer": "I'll explore the IPPL source code to find where boundary conditions are applied to Fields. Let me search for relevant declarations across `.h`/`.cpp` files.\n\n## Step 1: Search for Field-related header definitions and applications of BCs\n\n```bash\nfind data/raw/ippl -type f \\( -name '*.hpp' -o -name '*.h' \\) | xargs grep -l \"boundary\\|BoundaryCondition\" 2>/dev/null || echo 'No boundary declarations found in headers.'\n```",
+      "error": "",
+      "latency_seconds": 4.363981547998264
+    },
+    {
+      "id": "loc_006",
+      "category": "definition_location",
+      "question": "Where is the CIC (cloud-in-cell) scatter implemented?",
+      "answer": "I'll explore the codebase to locate where the CIC (cloud-in-cell) scatter is implemented. Let me search through the IPPL source files under `data/raw/ippl`.\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | head -30\n```",
+      "error": "",
+      "latency_seconds": 4.556122126057744
+    },
+    {
+      "id": "loc_007",
+      "category": "definition_location",
+      "question": "Where is the CIC gather implemented?",
+      "answer": "I'll explore the repository code in `data/raw/ippl` to find where the CIC gather implementation is located, searching for references to \"CIC\" (likely a class or function name) combined with \"gather\".",
+      "error": "",
+      "latency_seconds": 4.419243434909731
+    },
+    {
+      "id": "loc_008",
+      "category": "definition_location",
+      "question": "Where is halo exchange for BareField implemented?",
+      "answer": "I'll search for where `halo exchange` is implemented for `BareField` in the IPPL codebase. Let me first explore the relevant source files.\n\n```bash\nfind /psi/home/ext-nobile_a/data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | head -30\n```",
+      "error": "",
+      "latency_seconds": 5.240065906895325
+    },
+    {
+      "id": "loc_009",
+      "category": "definition_location",
+      "question": "Where are the FFT-based open-boundary Poisson solver routines defined?",
+      "answer": "I'll explore the repository to locate the FFT-based open-boundary Poisson solver routines in the IPPL source code under `data/raw/ippl`.",
+      "error": "",
+      "latency_seconds": 3.7131181571166962
+    },
+    {
+      "id": "loc_010",
+      "category": "definition_location",
+      "question": "Where is the conjugate gradient solver algorithm implemented?",
+      "answer": "I'll search for the conjugate gradient solver implementation in the IPPL source tree and documentation.\n\n```bash\ngrep -r \"conj\" /psi/home/ext-nobile_a/rag-scientific-code-agent/data/raw/ippl --include=\"*.cpp,hpp,header,cpp,HPP,C\" | head -30\n```",
+      "error": "",
+      "latency_seconds": 6.285393130965531
+    },
+    {
+      "id": "loc_011",
+      "category": "definition_location",
+      "question": "Where is the FEM Poisson solver implemented?",
+      "answer": "I'll explore the repository to find where the FEM Poisson solver is implemented. Let me start by searching for relevant files and symbols.\n\n```bash\nfind data/raw/ippl -name \"*.cpp\" -o -name \"*.h\" | xargs grep -l \"Poisson\" 2>/dev/null | head -20\n```",
+      "error": "",
+      "latency_seconds": 3.228244101861492
+    },
+    {
+      "id": "loc_012",
+      "category": "definition_location",
+      "question": "Where is the FDTD Maxwell solver base class defined?",
+      "answer": "I'll explore the IPPL repository under `data/raw/ippl` to locate the FDTD Maxwell solver's base class definition. Let me start by examining relevant code structures.\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | head -20\n```",
+      "error": "",
+      "latency_seconds": 5.5474476490635425
+    },
+    {
+      "id": "loc_013",
+      "category": "definition_location",
+      "question": "Where is the LagrangeSpace class defined?",
+      "answer": "I'll search for where the `LagrangeSpace` class is defined in the codebase by examining the C++ files under `data/raw/ippl`.",
+      "error": "",
+      "latency_seconds": 8.097883906913921
+    },
+    {
+      "id": "loc_014",
+      "category": "definition_location",
+      "question": "Where is the particle update routine (that moves particles across ranks) implemented?",
+      "answer": "I'll explore the repository to find where the particle update routine for moving particles across ranks is implemented. Let me search through the codebase.\n\n```shell\nfind data/raw/ippl -name \"*.cpp\" -o -name \"*.h\" | head -30\n```",
+      "error": "",
+      "latency_seconds": 4.434655893826857
+    },
+    {
+      "id": "loc_015",
+      "category": "definition_location",
+      "question": "Where are IPPL timers defined?",
+      "answer": "I'll search for timer definitions in the IPPL source code located at `data/raw/ippl`.",
+      "error": "",
+      "latency_seconds": 3.975995510118082
+    },
+    {
+      "id": "cls_001",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the BareField class?",
+      "answer": "I'll search for information about the `BareField` class to understand its main responsibility.\n\n<shell_command>grep -r \"class BareField\" /psi/home/ext-nobile_a/data/raw --include=\"*.cpp\" --include=\".h*\" 2>/dev/null | head -20</shell_command>",
+      "error": "",
+      "latency_seconds": 4.643920962931588
+    },
+    {
+      "id": "cls_002",
+      "category": "class_responsibility",
+      "question": "What is the main responsibility of the Field class compared to BareField?",
+      "answer": "I'll analyze the differences between `Field` and `BareField` from the IPPL source code. Let me explore the relevant files.",
+      "error": "",
+      "latency_seconds": 3.221648273989558
+    },
+    {
+      "id": "cls_003",
+      "category": "class_responsibility",
+      "question": "What does the FieldLayout class do and what are its main template parameters?",
+      "answer": "I'll search for the `FieldLayout` class in the IPPL codebase under `data/raw/ippl`.",
+      "error": "",
+      "latency_seconds": 5.711102884961292
+    },
+    {
+      "id": "cls_004",
+      "category": "class_responsibility",
+      "question": "What is the purpose of the ParticleBase class and how is it meant to be used?",
+      "answer": "I'll explore the IPPL source code to understand the purpose of `ParticleBase` class. Let me search for its definition first.\n\n```shell\nfind data/raw/ippl -name \"*.cpp\" -o -name \"*.h\" | xargs grep -l \"class ParticleBase\" 2>/dev/null | head -5\n```",
+      "error": "",
+      "latency_seconds": 7.144455893198028
+    },
+    {
+      "id": "cls_005",
+      "category": "class_responsibility",
+      "question": "What does the ParticleSpatialLayout class do?",
+      "answer": "I'll search for and examine the `ParticleSpatialLayout` class definition in the repository.\n\n```bash\ngrep -r \"class ParticleSpatialLayout\" data/raw/ippl/ --include=\"*.cpp\" --include=\"*.hpp\"\n```",
+      "error": "",
+      "latency_seconds": 3.9210519450716674
+    },
+    {
+      "id": "cls_006",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of UniformCartesian?",
+      "answer": "I'll explore the repository to find information about `UniformCartesian` and determine its responsibility.\n\n```bash\nfind data/raw/ippl -name \"*.hpp\" -o -name \"*.h\" | xargs grep -l \"class UniformCartesian\\|struct UniformCartesian\" 2>/dev/null || true\ngrep -r \"uniform_cartesian\" --include=\"*.cpp\" --include=\"*.hpp\" --include=\"*.md\" data/raw/ippl/ 2>/dev/null | head -50\n```",
+      "error": "",
+      "latency_seconds": 3.436301273992285
+    },
+    {
+      "id": "cls_007",
+      "category": "class_responsibility",
+      "question": "What does the Mesh base class define?",
+      "answer": "I'll search for the `Mesh` base class definition in the IPPL source tree under `data/raw/ippl`.\n\n```bash\nfind data/raw/ippl -name \"*.h\" -o -name \"*.hpp\" | xargs grep -l \"class Mesh\" 2>/dev/null || find data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.c\" \\) | head -5 | xargs cat\n```\n\nLet me explore the codebase systematically:\n\n```bash\ngrep -rn \"^.*class Mesh[^{]\" --include=\"*.h\" --include=\"*.hpp\" data/raw/ippl 2>/dev/null | head -10\necho \"---\"\nls -la data/raw/ippl/src/ingestion/*.py 2>/dev/null || ls -la data/raw/ippl/*Mesh* 2>/dev/null || find data/raw/ippl -name \"*mesh*\" -o -name \"*Mesh*\" 2>/dev/null | head -10\n```",
+      "error": "",
+      "latency_seconds": 4.127584470901638
+    },
+    {
+      "id": "cls_008",
+      "category": "class_responsibility",
+      "question": "What is the responsibility of the Communicator class in ippl::mpi?",
+      "answer": "I'll search through the IPPL source code to understand what the `Communicator` class in ippl::mpi does, particularly its responsibilities around MPI communication operations.",
+      "error": "",
+      "latency_seconds": 3.494874788913876
+    },
+    {
+      "id": "cls_009",
+      "category": "class_responsibility",
+      "question": "What is the role of the Environment class in ippl::mpi?",
+      "answer": "I'll explore the IPPL source tree in `data/raw/ippl` to understand what the role of the `Environment` class is in `ippl::mpl`.",
+      "error": "",
+      "latency_seconds": 2.4820887348614633
+    },
+    {
+      "id": "cls_010",
+      "category": "class_responsibility",
+      "question": "What does the Archive class do in the Communicate module?",
+      "answer": "I'll explore the repository to find information about the `Archive` class in the `Communicate` module.\n\n```shell\nfind data/raw/ippl -name \"*.cpp\" -o -name \"*.h\" | xargs grep -l \"class Archive\" 2>/dev/null || echo \"Not found via search\"\n```",
+      "error": "",
+      "latency_seconds": 3.0680122170597315
+    },
+    {
+      "id": "cls_011",
+      "category": "class_responsibility",
+      "question": "What is the role of the BConds class?",
+      "answer": "I'll search for the `BConds` class in the IPPL repository to understand its role. Let me explore the codebase under `data/raw/ippl`.\n\n```bash\nfind data/raw/ippl -name \"*.cpp\" -o -name \"*.h\" | xargs grep -l \"class BConds\\|struct BConds\" 2>/dev/null | head -5\n```",
+      "error": "",
+      "latency_seconds": 3.2611501419451088
+    },
+    {
+      "id": "cls_012",
+      "category": "class_responsibility",
+      "question": "What is the role of the BaseManager class?",
+      "answer": "I'll explore the IPPL source code under `data/raw/ippl` to understand the `BaseManager` class and its responsibilities. Let me search for it in the header/source files.\n\n```bash\nfind data/raw/ippl -name \"*.hpp\" -o -name \"*.h\" | xargs grep -l \"class BaseManager\" 2>/dev/null\n```",
+      "error": "",
+      "latency_seconds": 4.370929011143744
+    },
+    {
+      "id": "cls_013",
+      "category": "class_responsibility",
+      "question": "What does the Index class represent and what operations does it support?",
+      "answer": "I'll search for the `Index` class/struct definition and understand what it represents and which operations it supports based on the IPPL source code.\n\nLet me explore the repository:",
+      "error": "",
+      "latency_seconds": 3.544977017911151
+    },
+    {
+      "id": "alg_001",
+      "category": "algorithm",
+      "question": "How does the FFT-based open-boundary Poisson solver compute the electrostatic potential?",
+      "answer": "I'll explore the repository to understand how the FFT-based open-boundary Poisson solver computes electrostatic potential. Let me search through the source code in `data/raw/ippl`.\n\n```shell\nfind data/raw/ippl -type f \\( -name \"*.h\" -o -name \"*.hpp\" \\) | xargs grep -l \"Poisson\\|FFT\\|electrostatic\\|open-boundary\\|open_boundary\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 3.5505902350414544
+    },
+    {
+      "id": "alg_002",
+      "category": "algorithm",
+      "question": "How does the FFT-based periodic Poisson solver work in IPPL?",
+      "answer": "I'll explore the repository to understand the FFT-based periodic Poisson solver implementation in IPPL.\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | xargs grep -l \"poisson\\|FFT\\|spectral\" 2>/dev/null | head -20\n```",
+      "error": "",
+      "latency_seconds": 2.911210495978594
+    },
+    {
+      "id": "alg_003",
+      "category": "algorithm",
+      "question": "How does the truncated Green periodic Poisson solver differ from the standard periodic one?",
+      "answer": "I'll explore the source tree for Poisson solver implementations to understand how the truncated Green periodic version differs from the standard one. Let me search for relevant code.\n\n```bash\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data/raw/ippl -name \"*.cpp\" -o -name \"*.hpp\" | xargs grep -l \"PoissonSolver\\|GreenPeriodicPoisson\\|truncated.*periodic\" 2>/dev/null | head -30\n```\n\nLet me also search for files with Poisson-related keywords:",
+      "error": "",
+      "latency_seconds": 3.843904003035277
+    },
+    {
+      "id": "alg_004",
+      "category": "algorithm",
+      "question": "How does IPPL's CG solver iterate in the PCG.h implementation?",
+      "answer": "I'll explore the IPPL repository's CG solver implementation, specifically looking at `PCG.h` for how it iterates in its PCG (Preconditioned Conjugate Gradient) algorithm.\n\nLet me first find and examine the relevant source code:\n\n<read_file file_path=\"/psi/home/ext-nobile_a/data/raw/ippl/PCG.h\" path_metadata=\"---\\nname: ppcg-h\\npath_metadata:\">",
+      "error": "",
+      "latency_seconds": 3.2475102979224175
+    },
+    {
+      "id": "alg_005",
+      "category": "algorithm",
+      "question": "How is cloud-in-cell interpolation performed in IPPL (both scatter and gather directions)?",
+      "answer": "I'll explore the IPPL source tree in `data/raw/ippl` to find information about cloud-in-cell interpolation (both scatter and gather directions). Let me search for relevant code files related to particle redistribution, scattering, or these specific algorithms.\n\n```bash\nfind data/raw -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | head -50\n```",
+      "error": "",
+      "latency_seconds": 4.890711008105427
+    },
+    {
+      "id": "alg_006",
+      "category": "algorithm",
+      "question": "How does the standard FDTD solver advance the electromagnetic field in time?",
+      "answer": "I'll explore the IPPL source tree to answer this question about FDTD solver's temporal update scheme.\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | xargs grep -l \"FDTD\\|femtosecond\\|time_update\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 3.3031181199476123
+    },
+    {
+      "id": "alg_007",
+      "category": "algorithm",
+      "question": "How does the LagrangeSpace class evaluate degrees of freedom per element?",
+      "answer": "I'll search for the `LagrangeSpace` class implementation in the IPPL repository codebase to understand how it evaluates degrees of freedom per element.",
+      "error": "",
+      "latency_seconds": 4.501810397952795
+    },
+    {
+      "id": "alg_008",
+      "category": "algorithm",
+      "question": "How is Gauss-Jacobi quadrature implemented and used in IPPL FEM?",
+      "answer": "I'll search through the IPPL codebase to find where Gauss-Jacobi quadrature is implemented and used for FEM computations. Let me start by exploring relevant files in data/raw/ippl.\n\n```bash\nfind /psi/home/ext-nobile_a/data/raw/ippl -name \"*.cpp\" -o -name \"*.h\" | head -100\n```",
+      "error": "",
+      "latency_seconds": 3.588263431098312
+    },
+    {
+      "id": "alg_009",
+      "category": "algorithm",
+      "question": "How does the orthogonal recursive bisection decide where to cut the domain?",
+      "answer": "I'll search through the repository to understand how orthogonal recursive bisection (ORB) decides where to cut domains. Let me start by exploring the source code structure.\n\n```shell\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/src -type f -name \"*.py\" | head -30\nls -la /psi_home_ext_nobile_a/data/raw/ippl\ngrep -r \"orthogonal_recursive\\|ORB\\|recursive_bisection\\|cut_domain\\|bisection_cut\" /psi/home/ext-nobile_a/rag-scientific-code-agent/src --include=\"*.py\" | head -50\n```",
+      "error": "",
+      "latency_seconds": 4.833387459162623
+    },
+    {
+      "id": "alg_010",
+      "category": "algorithm",
+      "question": "How does inverse transform sampling generate particles from a given distribution in IPPL?",
+      "answer": "I'll search through the IPPL codebase to understand how inverse transform sampling generates particles from a given distribution.\n\n```shell\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" -o -name \"*.hpp\" \\) 2>/dev/null | head -50\n```",
+      "error": "",
+      "latency_seconds": 3.103729881113395
+    },
+    {
+      "id": "alg_011",
+      "category": "algorithm",
+      "question": "How does the FFT class interface with heFFTe to perform complex-to-complex and real-to-complex transforms?",
+      "answer": "I'll explore the repository to understand how the FFT class interfaces with heFFTe library for complex-to-complex and real-to-complex transforms. Let me search through the IPPL source code under `data/raw/ippl`.\n\n```shell\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | xargs grep -l \"heffte\\|FFTW3*complex_to_complex\\|real_to_complex\" 2>/dev/null | head -20\n```",
+      "error": "",
+      "latency_seconds": 5.210334036033601
+    },
+    {
+      "id": "alg_012",
+      "category": "algorithm",
+      "question": "How does IPPL's preconditioned CG use the preconditioner defined in Preconditioner.h?",
+      "answer": "I'll explore the IPPL repository to understand how the preconditioned CG uses the preconditioner defined in `Preconditioner.h`.\n\n```bash\nfind data/raw/ippl -name \"Preconditioner.h\" -o -name \"*precond*\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 2.903116671834141
+    },
+    {
+      "id": "flow_001",
+      "category": "data_flow",
+      "question": "How does charge density flow from particles to the grid in a typical PIC step in IPPL?",
+      "answer": "I need to explore the IPPL repository to understand how charge density flows from particles to the grid in a PIC step. Let me examine the source code structure first.",
+      "error": "",
+      "latency_seconds": 9.516467951936647
+    },
+    {
+      "id": "flow_002",
+      "category": "data_flow",
+      "question": "How does the electric field flow from the grid back to particles after a Poisson solve?",
+      "answer": "I'll explore the IPPL source tree in `data/raw/ippl` to understand how electric fields are returned from the grid back to particles after a Poisson solve.",
+      "error": "",
+      "latency_seconds": 7.108135037124157
+    },
+    {
+      "id": "flow_003",
+      "category": "data_flow",
+      "question": "How are halo cells exchanged between neighboring MPI ranks for a BareField?",
+      "answer": "I need to explore the IPPL repository to understand how halo cells are exchanged between MPI ranks for a BareField implementation. Let me start by examining the relevant source files.\n\n```shell\nls -la data/raw/ippl/src/core/ | head -30\n```",
+      "error": "",
+      "latency_seconds": 6.104959288146347
+    },
+    {
+      "id": "flow_004",
+      "category": "data_flow",
+      "question": "How are particles migrated between MPI ranks by ParticleSpatialLayout?",
+      "answer": "I'll search for how particles are migrated between MPI ranks in the IPPL codebase, focusing on `ParticleSpatialLayout`. Let me explore the relevant source files.\n\n```shell\nfind data/raw/ippl/src -type f -name \"*.cpp\" | xargs grep -l \"ParticleSpatialLayout\" 2>/dev/null || true\ngrep -r \"migrate.*particle\\|particle.*migration\\|rank.*transfer\" data/raw/ippl/include --include=\"*.h\" 2>/dev/null | head -30 || true\n```",
+      "error": "",
+      "latency_seconds": 3.4254373551812023
+    },
+    {
+      "id": "flow_005",
+      "category": "data_flow",
+      "question": "How does FieldLayout decide which index ranges live on which rank?",
+      "answer": "I'll explore the repository to understand how `FieldLayout` distributes index ranges across ranks.\n\n```shell\ngrep -r \"class FieldLayout\" /psi/home/ext-nobile_a/data/raw/ippl/ 2>/dev/null || grep -rn \"FieldLayout\" /psi/home/ext-nobile_a/data/raw/ippl/src/*.py 2>/dev/null | head -50\n```",
+      "error": "",
+      "latency_seconds": 6.780875590862706
+    },
+    {
+      "id": "flow_006",
+      "category": "data_flow",
+      "question": "How is a ParameterList used to configure the FFT and solver classes?",
+      "answer": "I'll explore the IPPL repository to understand how `ParameterList` configures `FFT` and solver classes for data flow purposes. Let me search through the relevant codebase.",
+      "error": "",
+      "latency_seconds": 4.495340849971399
+    },
+    {
+      "id": "flow_007",
+      "category": "data_flow",
+      "question": "How does data flow through the BaseManager's pre_step / advance / post_step hooks during a simulation?",
+      "answer": "I'll analyze how data flows through BaseManager hooks during a simulation by exploring the IPPL source code under `data/raw/ippl`.",
+      "error": "",
+      "latency_seconds": 4.064572752220556
+    },
+    {
+      "id": "flow_008",
+      "category": "data_flow",
+      "question": "How does the FEM solver move data between fields and FEMVector representations?",
+      "answer": "I'll search for code related to field-to-FEMVector representation in the IPPL repository under `data/raw/ippl`. Let me explore relevant files.",
+      "error": "",
+      "latency_seconds": 7.123464309843257
+    },
+    {
+      "id": "flow_009",
+      "category": "data_flow",
+      "question": "How does OrthogonalRecursiveBisection redistribute particles after rebalancing?",
+      "answer": "I'll explore the source tree for information about OrthogonalRecursiveBisection and its particle redistribution behavior.\n\n```shell\nfind data/raw/ippl -name \"*.cpp\" -o -name \"*.h\" | xargs grep -l \"OrthogonalRecursiveBisection\" 2>/dev/null || true\n```",
+      "error": "",
+      "latency_seconds": 6.639841152820736
+    },
+    {
+      "id": "api_001",
+      "category": "api_usage",
+      "question": "How do I create a 3D Field of doubles in IPPL?",
+      "answer": "I'll search the IPPL codebase to find how to create a 3D field of doubles. Let me explore the relevant API documentation first, particularly around field creation with type specifications.\n\n```bash\nfind /psi/home/ext-nobile_a/data/raw/ippl -type f \\( -name \"*.h\" -o -name \"*.cpp\" \\) | head -20\n```\n\nLet me also check for any existing evaluation answers that might cover similar API questions:",
+      "error": "",
+      "latency_seconds": 7.428246330004185
+    },
+    {
+      "id": "api_002",
+      "category": "api_usage",
+      "question": "How do I construct a UniformCartesian mesh with custom spacing and origin?",
+      "answer": "I'll search for information about constructing a `UniformCartesian` mesh with custom spacing and origin by exploring the relevant IPPL source files in this repository.\n\n<system-reminder>\nThe user invoked /fast but explicitly authorized me to use any tools as stated before (use only read-only, write memory). Use shell or file system commands when appropriate for exploration tasks like reading code.\n</system-reminder",
+      "error": "",
+      "latency_seconds": 5.187402460025623
+    },
+    {
+      "id": "api_003",
+      "category": "api_usage",
+      "question": "How do I attach a boundary condition (e.g. periodic) to a Field?",
+      "answer": "I'll search the IPPL repository for information about attaching boundary conditions (like periodic) to a Field type. Let me explore the codebase in `data/raw/ippl`.\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | xargs grep -l \"boundary\\|periodic\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 4.0432608120609075
+    },
+    {
+      "id": "api_004",
+      "category": "api_usage",
+      "question": "How do I define a custom particle class that adds mass and velocity attributes on top of ParticleBase?",
+      "answer": "I'll search the repository for information about `ParticleBase` and how to define custom particle classes that add mass and velocity attributes.\n\n```bash\ngrep -r \"ParticleBase\" data/raw/ippl --include=\"*.cpp\" --include=\"*.h\" | head -50\n```",
+      "error": "",
+      "latency_seconds": 5.633184153120965
+    },
+    {
+      "id": "api_005",
+      "category": "api_usage",
+      "question": "How do I call ippl::initialize and ippl::finalize in a main program?",
+      "answer": "I need to explore the repository to understand how `ippl::initialize` and `ippl::finalize` are called in a main program. Let me examine the IPPL source code for API usage patterns.",
+      "error": "",
+      "latency_seconds": 4.876493701012805
+    },
+    {
+      "id": "api_006",
+      "category": "api_usage",
+      "question": "How do I set up and run a forward FFT on an IPPL Field?",
+      "answer": "I'll explore the IPPL source tree to find information about setting up and running a forward FFT on an IPPL Field. Let me start by examining relevant header files.\n\n```shell\nfind data/raw/ippl -name \"*.h\" | xargs grep -l \"FFT\\|FourierTransform\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 3.828524715034291
+    },
+    {
+      "id": "api_007",
+      "category": "api_usage",
+      "question": "How do I construct an FFTPeriodicPoissonSolver and solve for the potential?",
+      "answer": "I'll search for information about `FFTPeriodicPoissonSolver` in the IPPL source tree. Let me explore what's available.\n\n```bash\nfind /psi/home/ext-nobile_a/data/raw -name \"*.cpp\" -o -name \"*.h\" | xargs grep -l \"FFTPeriodicPoissonSolver\" 2>/dev/null || echo \"No direct matches in header files\"\ngrep -r \"class FFTPeriodicPoissonSolver\" /psi/home/ext-nobile_a/data/raw --include=\"*.hpp\" --include=\".h\" 2>/dev/null | head -5\nfind /psi/home/ext-nobile_a/data/raw -name \"*.md\" -o -name \"*.txt\" | xargs grep -l \"FFTPeriodicPoissonSolver\" 2>/dev/null || echo \"\"\ncat /psi/home/ext-nobile_a/docs/README.md 2>/dev/null | head -100\n```",
+      "error": "",
+      "latency_seconds": 5.565089910989627
+    },
+    {
+      "id": "api_008",
+      "category": "api_usage",
+      "question": "How do I invoke the conjugate gradient Poisson solver on a Field?",
+      "answer": "I'll explore the repository to find how to invoke a conjugate gradient Poisson solver on a Field object.",
+      "error": "",
+      "latency_seconds": 4.98972403886728
+    },
+    {
+      "id": "api_009",
+      "category": "api_usage",
+      "question": "How do I sample particles from a normal distribution using IPPL Random utilities?",
+      "answer": "I'll explore the IPPL repository to understand how to sample particles from a normal distribution using their Random utilities.\n\nLet me start by examining the repository structure and finding any random/particle sampling related code:\n\n```bash\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data/raw/ippl -type f \\( -name \"*.h\" -o -name \"*.cpp\" \\) | head -50\n```",
+      "error": "",
+      "latency_seconds": 3.9378534459974617
+    },
+    {
+      "id": "api_010",
+      "category": "api_usage",
+      "question": "How do I register particle attributes with ParticleBase so that they are communicated on migration?",
+      "answer": "I'll search the IPPL source tree for information about `ParticleBase` and how it handles particle attribute registration for migration.\n\n</thinking>\n<cli_call>\nfind_in_files_search\n<path_to_search>[data/raw/ippl]</path_to_search>\n<patterns_to_find><patterns>{\"class_names\": [\"ParticleBase\"], \"keywords\": [\"register\", \"migration\", \"attribute\"]}</patterns></patterns_to_find>\n<use_regex>false</use_regex>\n</cli_call>",
+      "error": "",
+      "latency_seconds": 3.6277845969889313
+    },
+    {
+      "id": "api_011",
+      "category": "api_usage",
+      "question": "How do I access the MPI rank and size through the IPPL Communicator?",
+      "answer": "I'll search for documentation about accessing MPI rank/size through the communicator in this repo's parallel computing components.",
+      "error": "",
+      "latency_seconds": 2.321229894179851
+    },
+    {
+      "id": "api_012",
+      "category": "api_usage",
+      "question": "How do I use IpplTimings to measure a region of code?",
+      "answer": "I'll search for documentation and examples about `IpplTimings` in the repository context.",
+      "error": "",
+      "latency_seconds": 6.106302650878206
+    },
+    {
+      "id": "par_001",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL achieve performance portability across CPUs and GPUs?",
+      "answer": "I'll explore the IPPL repository to understand how it achieves performance portability across CPUs and GPUs, with a focus on Kokkos integration as indicated by the question category.\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | xargs grep -l \"Kokkos\\|performance.*portable\\|parallelism\\|GPU\\|CPU\" 2>/dev/null | head -30\n```\n\nLet me search for Kokkos-related files and relevant documentation:\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" -o -name \"*README*\" \\) | xargs grep -l \"Kokkos\\|performance.*portable\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 5.307463740929961
+    },
+    {
+      "id": "par_002",
+      "category": "parallelism_and_kokkos",
+      "question": "Why does IPPL use Kokkos::View for field storage?",
+      "answer": "I'll explore the IPPL codebase to understand why `Kokkos::View` is used for field storage in parallelism-related contexts.",
+      "error": "",
+      "latency_seconds": 3.913311359938234
+    },
+    {
+      "id": "par_003",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL parallelize loops over field indices using Kokkos RangePolicy?",
+      "answer": "I'll search through the repository to find examples of how IPPL parallelizes loops over field indices using Kokkos RangePolicy. Let me examine relevant source files.",
+      "error": "",
+      "latency_seconds": 4.090119878994301
+    },
+    {
+      "id": "par_004",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL support mixed precision (float vs double) for fields?",
+      "answer": "I'll search the IPPL source code (in `data/raw/ippl`) to find how mixed precision is supported for fields. Let me explore the relevant parts of the codebase.\n\n```bash\ngrep -r \"mixed.precision\\|float.*double\\|precision\" data/raw/ippl --include=\"*.cpp\" --include=\"*.h\" | head -50\n```",
+      "error": "",
+      "latency_seconds": 2.9306843960657716
+    },
+    {
+      "id": "par_005",
+      "category": "parallelism_and_kokkos",
+      "question": "How does IPPL handle multiple execution spaces like OpenMP and CUDA in the same build?",
+      "answer": "I'll search the IPPL source tree for information about handling multiple execution spaces like OpenMP and CUDA in the same build. Let me explore the repository structure first.\n\n```bash find data/raw/ippl -name \"*.cpp\" -o -name \"*.h*\" | xargs grep -l \"execution.space\\|Kokkos::Space\\|OpenMPSpace\\|CUDASpace\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 5.531353057129309
+    },
+    {
+      "id": "par_006",
+      "category": "parallelism_and_kokkos",
+      "question": "What is the purpose of ParallelDispatch.h and what helpers does it expose?",
+      "answer": "Looking up `ParallelDispatch.h` in IPPL's source (parallelism/kokkos directory) to answer your question about its purpose and helpers:\n\n<read file_path=\"/psi/home/ext-nobile_a/data/raw/ippl/par_006.txt\">",
+      "error": "",
+      "latency_seconds": 2.4938201559707522
+    },
+    {
+      "id": "par_007",
+      "category": "parallelism_and_kokkos",
+      "question": "How does the Archive class serialize/deserialize Kokkos views for MPI transfer?",
+      "answer": "I'll explore the repository to understand how the Archive class handles Kokkos view serialization/deserialization for MPI transfers.\n\n```bash\nfind /psi/home/ext-nobile_a/data/raw/ippl -type f \\( -name \"*.hpp\" -o -name \"*.h\" \\) | xargs grep -l \"Archive\\|KokkosView\\|deserialize.*Kokkos\" 2>/dev/null | head -30\n```\n\nLet me start by searching for the Archive class implementation:\n\n```bash\nfind /psi/home/ext-nobile_a/data/raw/ippl -type f \\( -name \"*.hpp\" -o -name \"*.h\" \\) -exec grep -l \"class Archive\\|struct.*Archive\" {} \\; 2>/dev/null\n```",
+      "error": "",
+      "latency_seconds": 4.326049090828747
+    },
+    {
+      "id": "par_008",
+      "category": "parallelism_and_kokkos",
+      "question": "How are MPI tags managed in IPPL to avoid collisions across subsystems?",
+      "answer": "I'll explore the repository to understand how MPI tags are managed in IPPL to avoid collisions across subsystems. Let me start by searching for MPITags-related code.\n\n```bash\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent -type f \\( -name \"*.py\" -o -name \"*.h\" -o -name \"*.cpp\" \\) -exec grep -l \"MPITag\\|mpi_tag\" {} \\; 2>/dev/null | head -30\n```\n\nI'll search for documentation or comments about MPITags to understand the tag management strategy.",
+      "error": "",
+      "latency_seconds": 5.222843039082363
+    },
+    {
+      "id": "par_009",
+      "category": "parallelism_and_kokkos",
+      "question": "What does Kokkos::fence do, and when does IPPL call the wrapper ippl::fence?",
+      "answer": "I'll search for information about `Kokkos::fence` and its IPPL wrapper across the repository's source code and documentation.\n\n```bash\ngrep -r \"ippl::fence\" data/raw/ippl --include=\"*.cpp\" --include=\"*.h\" | head -30\n```",
+      "error": "",
+      "latency_seconds": 4.784650395158678
+    },
+    {
+      "id": "bc_001",
+      "category": "boundary_and_halo",
+      "question": "What boundary condition types are provided in BcTypes.h?",
+      "answer": "I'll search for the BcTypes.h file in the IPPL source tree to identify what boundary condition types are provided.\n\n```bash\nfind /psi/home/ext-nobile_a/data/raw/ippl -name \"BcTypes.h\" 2>/dev/null | head -5\n```",
+      "error": "",
+      "latency_seconds": 2.978729810100049
+    },
+    {
+      "id": "bc_002",
+      "category": "boundary_and_halo",
+      "question": "How does a periodic boundary condition differ from a Neumann boundary condition in IPPL Fields?",
+      "answer": "I'll explore the IPPL repository to find information about periodic boundary conditions versus Neumann boundary conditions in particle field contexts. Let me start by searching relevant files.\n\n```bash\nfind data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" -o -name \"*.hpp\" \\) | head -20\n```",
+      "error": "",
+      "latency_seconds": 4.341979342047125
+    },
+    {
+      "id": "bc_003",
+      "category": "boundary_and_halo",
+      "question": "How are ghost cells populated during a halo exchange?",
+      "answer": "I'll explore the IPPL repository to find how ghost cells are populated during a halo exchange. Let me search for relevant code.",
+      "error": "",
+      "latency_seconds": 8.795083734905347
+    },
+    {
+      "id": "bc_004",
+      "category": "boundary_and_halo",
+      "question": "How are physical-cell values copied into ghost cells for periodic boundary conditions?",
+      "answer": "I'll explore the repository to understand how physical-cell values are copied into ghost cells for periodic boundary conditions in IPPL.\n\nLet me start by examining the codebase structure and finding relevant files:\n\n```bash\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | xargs grep -l \"periodic\\|ghost cell\\|copy.*physical\\|boundary condition\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 4.7017176491208375
+    },
+    {
+      "id": "bc_005",
+      "category": "boundary_and_halo",
+      "question": "How does the absorbing boundary condition in the MaxwellSolvers module damp outgoing waves?",
+      "answer": "I'll explore the repository to understand how the absorbing boundary condition is implemented in the MaxwellSolvers module. Let me start by examining the IPPL source code structure and finding relevant files.\n\n```shell\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | head -50\n```",
+      "error": "",
+      "latency_seconds": 3.2597092741634697
+    },
+    {
+      "id": "num_001",
+      "category": "numerical_meaning",
+      "question": "What does the FFT-based Poisson solver physically compute in terms of Coulomb's law?",
+      "answer": "I'll explore the repository to understand how the FFT-based Poisson solver works and what physical quantity it computes in relation to Coulomb's law.\n\nLet me first examine the structure of the data directory:\n\n<function_read path=\"data/raw/ippl/src/electrostatics/fft_solver.h\" mode=\"read\"/>",
+      "error": "",
+      "latency_seconds": 3.8882535081356764
+    },
+    {
+      "id": "num_002",
+      "category": "numerical_meaning",
+      "question": "What is the physical meaning of the fields advanced by the FDTD solver?",
+      "answer": "I'll search for the FDTD solver implementation in the IPPL repository to determine what electromagnetic fields it advances.\n\nLet me first explore the data directory:\n\n```bash\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data/raw/ippl -name \"*fdtd*\" -o -name \"*solver*\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 5.352224134840071
+    },
+    {
+      "id": "num_007",
+      "category": "numerical_meaning",
+      "question": "What are the numerical tradeoffs between the FFT and CG Poisson solvers in IPPL?",
+      "answer": "I'll explore the IPPL source tree to understand the numerical tradeoffs between FFT and CG Poisson solvers. Let me search for relevant solver implementations first.\n\n```bash\nfind /psi/home/ext-nobile_a/data/raw/ippl -type f \\( -name \"*.cpp\" -o -name \"*.h\" \\) | head -50\n```",
+      "error": "",
+      "latency_seconds": 4.95266428287141
+    },
+    {
+      "id": "build_001",
+      "category": "build_and_install",
+      "question": "Which third-party libraries does IPPL depend on, and what are they used for?",
+      "answer": "I'll explore the IPPL source code to identify its third-party dependencies and their purposes. Let me search for dependency declarations in setup files like `pyproject.toml` or `requirements.txt`.\n\n```bash\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data -name \"setup.py\" -o -name \"pyproject.toml\" -o -name \"requirements*.txt\" 2>/dev/null | head -50\n```",
+      "error": "",
+      "latency_seconds": 4.475653404835612
+    },
+    {
+      "id": "build_002",
+      "category": "build_and_install",
+      "question": "What C++ standard does IPPL require, and why?",
+      "answer": "I'll explore the IPPL codebase in `data/raw/ippl` to find information about C++ standard requirements and their rationale.",
+      "error": "",
+      "latency_seconds": 4.510612172074616
+    },
+    {
+      "id": "build_003",
+      "category": "build_and_install",
+      "question": "How is IPPL configured with CMake to enable a GPU build?",
+      "answer": "I'll search for CMake configuration files and documentation related to IPPL's hardware-accelerated feature settings in `data/raw/ippl`. Let me start by exploring that directory.\n\n```shell\nfind data/raw -name \"*.md\" 2>/dev/null | head -30\n```",
+      "error": "",
+      "latency_seconds": 5.732214114861563
+    },
+    {
+      "id": "build_004",
+      "category": "build_and_install",
+      "question": "What options does INSTALLATION.md describe for configuring Kokkos for IPPL?",
+      "answer": "I'll explore the IPPL source tree in `data/raw/ippl` and locate the INSTALLATION.md file to answer your question about Kokkos configuration options.",
+      "error": "",
+      "latency_seconds": 5.056375477928668
+    },
+    {
+      "id": "build_005",
+      "category": "build_and_install",
+      "question": "How do I install IPPL on the EULER cluster according to the documentation?",
+      "answer": "Looking for installation instructions specific to the **EULER cluster** within the repository's documentation. Let me examine the relevant documents.",
+      "error": "",
+      "latency_seconds": 5.409866368863732
+    },
+    {
+      "id": "test_002",
+      "category": "testing_and_workflow",
+      "question": "What naming conventions does WORKFLOW.md require for variables, constants, and member variables?",
+      "answer": "I'll search for the WORKFLOW.md file in the data/raw/ippl directory to find the naming convention requirements.\n\n```shell\nfind /psi/home/ext-nobile_a/rag-scientific-code-agent/data -name \"WORKFLOW.md\" 2>/dev/null | head -5\n```",
+      "error": "",
+      "latency_seconds": 5.076310260919854
+    },
+    {
+      "id": "test_003",
+      "category": "testing_and_workflow",
+      "question": "When should code use Kokkos::sqrt versus std::sqrt according to WORKFLOW.md?",
+      "answer": "I'll explore the repository to find information about `Kokkos::sqrt` vs `std::sqrt` usage guidelines from WORKFLOW.md.",
+      "error": "",
+      "latency_seconds": 4.048406735062599
+    },
+    {
+      "id": "test_004",
+      "category": "testing_and_workflow",
+      "question": "How does IPPL profile MPI calls using mpiP?",
+      "answer": "I need to understand how IPPL profiles MPI calls using mpiP. Let me explore the repository for profiling-related code and documentation.",
+      "error": "",
+      "latency_seconds": 5.9363822541199625
+    },
+    {
+      "id": "test_005",
+      "category": "testing_and_workflow",
+      "question": "What does the SLURM job template for Gwendolen in the README look like?",
+      "answer": "I'll search for information about the SLURM job template in the repository documentation, particularly in README files.",
+      "error": "",
+      "latency_seconds": 4.119768372969702
+    }
+  ]
+}
