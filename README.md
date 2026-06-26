@@ -1,252 +1,278 @@
 # RAG Scientific Code Agent
 
-Retrieval-Augmented Generation system for scientific C++ code understanding, currently focused on the IPPL codebase.
+A Retrieval-Augmented Generation (RAG) system for understanding large scientific
+C++ codebases, currently focused on the [IPPL](https://github.com/IPPL-framework/ippl)
+framework.
 
-The project ingests source code and documentation, builds a multi-granular structural representation of the codebase, embeds retrievable units at several levels, and uses an LLM to answer questions about architecture, file roles, workflows, and implementation details.
+The agent ingests source code and documentation, builds a **multi-granular structural
+representation** of the codebase, embeds retrievable units at several abstraction
+levels, and uses an LLM to answer questions about architecture, file roles,
+workflows, and implementation details.
 
-For a repo-layout-oriented overview, see [`PROJECT_OVERVIEW.md`](/Users/aaron/semester_project/rag-scientific-code-agent/PROJECT_OVERVIEW.md).
+> For a repo-layout-oriented walkthrough, see [`PROJECT_OVERVIEW.md`](PROJECT_OVERVIEW.md).
 
-## Overview
+---
 
-The current system supports:
+## Why multi-granular retrieval
 
-- C++ source and header ingestion
-- documentation ingestion
-- entity-level explanation generation with an LLM
-- dense retrieval with metadata-aware reranking
-- exact filename and symbol injection
-- structural expansion after seed retrieval
-- multi-granular retrieval across function/symbol, file, module, and call-chain levels
+A naive code RAG retrieves only function-sized chunks. That works for "where is X
+implemented?" but falls apart on "what does this file do?" or "how does this
+workflow fit together?". This system instead builds and retrieves **five levels of
+context** from the same vector store:
 
-The main target use cases are questions like:
+| Level | One entity per… | Good for |
+|---|---|---|
+| **Function / symbol** | function, method, class, struct (bodies may be sub-chunked) | "Where is `deleteAllBuffers` implemented?" |
+| **Documentation** | documentation section | conceptual / narrative questions |
+| **File** | whole file (symbol-aggregated, with raw-content fallback) | "What does `Ippl.h` do?" |
+| **Module** | module / folder (aggregates descendant files) | "What lives in the FFT module?" |
+| **Call-chain** | callable symbol + its local call neighborhood | "How does FFT work in IPPL?" |
 
-- What does `Ippl.h` do?
-- Where is `deleteAllBuffers` implemented?
-- Which numerical method do we use to generate simulation XY?
-- How does FFT work in IPPL?
+A structural layer (files, modules, symbols, and include/call/ownership/inheritance
+edges) ties these levels together so retrieval can expand from a seed hit to its
+structurally related neighbors.
 
-## Current Architecture
+---
 
-At a high level, the runtime flow is:
+## Architecture
 
-1. Load runtime settings from [`config/runtime_settings.json`](/Users/aaron/semester_project/rag-scientific-code-agent/config/runtime_settings.json)
-2. Load raw source and documentation files
-3. Parse source files into code entities
-4. Build the project structure graph
-5. If needed, generate entity explanations and build retrievable artifacts
-6. Embed the retrievable records and persist the vector store
-7. Answer user queries through retrieval + LLM synthesis
+### Build-time pipeline
 
-The main pipeline now looks like:
+```
+file_reader → parsers → explanation_generator → structure builders
+   → chunkers / entity builders → embedder → vector_store
+```
 
-`file_reader -> parsers -> explanation_generator -> structure builders -> chunkers/entity builders -> embedder -> vector_store -> retriever -> llm_agent`
+1. **Ingestion** (`src/ingestion/`) — `FileReader` loads `.cpp`/`.h`/`.hpp` and
+   documentation; tree-sitter-based parsers turn them into entity dicts.
+2. **Explanation generation** (`src/ingestion/explanation_generator.py`) — an LLM
+   enriches each parsed entity with a natural-language explanation before chunking,
+   at the function, documentation, file, module, and call-chain levels.
+3. **Structure building** (`src/structure/`) — `ProjectStructureBuilder` produces a
+   graph of files, modules, symbols, and relationships.
+4. **Multi-granular entity builders** — file-, module-, and call-chain-level
+   builders produce higher-level retrievable entities alongside the raw chunks.
+5. **Embedding & vector store** (`src/ingestion/embedder.py`,
+   `src/retrieval/vector_store.py`) — FAISS-backed, persisted with a manifest.
 
-The query-time flow looks like:
+### Query-time flow
 
-`query -> query_embed -> retriever -> reranker -> structural_expander -> llm_agent -> answer LLM`
+```
+query → query_embed → retriever → reranker → query_intent_router
+   → structural_expander → supplementary retrieval → llm_agent → answer LLM
+```
 
-## Multi-Granular Retrieval
+`Retriever` runs dense search, then a metadata-aware `Reranker` (with exact
+filename/symbol injection), a `QueryIntentRouter`, a `StructuralExpander` that pulls
+related entities across levels, and a supplementary retrieval pass. `LLMAgent` builds
+the final prompt from the retrieved context and calls the answer LLM.
 
-The system no longer retrieves only function chunks. It now builds and retrieves multiple levels of context:
+---
 
-- **Function / symbol level**
-  parsed functions, methods, declarations, classes, and structs.
-  Function and method bodies may be split into smaller chunks.
+## Requirements
 
-- **File level**
-  One whole-file entity per file.
-  Uses either aggregated symbol summaries or raw-content fallback if no symbols were detected.
+- **Python 3.11** (the cluster launcher pins `Python/3.11.11`)
+- **[Ollama](https://ollama.com/)** running locally, for the default embedding and
+  LLM backend — or an **Anthropic API key** if you opt any role onto Claude
+  (see [Using Anthropic models](#using-anthropic-models))
+- A **GPU node** for the initial build — ingestion is GPU-bound. At minimum a single
+  GPU able to serve the default 32B-q4 model (~24–48 GB VRAM, A6000 / A100-40G class)
 
-- **Module level**
-  One entity per module/folder.
-  Aggregates descendant files, file-level summaries, and structural facts.
+- **tree-sitter** for code parsing (installed via `requirements.txt`; startup fails
+  fast if it is unavailable)
+- The **IPPL source tree** (not checked in — see [Data prerequisite](#data-prerequisite))
 
-- **Call-chain level**
-  One entity per callable symbol with local incoming/outgoing call relationships.
-  Summarizes a local workflow neighborhood around that symbol.
+Python dependencies are pinned in [`requirements.txt`](requirements.txt):
+FAISS, NumPy, `langchain-community`, `ollama`, `anthropic`, `sentence-transformers`,
+and the tree-sitter packages.
 
-## Structural Layer
-
-Before retrieval, the system builds a project structure snapshot and saves it to:
-
-- [`embeddings/project_structure/project_structure.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/project_structure.json)
-
-That structure currently contains:
-
-- `files`
-- `modules`
-- `symbols`
-- `relationships` with `include_edges`, `call_edges`, `ownership_edges`, and `inheritance_edges`
-- `indexes`
-- `status`
-- `summary`
-
-Module hierarchy is scope-aware, so source folders are separated from non-source areas such as tests or CI.
-
-## Generated Artifacts
-
-During a rebuild, the system can produce:
-
-- [`embeddings/project_structure/project_structure.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/project_structure.json)
-- [`embeddings/project_structure/file_level_entities.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/file_level_entities.json)
-- [`embeddings/project_structure/module_level_entities.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/module_level_entities.json)
-- [`embeddings/project_structure/call_chain_entities.json`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/project_structure/call_chain_entities.json)
-- [`embeddings/vector_store`](/Users/aaron/semester_project/rag-scientific-code-agent/embeddings/vector_store)
-
-The vector store persists:
-
-- embedding vectors
-- metadata for all retrievable records
-- a manifest describing the runtime settings used to build it
-
-If the manifest changes, the vector store is rebuilt automatically.
-
-## Key Components
-
-### Ingestion
-
-- [`src/ingestion/file_reader.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/file_reader.py)
-  - loads C++ source/header files and documentation files
-
-- [`src/ingestion/code/cpp_parser.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/code/cpp_parser.py)
-- [`src/ingestion/code/header_parser.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/code/header_parser.py)
-- [`src/ingestion/documentation/doc_parser.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/documentation/doc_parser.py)
-  - parse source code and documentation into structured entities
-
-- [`src/ingestion/explanation_generator.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/explanation_generator.py)
-  - generates LLM explanations for parsed entities before chunking
-
-- [`src/ingestion/code/cpp_function_chunker.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/code/cpp_function_chunker.py)
-- [`src/ingestion/code/header_chunker.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/code/header_chunker.py)
-- [`src/ingestion/documentation/doc_chunker.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/documentation/doc_chunker.py)
-  - turn parsed entities into retrievable chunk records
-
-- [`src/ingestion/embedder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/ingestion/embedder.py)
-  - supports `ollama` and `sentence_transformer` embedding backends
-
-### Structure Builders
-
-- [`src/structure/project_structure_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/project_structure_builder.py)
-  - builds the project structure graph
-
-- [`src/structure/call_graph_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/call_graph_builder.py)
-  - builds approximate call edges using tree-sitter
-
-- [`src/structure/file_level_entity_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/file_level_entity_builder.py)
-  - builds whole-file entities
-
-- [`src/structure/module_level_entity_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/module_level_entity_builder.py)
-  - builds module/folder entities
-
-- [`src/structure/call_chain_entity_builder.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/structure/call_chain_entity_builder.py)
-  - builds local call-chain workflow entities
-
-### Retrieval
-
-- [`src/retrieval/vector_store.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/vector_store.py)
-  - FAISS-backed persistent vector store
-
-- [`src/retrieval/reranker.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/reranker.py)
-  - metadata-aware reranking
-  - exact filename extraction
-  - exact symbol extraction
-
-- [`src/retrieval/query_intent_router.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/query_intent_router.py)
-  - routes query types such as location, workflow, or file-purpose queries
-
-- [`src/retrieval/structural_expander.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/structural_expander.py)
-  - expands seed retrieval results with related entities from other levels
-
-- [`src/retrieval/retriever.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/retriever.py)
-  - combines dense retrieval, reranking, structural expansion, and supplementary retrieval
-
-- [`src/retrieval/debugger.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/retrieval/debugger.py)
-  - prints a retrieval debug report when debug mode is enabled
-
-### Prompting and LLM Usage
-
-- [`src/prompts/prompt_templates.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/prompts/prompt_templates.py)
-  - prompt templates for entity explanations, file-level explanations, file-level fallback explanations, module-level explanations, call-chain explanations, and final retrieval-based answering
-
-- [`src/llm/llm_wrapper.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/llm/llm_wrapper.py)
-  - wraps the configured Ollama chat model
-
-- [`src/agent/llm_agent.py`](/Users/aaron/semester_project/rag-scientific-code-agent/src/agent/llm_agent.py)
-  - builds final retrieved context and asks the answer LLM
-
-## Runtime Settings
-
-Runtime behavior is configured in:
-
-- [`config/runtime_settings.json`](/Users/aaron/semester_project/rag-scientific-code-agent/config/runtime_settings.json)
-
-That file currently controls:
-
-- parser choice
-- chunk size
-- explanation generation settings
-- embedding backend and embedding model
-- prompt modes
-- LLM models for all explanation/answer stages
-- retrieval settings
-- strategy names used for manifest tracking
+---
 
 ## Installation
-
-Clone the repository:
 
 ```bash
 git clone https://github.com/nobileaaron/rag-scientific-code-agent
 cd rag-scientific-code-agent
+
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-The raw IPPL codebase is not included in the repository and needs to be added separately.
+### Data prerequisite
 
-Example:
+The IPPL source tree is **not** included in this repository (`data/raw/` is
+gitignored). Clone it into the path that `raw_data_path` points at in
+[`config/runtime_settings.json`](config/runtime_settings.json):
 
 ```bash
-git clone https://github.com/ippl-framework/ippl.git data/raw/ippl
+git clone https://github.com/IPPL-framework/ippl.git data/raw/ippl
 ```
 
-## Running the System
+### Model backends
 
-Run with your project Python environment:
+By default the system uses Ollama for both embeddings and generation. Pull the models
+referenced in `config/runtime_settings.json` before the first run, e.g.:
 
 ```bash
-python main.py
+ollama pull nomic-embed-text                       # embeddings
+ollama pull qwen2.5-coder:32b-instruct-q4_K_M      # answering + entity explanations
 ```
 
-If you use the repo-local launcher:
+---
+
+## Running the system
+
+```bash
+python main.py          # full pipeline, then drops into the interactive QA loop
+```
+
+Or use the repo-local launcher (wraps `main.py` with a fixed venv interpreter):
 
 ```bash
 ./run_main.sh
 ```
 
-The exact interpreter and models depend on how your environment is configured. On local development machines or servers, make sure the required Python packages and model backends are available.
+`main.py` reads [`config/runtime_settings.json`](config/runtime_settings.json) once at
+startup. There are no CLI flags — all behavior is configured there.
 
-## Debugging
+> **Run the first build on a GPU node — ingestion is the expensive part.** It
+> generates LLM explanations for every entity at five levels (thousands of calls on
+> the default ~32B model). Use at least a single 32B-capable GPU (the `job.sh` SLURM
+> launcher targets one). Afterward, explanation snapshots and the vector store are
+> cached, so re-runs and interactive querying are far lighter. To cut ingestion cost,
+> set `chunk_explanation_model` to a smaller model or point the heavy roles at a
+> hosted API.
 
-Turn retrieval debugging on or off inside the interactive prompt with:
+### Interactive loop
 
-```text
-:debug on
-:debug off
+Once the pipeline is ready you get a `Query:` prompt:
+
+| Command | Effect |
+|---|---|
+| *(any question)* | retrieve context and answer |
+| `:debug on` / `:debug off` | toggle retrieval and prompt diagnostics |
+| `exit` / `quit` | leave |
+
+The debug report shows the candidate pool size, exact filename/symbol matches, the
+detected query intent, the structural-expansion mode, the top reranked candidates,
+and the final retrieved context grouped by retrieval role.
+
+### Running on SLURM (gwendolen GPU partition)
+
+[`job.sh`](job.sh) is a SLURM launcher that starts an Ollama server, pulls any
+missing models named in the settings file, and then runs `main.py`:
+
+```bash
+sbatch job.sh
 ```
 
-The debug report shows:
+It honors `FORCE_CLEAN_REBUILD=1` (the default), which wipes
+`embeddings/vector_store`, `embeddings/project_structure`, and
+`embeddings/explanations` before the run. Set `FORCE_CLEAN_REBUILD=0` to reuse
+persisted artifacts.
 
-- candidate pool size
-- exact filename and symbol matches
-- query intent
-- structural expansion mode
-- top reranked candidates
-- final retrieved context grouped by retrieval role
+---
 
-## Current Focus
+## Configuration
 
-The current architecture is centered on:
+All knobs live in [`config/runtime_settings.json`](config/runtime_settings.json):
+parser choice, chunk size, embedding backend (`ollama` vs `sentence_transformer`),
+prompt modes, per-stage LLM models, entity strategies, and retrieval
+`candidate_k` / `supplementary_k`.
 
-- reliable structural understanding of the codebase
-- multi-granular retrieval
-- explanation generation at several abstraction levels
-- better grounding of final answers in retrieved evidence
+Each entry under `models` is either a **plain string** (an Ollama model) or a **dict**
+selecting a provider:
+
+```jsonc
+"models": {
+  "answer_model": "qwen2.5-coder:32b-instruct-q4_K_M",
+  "answer_model": {"provider": "anthropic", "name": "claude-opus-4-8", "max_tokens": 4096}
+}
+```
+
+Optional dict keys: `max_tokens`, `system`, `thinking`, `effort`
+(`"low"|"medium"|"high"|"xhigh"|"max"`).
+
+### Using Anthropic models
+
+Anthropic-backed roles require `ANTHROPIC_API_KEY` in the environment — there is no
+config field for the key by design (only `src/llm/llm_wrapper.py` reads it, via the
+official SDK). Export it before `sbatch job.sh`; SLURM forwards the submitter's
+environment by default, and the job script fails fast if a Claude model is configured
+but the key is missing.
+
+A detailed walkthrough (getting a key, exporting it locally and on the cluster,
+spend limits, and which roles to opt in first) lives in
+[`docs/ANTHROPIC_API_KEY_SETUP.md`](docs/ANTHROPIC_API_KEY_SETUP.md).
+
+---
+
+## Generated artifacts & caching
+
+A rebuild produces these (all under `embeddings/`, which is gitignored):
+
+- `embeddings/project_structure/project_structure.json` — the structural graph
+  (`files`, `modules`, `symbols`, `relationships`, `indexes`, `status`, `summary`)
+- `embeddings/project_structure/{file,module,call_chain}_level_entities.json`
+- `embeddings/vector_store/` — FAISS index, vectors, metadata, and a manifest
+
+There are **two cache layers** — know which one you're busting:
+
+- **Vector store manifest** — on startup, the stored manifest is compared against the
+  current settings. Any difference (parser type, chunk size, embedding model, prompt
+  signatures, model names, entity strategies) rebuilds the whole store. When a rebuild
+  misbehaves, check the printed *Stored manifest* vs *Expected manifest* diff first.
+- **Explanation snapshots** (`embeddings/explanations/*.json`) — generated
+  explanations are cached per-entity by a stable key and reused even across a full
+  vector-store rebuild, so the LLM only re-runs on new or changed entities. Delete a
+  snapshot file to force regeneration at that level.
+
+Prompt templates in [`src/prompts/prompt_templates.py`](src/prompts/prompt_templates.py)
+each carry a *signature* that participates in the manifest. Changing a template's text
+without bumping its signature will **not** trigger a rebuild.
+
+---
+
+## Repository layout
+
+```text
+rag-scientific-code-agent/
+├── main.py                       # single entry point: full pipeline + QA loop
+├── run_main.sh                   # local launcher (fixed venv interpreter)
+├── job.sh                        # SLURM launcher for the gwendolen GPU partition
+├── requirements.txt
+├── config/runtime_settings.json  # all runtime configuration
+├── data/raw/ippl/                # external IPPL source (not checked in)
+├── embeddings/                   # generated artifacts (gitignored)
+├── docs/                         # API-key setup + evaluation reports
+├── experiments/                  # benchmark / manual question sets
+├── scripts/                      # evaluation + report generation
+└── src/
+    ├── ingestion/                # file_reader, parsers, chunkers, explanation_generator, embedder
+    ├── structure/                # project_structure_builder, call_graph + entity builders
+    ├── retrieval/                # vector_store, retriever, reranker, intent router, expander, debugger
+    ├── prompts/                  # prompt_templates (signature-tracked)
+    ├── llm/                      # llm_wrapper (Ollama / Anthropic)
+    ├── agent/                    # llm_agent (final context assembly + answer)
+    └── utils/
+```
+
+---
+
+## Evaluation
+
+The `docs/evaluations/` and `scripts/` directories hold an evaluation harness used to
+compare models on an IPPL question set
+([`docs/evaluations/eval_questions_v2.json`](docs/evaluations/eval_questions_v2.json)).
+One track drives **Claude Code** with local Ollama models (via a LiteLLM proxy that
+re-exposes them as an Anthropic-compatible endpoint) and grades the answers against
+reference solutions. See
+[`docs/evaluations/CLAUDE_CODE_EVAL.md`](docs/evaluations/CLAUDE_CODE_EVAL.md) for how
+the pieces fit together.
+
+---
+
+## License
+
+Licensed under the Apache License 2.0 — see [`LICENSE`](LICENSE).
