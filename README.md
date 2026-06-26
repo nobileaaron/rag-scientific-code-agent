@@ -9,8 +9,6 @@ representation** of the codebase, embeds retrievable units at several abstractio
 levels, and uses an LLM to answer questions about architecture, file roles,
 workflows, and implementation details.
 
-> For a repo-layout-oriented walkthrough, see [`PROJECT_OVERVIEW.md`](PROJECT_OVERVIEW.md).
-
 ---
 
 ## Why multi-granular retrieval

@@ -51,4 +51,4 @@ When a rebuild misbehaves, check the printed "Stored manifest" vs "Expected mani
 
 ## Context files
 
-`README.md` and `PROJECT_OVERVIEW.md` contain more narrative background on use cases and the file layout; both are kept up to date with the current code.
+`README.md` contains more narrative background on use cases and the file layout; it is kept up to date with the current code.
