@@ -43,6 +43,11 @@ both `litellm_ollama_config.yaml` (the `model:` lines) and the pull list. The
 `qwen3.5:9b` / `gemma4:12b` tags follow the naming already used in this repo's
 other eval files — adjust to whatever you actually have installed.
 
+The large context window (`num_ctx: 32768`) is set in `litellm_ollama_config.yaml`,
+so the default flow needs nothing extra. If you'd rather bake the context window into
+a named Ollama model instead, the matching Modelfiles live in
+[`modelfiles/`](modelfiles/) — see that folder's README for `ollama create` usage.
+
 ## Prerequisites (one time, on the SSH box)
 
 ```bash
