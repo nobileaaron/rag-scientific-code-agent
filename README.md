@@ -172,6 +172,12 @@ It honors `FORCE_CLEAN_REBUILD=1` (the default), which wipes
 `embeddings/explanations` before the run. Set `FORCE_CLEAN_REBUILD=0` to reuse
 persisted artifacts.
 
+> If you switch the embedding backend to `sentence_transformer`, the compute nodes
+> run offline (`HF_HUB_OFFLINE=1`) and can't download the model. Run
+> [`precache_hf_model.sh`](precache_hf_model.sh) **once on the login node** first to
+> fetch the model into the shared Hugging Face cache. The default `ollama` backend
+> doesn't need this — Ollama pulls its own embedding model inside `job.sh`.
+
 ---
 
 ## Configuration
