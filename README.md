@@ -277,6 +277,146 @@ the pieces fit together.
 
 ---
 
+## Reproducibility
+
+This section is the single end-to-end recipe: what to install, how to build the
+index, how to query it, and how to regenerate every evaluation artifact. It
+consolidates and cross-links the [Installation](#installation),
+[Running the system](#running-the-system), and [Evaluation](#evaluation)
+sections above — follow it top to bottom to reproduce the results from scratch.
+
+### 0. Prerequisites checklist
+
+| Need | How to get it |
+|---|---|
+| Python **3.11** | `python3.11 -m venv .venv` (the cluster pins `Python/3.11.11`) |
+| Python deps | `pip install -r requirements.txt` (FAISS, tree-sitter, ollama, anthropic, sentence-transformers, …) |
+| **Ollama** | <https://ollama.com> — serves the default embedding + LLM backend locally |
+| A **GPU** (build only) | 32B-q4 answering model needs ~24–48 GB VRAM (A6000 / A100-40G class) |
+| **IPPL source** | `git clone https://github.com/IPPL-framework/ippl.git data/raw/ippl` (not checked in) |
+| *(optional)* Anthropic key | `export ANTHROPIC_API_KEY=sk-...` if any role is put on Claude — see [`docs/ANTHROPIC_API_KEY_SETUP.md`](docs/ANTHROPIC_API_KEY_SETUP.md) |
+| *(eval track only)* LiteLLM + Claude Code | `pip install 'litellm[proxy]'` and `npm i -g @anthropic-ai/claude-code` |
+
+### 1. Set up the environment
+
+```bash
+git clone https://github.com/nobileaaron/rag-scientific-code-agent
+cd rag-scientific-code-agent
+
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+git clone https://github.com/IPPL-framework/ippl.git data/raw/ippl   # the corpus
+
+ollama pull nomic-embed-text                     # embeddings (default backend)
+ollama pull qwen2.5-coder:32b-instruct-q4_K_M    # answering + explanations
+```
+
+All behavior is driven by [`config/runtime_settings.json`](config/runtime_settings.json)
+(parser, chunk size, embedding backend, per-role models, retrieval `k` values).
+There are no CLI flags — edit that file to change anything.
+
+### 2. Build the index and query it
+
+The first run is the expensive one: it generates LLM explanations for every
+entity at five levels, then embeds them into the FAISS store. **Do this on a GPU
+node.** Afterward the explanation snapshots and vector store are cached, so
+re-runs and querying are cheap.
+
+```bash
+# Locally (needs Ollama up and a capable GPU):
+python main.py            # builds if needed, then drops into the Query: loop
+./run_main.sh             # same, but pins the fixed venv interpreter
+
+# On the gwendolen SLURM partition (boots Ollama, pulls models, then builds):
+sbatch job.sh             # FORCE_CLEAN_REBUILD=1 by default (wipes embeddings/ first)
+FORCE_CLEAN_REBUILD=0 sbatch job.sh   # reuse persisted artifacts instead
+```
+
+In the `Query:` loop: type any question, `:debug on` / `:debug off` toggles
+retrieval diagnostics, `exit` / `quit` leaves. See
+[Generated artifacts & caching](#generated-artifacts--caching) for the two cache
+layers (vector-store manifest and explanation snapshots) and how to bust them.
+
+> If you switch the embedding backend to `sentence_transformer`, run
+> [`precache_hf_model.sh`](precache_hf_model.sh) **once on the login node** first
+> — compute nodes run offline (`HF_HUB_OFFLINE=1`) and can't download the model.
+
+### 3. Reproduce the evaluations
+
+There are **two independent evaluation tracks**, both driven by the shared
+question set [`docs/evaluations/eval_questions_v2.json`](docs/evaluations/eval_questions_v2.json)
+and both writing to `docs/evaluations/answers/`:
+
+**Track A — RAG pipeline.** Runs the question set through this system's own
+retrieval + answer pipeline (the same one behind the interactive loop).
+
+```bash
+sbatch eval_job.sh        # reuses the existing vector store by default (FORCE_CLEAN_REBUILD=0)
+# override the answer model, or force a rebuild first:
+EVAL_ANSWER_MODEL=qwen2.5-coder:32b-instruct-q4_K_M FORCE_CLEAN_REBUILD=1 sbatch eval_job.sh
+```
+
+It writes `docs/evaluations/answers/eval_v2_<timestamp>.json` (each answer stamped
+with the models + settings that produced it). Under the hood it calls
+[`scripts/run_rag_evaluation.py`](scripts/run_rag_evaluation.py), which you can
+also run directly (`RAG_ALLOW_REBUILD=1 python scripts/run_rag_evaluation.py`)
+with `EVAL_QUESTIONS_PATH` / `EVAL_OUTPUT_PATH` / `EVAL_RUN_LABEL` set.
+
+**Track B — Claude Code over local models.** Drives **Claude Code** while it is
+backed by local Ollama models (via a LiteLLM proxy that re-exposes them as an
+Anthropic-compatible endpoint), letting the agent explore `data/raw/ippl` with
+read-only tools. Full walkthrough in
+[`docs/evaluations/CLAUDE_CODE_EVAL.md`](docs/evaluations/CLAUDE_CODE_EVAL.md).
+
+```bash
+./run_eval_ssh.sh         # starts Ollama + LiteLLM proxy + tool-call shim, runs all models
+sbatch eval_claude_code_job.sh                # same, as a SLURM job
+EVAL_MODELS="qwen25_7b_q4km gemma4_12b" ./run_eval_ssh.sh   # subset of models
+```
+
+It writes `docs/evaluations/answers/claude_code_<label>_<timestamp>.json`
+incrementally (a crash keeps finished answers). Model↔tag mapping and context
+window live in [`litellm_ollama_config.yaml`](litellm_ollama_config.yaml).
+
+**Grading reports.** Turn saved answer JSON into the source-backed comparison
+reports (Markdown + PDF) under `docs/evaluations/`:
+
+```bash
+python scripts/generate_codex_vs_local_eval_report.py       # round-1 report
+python scripts/generate_codex_vs_local_eval_report_v2.py    # round-2 (reuses round-1 judgments)
+python scripts/generate_eval_round_comparison_report.py     # round-1 vs round-2 diff
+```
+
+### Complete script reference
+
+Everything runnable in the repo, and what it does:
+
+| Script | Kind | What it does |
+|---|---|---|
+| [`main.py`](main.py) | entry point | The whole pipeline: ingest → explain → structure → embed → interactive QA loop. Reads `config/runtime_settings.json`. |
+| [`run_main.sh`](run_main.sh) | launcher | Runs `main.py` with the fixed local venv interpreter. |
+| [`job.sh`](job.sh) | SLURM | gwendolen build + interactive run: starts Ollama, pulls configured models, then `main.py`. `FORCE_CLEAN_REBUILD=1` by default wipes `embeddings/`. |
+| [`precache_hf_model.sh`](precache_hf_model.sh) | login-node | One-time: caches the SentenceTransformer embedding model into the shared HF cache so offline compute nodes can load it. Only needed for the `sentence_transformer` backend. |
+| [`eval_job.sh`](eval_job.sh) | SLURM | **Track A** RAG-pipeline eval over `eval_questions_v2.json` → `answers/eval_v2_<ts>.json`. Reuses the vector store by default; `EVAL_ANSWER_MODEL` overrides the answer model. |
+| [`scripts/run_rag_evaluation.py`](scripts/run_rag_evaluation.py) | python | The Track-A runner invoked by `eval_job.sh`; usable standalone with `RAG_ALLOW_REBUILD=1`. |
+| [`run_eval_ssh.sh`](run_eval_ssh.sh) | launcher | **Track B** orchestrator: boots Ollama + LiteLLM proxy + tool-call shim, points Claude Code at it, runs every model over every question. |
+| [`eval_claude_code_job.sh`](eval_claude_code_job.sh) | SLURM | SLURM wrapper that sets up the environment then hands off to `run_eval_ssh.sh`. |
+| [`scripts/run_claude_code_model_matrix.py`](scripts/run_claude_code_model_matrix.py) | python | Drives `claude -p` once per (model, question) through the proxy; the Python core of Track B. |
+| [`scripts/toolcall_shim.py`](scripts/toolcall_shim.py) | python | Sits between Claude Code and LiteLLM, rewriting local models' plain-JSON tool calls into proper Anthropic `tool_use` blocks so tools actually run. |
+| [`scripts/generate_codex_vs_local_eval_report.py`](scripts/generate_codex_vs_local_eval_report.py) | python | Grades a saved answer run against a manual code-reading pass; emits the round-1 report (MD + PDF). |
+| [`scripts/generate_codex_vs_local_eval_report_v2.py`](scripts/generate_codex_vs_local_eval_report_v2.py) | python | Round-2 report; reuses round-1 judgments for overlapping question IDs. |
+| [`scripts/generate_eval_round_comparison_report.py`](scripts/generate_eval_round_comparison_report.py) | python | Diffs the round-1 and round-2 reports into a comparison document. |
+
+Supporting (not run directly): [`litellm_ollama_config.yaml`](litellm_ollama_config.yaml)
+(proxy model definitions + `num_ctx`), and
+[`docs/evaluations/modelfiles/`](docs/evaluations/modelfiles/) (Ollama `Modelfile`s
+that bake the large context window into named models — an alternative to setting
+`num_ctx` in the proxy config).
+
+---
+
 ## License
 
 Licensed under the Apache License 2.0 — see [`LICENSE`](LICENSE).
